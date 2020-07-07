@@ -44,4 +44,4 @@ with open(os.path.join(currentDirectory, "helpers/config.json"), "w") as file:
     json.dump({"istalled": True, "platform": platform}, file)
 
 
-print(color("All set, you can now use all other scipts", colors.GREEN))
+print(color("All set, you can now use all other scripts", colors.GREEN))
