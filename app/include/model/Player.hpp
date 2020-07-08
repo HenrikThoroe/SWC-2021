@@ -20,6 +20,7 @@ namespace Model {
             /// Inverts the player's color to it's logical opposite. Red -> Blue; Blue -> Red;
             void invertColor();
 
+            /// Returns the piece colors of the player instance based on the player color.
             std::array<PieceColor, 2>& getPieceColors() const;
 
         private:
