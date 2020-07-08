@@ -13,7 +13,7 @@ namespace Model {
      */ 
     enum class PieceColor: uint8_t {
         RED, BLUE, GREEN, YELLOW, NONE, OBSTRUCTED
-    }
+    };
 
     /**
      * The colorful representation of a player. Each player has one color assigned. Possible colors are red and blue.
@@ -22,6 +22,6 @@ namespace Model {
      */ 
     enum class PlayerColor: uint8_t {
         RED, BLUE
-    }
+    };
 
 }
