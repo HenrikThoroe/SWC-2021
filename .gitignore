@@ -238,4 +238,4 @@ $RECYCLE.BIN/
 
 ## Project specific ##
 # Scripts settings
-scripts/helpers/config.json
+scripts/helpers/PyBlokusTools/pyblokustools/data/config.json
