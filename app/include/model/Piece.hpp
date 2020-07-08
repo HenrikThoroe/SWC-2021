@@ -12,7 +12,7 @@ namespace Model {
     /// An abstract description of a piece. 
     /// The piece is described by a set of vectors which lead to all positions of the piece if an absolute origin is taken into context. 
     /// The Piece struct also provides information about the attach points of the specified piece. 
-    /// These are vectors which point from the origin to each poistion where another piece of the same color could be attached.s
+    /// These are vectors which point from the origin to each poistion where another piece of the same color could be attached.
     struct Piece {
         typedef std::vector<Util::Vector2D> Shape;
         typedef std::array<Util::Vector2D, 2> AttachPoint;
