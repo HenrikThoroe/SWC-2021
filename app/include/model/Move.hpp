@@ -1,10 +1,11 @@
 #pragma once
 
+#include <inttypes.h>
+
 #include "color.hpp"
 #include "Rotation.hpp"
 #include "Position.hpp"
 #include "Vector2D.hpp"
-#include <inttypes.h>
 
 namespace Model {
 

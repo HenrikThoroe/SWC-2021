@@ -1,10 +1,11 @@
 #pragma once 
 
-#include "Vector2D.hpp"
 #include <inttypes.h>
 #include <vector>
 #include <array>
 #include <tuple>
+
+#include "Vector2D.hpp"
 
 namespace Model {
 

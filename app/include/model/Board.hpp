@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Move.hpp"
 #include <array>
 #include <inttypes.h>
+
+#include "Move.hpp"
 
 namespace Model {
 

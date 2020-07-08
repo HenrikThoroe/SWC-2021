@@ -1,11 +1,11 @@
 #pragma once
 
+#include <inttypes.h>
+#include <vector>
+
 #include "Piece.hpp"
 #include "Rotation.hpp"
 #include "Position.hpp"
-
-#include <inttypes.h>
-#include <vector>
 
 namespace Model {
 

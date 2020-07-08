@@ -1,5 +1,6 @@
-#include "Vector2D.hpp"
 #include <math.h>
+
+#include "Vector2D.hpp"
 
 namespace Util {
 

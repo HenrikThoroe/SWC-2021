@@ -1,6 +1,7 @@
+#include <vector>
+
 #include "Board.hpp"
 #include "Piece.hpp"
-#include <vector>
 
 namespace Model {
 

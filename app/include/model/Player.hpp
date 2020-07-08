@@ -1,7 +1,8 @@
 #pragma once 
 
-#include "color.hpp"
 #include <array>
+
+#include "color.hpp"
 
 namespace Model {
 
