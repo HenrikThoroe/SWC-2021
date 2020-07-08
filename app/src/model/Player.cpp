@@ -8,7 +8,7 @@ namespace Model {
 
     Player::Player(const Player* player) : color(player->color) {}
 
-    std::array<PieceColor, 2>& Player::getPieceColors() const {
+    const std::array<PieceColor, 2>& Player::getPieceColors() const {
         return Player::pieceColors.at(uint8_t(color));
     }
 

@@ -22,12 +22,12 @@ namespace Model {
             void invertColor();
 
             /// Returns the piece colors of the player instance based on the player color.
-            std::array<PieceColor, 2>& getPieceColors() const;
+            const std::array<PieceColor, 2>& getPieceColors() const;
 
         private:
             /// The available piece colors for each player. 
             /// The player color works as index for acceessing a array which contains the assigned colors.
-            static std::array<std::array<PieceColor, 2>, 2> pieceColors;
+            static const std::array<std::array<PieceColor, 2>, 2> pieceColors;
     };
 
 }
