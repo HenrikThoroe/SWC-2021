@@ -33,6 +33,8 @@ namespace Util {
             Vector2D operator + (const Vector2D& offset) const;
 
             Vector2D operator * (const int& factor) const;
+
+            bool operator == (const Vector2D& other) const;
     };
 
 }
