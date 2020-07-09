@@ -1,32 +1,21 @@
-#include <vector>
-
 #include "Board.hpp"
-#include "Piece.hpp"
 
 namespace Model {
 
     Board::Board() {}
 
-    void Board::perform(const Move& move) {
-        using Util::Vector2D;
-        using Util::Position;
-
-        const Position origin = move.positionOnBoard.move(move.vectorToOrigin);
-        std::vector<Position> positionsOfPiece;
-        const Piece::Shape shape = std::get<0>(Piece::allPieces.at(move.pieceId).rotations.at(uint8_t(move.rotation))); 
-
-        for (auto path : shape) {
-            positionsOfPiece.push_back(origin.move(path));
+    void Board::dropPiece(const DeployedPiece& piece) {
+        for (auto pos : piece.getOccupiedPositions()) {
+            fields[pos.x][pos.y] = 1;
+            
+            for (int i = 0; i < 4; ++i) {
+                dropPositions[i][pos.x][pos.y] *= -1;
+            }
         }
 
-        for (auto pos : positionsOfPiece) {
-            fields[pos.x][pos.y] = uint8_t(move.color);
+        for (auto pos : piece.getAttachPoints()) {
+            dropPositions[uint8_t(piece.color)][pos.x][pos.y] += 1;
         }
-    }
-
-    bool Board::canPerform(const Move& move) const {
-        // ToDo: Implement 
-        return false;
     }
 
 }

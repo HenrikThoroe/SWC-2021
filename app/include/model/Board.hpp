@@ -4,6 +4,7 @@
 #include <inttypes.h>
 
 #include "Move.hpp"
+#include "DeployedPiece.hpp"
 
 namespace Model {
 
@@ -16,11 +17,8 @@ namespace Model {
 
             Board();
 
-            /// Performs the passed move on 'Board' instance.
-            void perform(const Move& move);
-
-            /// Validates wheter the specified move can be performed on the board.
-            bool canPerform(const Move& move) const;
+            /// Deploys a piece on the current board instance.
+            void dropPiece(const DeployedPiece& piece);
 
         private:
             /// An array which stores four representations of the board. 
