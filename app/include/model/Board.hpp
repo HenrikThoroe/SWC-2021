@@ -20,6 +20,9 @@ namespace Model {
             /// Deploys a piece on the current board instance.
             void dropPiece(const DeployedPiece& piece);
 
+            /// Removes a piece from the current board instance.
+            void removePiece(const DeployedPiece& piece);
+
         private:
             /// An array which stores four representations of the board. 
             /// Each field of the board is described by an uint8_t value which indicates the number of possible attach points.
