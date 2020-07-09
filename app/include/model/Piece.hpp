@@ -31,11 +31,6 @@ namespace Model {
          * @brief An array which contains the information to construct the piece in all possible rotations.
          */ 
         std::array<Rotation, 4> rotations;
-
-        /// A collection of all pieces.
-        constexpr static std::array<Piece, 0> allPieces = {
-
-        };
     };
 
 }

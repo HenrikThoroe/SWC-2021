@@ -1,10 +1,11 @@
 #include "DeployedPiece.hpp"
 #include "Position.hpp"
+#include "PieceCollection.hpp"
 
 namespace Model {
 
     DeployedPiece::DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color) : pieceId(id), origin(origin), rotation(rotation), color(color) {
-        Piece piece = Piece::allPieces.at(pieceId);
+        Piece piece = PieceCollection::getPiece(pieceId);
         Piece::Shape shape = std::get<0>(piece.rotations.at(uint8_t(rotation)));
         Piece::AttachPoints attachPoints = std::get<1>(piece.rotations.at(uint8_t(rotation)));
 
