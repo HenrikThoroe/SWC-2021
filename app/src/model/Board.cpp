@@ -5,7 +5,7 @@ namespace Model {
     Board::Board() {}
 
     void Board::dropPiece(const DeployedPiece& piece) {
-        for (auto pos : piece.getOccupiedPositions()) {
+        for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.x][pos.y] = 1;
             
             for (int i = 0; i < 4; ++i) {
@@ -13,13 +13,13 @@ namespace Model {
             }
         }
 
-        for (auto pos : piece.getAttachPoints()) {
+        for (const Util::Position& pos : piece.getAttachPoints()) {
             dropPositions[uint8_t(piece.color)][pos.x][pos.y] += 1;
         }
     }
 
     void Board::removePiece(const DeployedPiece& piece) {
-        for (auto pos : piece.getOccupiedPositions()) {
+        for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.x][pos.y] = 0;
             
             for (int i = 0; i < 4; ++i) {
@@ -27,7 +27,7 @@ namespace Model {
             }
         }
 
-        for (auto pos : piece.getAttachPoints()) {
+        for (const Util::Position& pos : piece.getAttachPoints()) {
             dropPositions[uint8_t(piece.color)][pos.x][pos.y] -= 1;
         }
     }
