@@ -21,9 +21,9 @@ namespace Model {
         }
     }
 
-    DeployedPiece::DeployedPiece(const DeployedPiece& other) : DeployedPiece(other.pieceId, other.origin, other.rotation) {}
+    DeployedPiece::DeployedPiece(const DeployedPiece& other) : DeployedPiece(other.pieceId, other.origin, other.rotation, other.color) {}
 
-    DeployedPiece::DeployedPiece(const DeployedPiece* other) : DeployedPiece(other->pieceId, other->origin, other->rotation) {}
+    DeployedPiece::DeployedPiece(const DeployedPiece* other) : DeployedPiece(other->pieceId, other->origin, other->rotation, other->color) {}
 
     const std::vector<Util::Position>& DeployedPiece::getOccupiedPositions() const {
         return occupiedPositions;
