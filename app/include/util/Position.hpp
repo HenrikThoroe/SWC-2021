@@ -11,6 +11,8 @@ namespace Util {
             bool isNextTo(const Position& other) const;
 
             Position move(const Vector2D& direction) const;
+
+            Position operator + (const Vector2D& direction) const;
     };
 
 }

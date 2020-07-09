@@ -17,4 +17,8 @@ namespace Util {
         return Position(x + direction.x, y + direction.y);
     }
 
+    Position Position::operator + (const Vector2D& direction) const {
+        return move(direction);
+    }
+
 }
