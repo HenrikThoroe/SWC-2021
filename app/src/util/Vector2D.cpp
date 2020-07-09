@@ -36,4 +36,12 @@ namespace Util {
         return sqrt(pow(x, 2) + pow(y, 2));
     }
 
+    Vector2D Vector2D::operator + (const Vector2D& offset) const {
+        return shifted(offset);
+    }
+
+    Vector2D Vector2D::operator * (const int& factor) const {
+        return scaled(factor);
+    }
+
 }

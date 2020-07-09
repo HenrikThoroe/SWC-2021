@@ -29,6 +29,10 @@ namespace Util {
 
             /// Similiar to shift(const Vector2D&) but does not mutate the instance.
             Vector2D shifted(const Vector2D& offset) const;
+
+            Vector2D operator + (const Vector2D& offset) const;
+
+            Vector2D operator * (const int& factor) const;
     };
 
 }
