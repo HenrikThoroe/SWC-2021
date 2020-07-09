@@ -6,6 +6,7 @@
 #include "Piece.hpp"
 #include "Rotation.hpp"
 #include "Position.hpp"
+#include "color.hpp"
 
 namespace Model {
 
@@ -21,7 +22,10 @@ namespace Model {
             /// The rotation in which the piece has been deployed.
             const Rotation rotation;
 
-            DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation);
+            /// The color of the piece.
+            const PieceColor color;
+
+            DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color);
             DeployedPiece(const DeployedPiece& other);
             DeployedPiece(const DeployedPiece* other);
 
