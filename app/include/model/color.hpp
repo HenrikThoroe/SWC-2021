@@ -12,7 +12,12 @@ namespace Model {
      * @note The enum maps to uint8_t
      */ 
     enum class PieceColor: uint8_t {
-        RED, BLUE, GREEN, YELLOW, NONE, OBSTRUCTED
+        RED = 0, 
+        BLUE = 1, 
+        GREEN = 2, 
+        YELLOW = 3, 
+        NONE = 4, 
+        OBSTRUCTED = 5
     };
 
     /**
@@ -21,7 +26,8 @@ namespace Model {
      * @note The enum maps to uint8_t
      */ 
     enum class PlayerColor: uint8_t {
-        RED, BLUE
+        RED = 0, 
+        BLUE = 1
     };
 
 }
