@@ -9,15 +9,15 @@ namespace Model {
         Piece::AttachPoints attachPoints = std::get<1>(piece.rotations.at(uint8_t(rotation)));
 
         for (auto path : shape) {
-            occupiedPositions.emplace_back(origin.move(path));
+            occupiedPositions.emplace_back(origin + path);
         }
 
         for (auto attachPointPath : attachPoints.at(0)) {
-            attachPoints.emplace_back(origin.move(attachPointPath));
+            attachPoints.emplace_back(origin + attachPointPath);
         }
 
         for (auto validationPointPath : attachPoints.at(1)) {
-            validationPoints.emplace_back(origin.move(validationPointPath));
+            validationPoints.emplace_back(origin + validationPointPath);
         }
     }
 
