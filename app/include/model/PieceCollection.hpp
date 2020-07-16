@@ -8,7 +8,7 @@ namespace Model {
 
     class PieceCollection {
         private:
-            static const std::array<Piece, 0> allPieces;
+            static const std::array<Piece, 21> allPieces;
 
         public:
             PieceCollection() = delete;
