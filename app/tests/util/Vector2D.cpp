@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "Vector2D.hpp"
 
-TEST_CASE("Mathematical Vector Test", "[model]") {
+TEST_CASE("Mathematical Vector Test", "[util]") {
     auto vec = Util::Vector2D(5, -3);
 
     REQUIRE(vec.x == 5);
