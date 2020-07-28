@@ -10,6 +10,10 @@ namespace Util {
         const int minY = y - 1;
         const int maxY = y + 1;
 
+        if (other == *this) {
+            return false;
+        }
+
         return other.x >= minX && other.x <= maxX && other.y >= minY && other.y <= maxY;
     }
 
