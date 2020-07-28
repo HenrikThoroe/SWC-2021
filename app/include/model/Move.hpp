@@ -11,7 +11,7 @@
 namespace Model {
 
     /// A derived class from 'DeployedPiece' which can be initialized with a position on board and a vector pointing to origin.
-    class Move: DeployedPiece {
+    class Move: public DeployedPiece {
         public: 
             Move(uint8_t pieceId, PieceColor color, Rotation rotation, Util::Vector2D vectorToOrigin, Util::Position dropPosition);
     };
