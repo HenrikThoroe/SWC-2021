@@ -32,7 +32,7 @@ namespace Util {
         return shifted;
     }
 
-    int Vector2D::length() const {
+    double Vector2D::length() const {
         return sqrt(pow(x, 2) + pow(y, 2));
     }
 

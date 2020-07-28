@@ -22,7 +22,7 @@ namespace Util {
             void shift(const Vector2D& offset);
 
             /// The length of the vector.
-            int length() const;
+            double length() const;
 
             /// Similiar to scale(const int&) but does not mutate the instance.
             Vector2D scaled(const int& factor) const;
