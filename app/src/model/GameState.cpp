@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "GameState.hpp"
 
 namespace Model {
@@ -32,15 +34,15 @@ namespace Model {
     }
 
     const std::vector<Move>& GameState::getPossibleMoves() const {
-        return {};
+        throw std::runtime_error("Not Implemented");
     }
 
     uint64_t GameState::hash() const {
-        return 0;
+        throw std::runtime_error("Not Implemented");
     }
 
     int GameState::evaluate() const {
-        return 0;
+        throw std::runtime_error("Not Implemented");
     }
 
 }
