@@ -14,8 +14,9 @@ namespace Model {
         }
 
         for (const auto& attachPoint : attachPoints) {
-            this->attachPoints.push_back(origin + attachPoint.at(0));
-            this->validationPoints.push_back(origin + attachPoint.at(1));
+            const auto absolutePoint = origin + attachPoint.at(0);
+            this->attachPoints.push_back(absolutePoint);
+            this->validationPoints.push_back(absolutePoint + attachPoint.at(1));
         }
     }
 
