@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace Util {
 
     /// The mathematical representation of a two dimensional vector (not C++ array like vector).
@@ -35,6 +37,8 @@ namespace Util {
             Vector2D operator * (const int& factor) const;
 
             bool operator == (const Vector2D& other) const;
+
+            friend std::ostream& operator << (std::ostream& os, const Vector2D& vec);
     };
 
 }

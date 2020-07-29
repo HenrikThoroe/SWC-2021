@@ -48,4 +48,9 @@ namespace Util {
         return x == other.x && y == other.y;
     }
 
+    std::ostream& operator << (std::ostream& os, const Vector2D& vec) {
+        os << "Vector2D { x: " << vec.x << ", y: " << vec.y << " }";
+        return os;
+    }
+
 }
