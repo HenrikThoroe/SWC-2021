@@ -6,29 +6,29 @@ namespace Model {
 
     void Board::dropPiece(const DeployedPiece& piece) {
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
-            fields[pos.x][pos.y] = uint8_t(piece.color);
+            fields[pos.y][pos.x] = uint8_t(piece.color);
             
             for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.x][pos.y] *= -1;
+                dropPositions[i][pos.y][pos.x] *= -1;
             }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
-            dropPositions[uint8_t(piece.color)][pos.x][pos.y] += 1;
+            dropPositions[uint8_t(piece.color)][pos.y][pos.x] += 1;
         }
     }
 
     void Board::removePiece(const DeployedPiece& piece) {
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
-            fields[pos.x][pos.y] = 0;
+            fields[pos.y][pos.x] = 0;
             
             for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.x][pos.y] *= -1;
+                dropPositions[i][pos.y][pos.x] *= -1;
             }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
-            dropPositions[uint8_t(piece.color)][pos.x][pos.y] -= 1;
+            dropPositions[uint8_t(piece.color)][pos.y][pos.x] -= 1;
         }
     }
 
