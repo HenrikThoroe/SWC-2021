@@ -77,4 +77,37 @@ TEST_CASE("DeployedPiece Test", "[model]") {
             REQUIRE(included);
         }
     }
+
+    SECTION("Can Rotate") {
+        std::array<DeployedPiece, 4> rotations = {
+            DeployedPiece(20, Position(0,0), Rotation::ZERO, PieceColor::RED),
+            DeployedPiece(20, Position(0,0), Rotation::ONEHALFPI, PieceColor::RED),
+            DeployedPiece(20, Position(0,0), Rotation::PI, PieceColor::RED),
+            DeployedPiece(20, Position(0,0), Rotation::THREEHALFPI, PieceColor::RED)
+        };
+
+        REQUIRE(rotations[0].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[0].getOccupiedPositions()[1] == Position(0, 1));
+        REQUIRE(rotations[0].getOccupiedPositions()[2] == Position(-1, 1));
+        REQUIRE(rotations[0].getOccupiedPositions()[3] == Position(1, 1));
+        REQUIRE(rotations[0].getOccupiedPositions()[4] == Position(2, 1));
+
+        REQUIRE(rotations[1].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[1].getOccupiedPositions()[1] == Position(-1, 0));
+        REQUIRE(rotations[1].getOccupiedPositions()[2] == Position(-1, -1));
+        REQUIRE(rotations[1].getOccupiedPositions()[3] == Position(-1, 1));
+        REQUIRE(rotations[1].getOccupiedPositions()[4] == Position(-1, 2));
+
+        REQUIRE(rotations[2].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[2].getOccupiedPositions()[1] == Position(0, -1));
+        REQUIRE(rotations[2].getOccupiedPositions()[2] == Position(1, -1));
+        REQUIRE(rotations[2].getOccupiedPositions()[3] == Position(-1, -1));
+        REQUIRE(rotations[2].getOccupiedPositions()[4] == Position(-2, -1));
+
+        REQUIRE(rotations[3].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[3].getOccupiedPositions()[1] == Position(1, 0));
+        REQUIRE(rotations[3].getOccupiedPositions()[2] == Position(1, 1));
+        REQUIRE(rotations[3].getOccupiedPositions()[3] == Position(1, -1));
+        REQUIRE(rotations[3].getOccupiedPositions()[4] == Position(1, -2));
+    }
 }
