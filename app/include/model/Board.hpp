@@ -13,7 +13,7 @@ namespace Model {
             /// A shorthand for a two dimensional array of the size 20x20 (BoardSize x BoardSize), which stores one byte per field.
             typedef std::array<std::array<uint8_t, 20>, 20> FieldSet;
 
-            FieldSet fields;
+            FieldSet fields{};
 
             Board();
 
