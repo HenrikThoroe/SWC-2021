@@ -32,4 +32,28 @@ namespace Model {
         }
     }
 
+    std::ostream& operator << (std::ostream& os, const Board& board) {
+        for (int row = 0; row < 20; ++row) {
+            for (int col = 0; col < 20; ++col) {
+                os << int(board.fields[row][col]);
+
+                if (col < 19) {
+                    os << " | ";
+                }
+            }
+
+            if (row < 19) {
+                os << std::endl;
+            
+                for (int i = 0; i < 77; ++i) {
+                    os << "-";
+                }
+
+                os << std::endl;
+            }
+        }
+
+        return os;
+    }
+
 }

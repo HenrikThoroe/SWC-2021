@@ -2,6 +2,7 @@
 
 #include <array>
 #include <inttypes.h>
+#include <iostream>
 
 #include "Move.hpp"
 #include "DeployedPiece.hpp"
@@ -22,6 +23,8 @@ namespace Model {
 
             /// Removes a piece from the current board instance.
             void removePiece(const DeployedPiece& piece);
+
+            friend std::ostream& operator << (std::ostream& os, const Board& board);
 
         private:
             /// An array which stores four representations of the board. 
