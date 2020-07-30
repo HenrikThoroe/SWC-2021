@@ -31,6 +31,15 @@ namespace Model {
             /// Reads the piece color at the given coordinates.
             const PieceColor& at(int x, int y) const;
 
+            /// Calculates the available drop positions for the specified color.
+            std::vector<Util::Position> getDropPositions(const PieceColor& color) const;
+
+            /// Checks if a piece of the passed color can be droped at the given position.
+            bool canDrop(const PieceColor& color, const Util::Position& position) const;
+
+            /// Checks if a piece of the passed color can be droped at the given coordinatess.
+            bool canDrop(const PieceColor& color, int x, int y) const;
+
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 
         private:
@@ -40,7 +49,7 @@ namespace Model {
             /// An array which stores four representations of the board. 
             /// Each field of the board is described by an uint8_t value which indicates the number of possible attach points.
             /// If the value is 0 no piece can be attached to this position.
-            /// @note 'dropPositions' should be indexed with instances of 'PieceColor'.
+            /// @note 'dropPositions' should be indexed with instances of 'PieceColor' - 1.
             std::array<RawFieldSet, 4> dropPositions {};
     };
 
