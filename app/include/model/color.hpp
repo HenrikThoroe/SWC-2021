@@ -1,6 +1,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <iostream>
 
 namespace Model {
 
@@ -20,6 +21,8 @@ namespace Model {
         OBSTRUCTED = 5
     };
 
+    std::ostream& operator << (std::ostream& os, const PieceColor& color);
+
     /**
      * The colorful representation of a player. Each player has one color assigned. Possible colors are red and blue.
      * 
@@ -29,5 +32,7 @@ namespace Model {
         RED = 0, 
         BLUE = 1
     };
+
+    std::ostream& operator << (std::ostream& os, const PlayerColor& color);
 
 }
