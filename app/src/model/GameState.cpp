@@ -4,8 +4,8 @@
 
 namespace Model {
 
-    GameState::GameState() : turn(0), players({ Player(PlayerColor::RED), Player(PlayerColor::BLUE) }) {
-        std::fill(availablePieces.begin(), availablePieces.end(), 1);
+    GameState::GameState() : turn(0), players({ Player(PlayerColor::RED), Player(PlayerColor::BLUE) }), board(Board()) {
+        availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
     }
 
     const uint8_t& GameState::getTurn() const {
@@ -47,6 +47,14 @@ namespace Model {
 
     int GameState::evaluate() const {
         throw std::runtime_error("Not Implemented");
+    }
+
+    std::ostream& operator << (std::ostream& os, const GameState& state) {
+        os << "Turn: " << int(state.turn) << std::endl;
+        os << "Player: " << state.getCurrentPlayer().color << std::endl;
+        os << "Color: " << state.getCurrentPieceColor() << std::endl;
+        os << "Board: " << std::endl << state.board;
+        return os;
     }
 
 }

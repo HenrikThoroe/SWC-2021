@@ -16,7 +16,7 @@ namespace Model {
             const std::array<Player, 2> players;
 
             /// A stack (first-in first-out) which tracks the performed moves.
-            std::stack<DeployedPiece> performedMoves;
+            std::stack<DeployedPiece> performedMoves {};
 
             /// A cache to improve move calculation speed.
             /// @warning Hashtable implementation will be changed to a more performant one.
@@ -59,6 +59,8 @@ namespace Model {
 
             /// Evaluates the current state.
             int evaluate() const;
+
+            friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };
 
 }
