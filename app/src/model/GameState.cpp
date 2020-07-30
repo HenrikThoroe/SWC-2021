@@ -4,7 +4,9 @@
 
 namespace Model {
 
-    GameState::GameState() : turn(0), players({ Player(PlayerColor::RED), Player(PlayerColor::BLUE) }) {}
+    GameState::GameState() : turn(0), players({ Player(PlayerColor::RED), Player(PlayerColor::BLUE) }) {
+        std::fill(availablePieces.begin(), availablePieces.end(), 1);
+    }
 
     const uint8_t& GameState::getTurn() const {
         return turn;
@@ -20,6 +22,7 @@ namespace Model {
     }
 
     void GameState::performMove(const Move& move) {
+        availablePieces[int(move.color) - 1][move.pieceId] -= 1;
         board.dropPiece(move);
         performedMoves.push(move);
         turn += 1;
@@ -28,6 +31,7 @@ namespace Model {
     void GameState::revertLastMove() {
         DeployedPiece& piece = performedMoves.top();
 
+        availablePieces[int(piece.color) - 1][piece.pieceId] += 1;
         board.removePiece(piece);
         performedMoves.pop();
         turn -= 1;

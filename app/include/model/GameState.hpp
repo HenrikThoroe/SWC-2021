@@ -28,6 +28,9 @@ namespace Model {
             /// The current turn. 
             uint8_t turn;
 
+            /// A collection of all remaining piece shapes stored as an array of their IDs for each color.
+            std::array<std::array<uint8_t, 21>, 4> availablePieces {};
+
         public:
             GameState();
             GameState(GameState* other) = delete;
