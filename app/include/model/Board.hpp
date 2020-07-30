@@ -37,7 +37,7 @@ namespace Model {
             /// Checks if a piece of the passed color can be droped at the given position.
             bool canDrop(const PieceColor& color, const Util::Position& position) const;
 
-            /// Checks if a piece of the passed color can be droped at the given coordinatess.
+            /// Checks if a piece of the passed color can be droped at the given coordinates.
             bool canDrop(const PieceColor& color, int x, int y) const;
 
             friend std::ostream& operator << (std::ostream& os, const Board& board);
