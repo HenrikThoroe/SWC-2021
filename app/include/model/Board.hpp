@@ -17,8 +17,6 @@ namespace Model {
             /// A shorthand for a two dimensional array of the size 20x20 (BoardSize x BoardSize), which stores one byte per field.
             typedef std::array<std::array<int8_t, 20>, 20> RawFieldSet;
 
-            FieldSet fields{};
-
             Board();
 
             /// Deploys a piece on the current board instance.
@@ -36,6 +34,9 @@ namespace Model {
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 
         private:
+            /// A 20x20 array which stores the piece color for each position of the board.
+            FieldSet fields {};
+
             /// An array which stores four representations of the board. 
             /// Each field of the board is described by an uint8_t value which indicates the number of possible attach points.
             /// If the value is 0 no piece can be attached to this position.
