@@ -6,8 +6,21 @@ using namespace Util;
 
 TEST_CASE("Test Game State", "[model]") {
     GameState state = GameState();
-    Move m1 = Move(0, PieceColor::RED, Rotation::ZERO, Vector2D(0, 0), Position(0, 0));
-    WARN(state);
+    Move m1 = Move(20, PieceColor::BLUE, Rotation::ONEHALFPI, Vector2D(1, 1), Position(0, 0));
+
     state.performMove(m1);
-    WARN(state);
+
+    SECTION("Can Perform Move") {
+        REQUIRE(state.getTurn() == 1);
+        REQUIRE(state.getCurrentPlayer().color == PlayerColor::RED);
+        REQUIRE(state.getCurrentPieceColor() == PieceColor::RED);
+    }
+
+    state.revertLastMove();
+
+    SECTION("Can Revert Move") {
+        REQUIRE(state.getTurn() == 0);
+        REQUIRE(state.getCurrentPlayer().color == PlayerColor::BLUE);
+        REQUIRE(state.getCurrentPieceColor() == PieceColor::BLUE);
+    }
 }
