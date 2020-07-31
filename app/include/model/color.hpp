@@ -29,8 +29,8 @@ namespace Model {
      * @note The enum maps to uint8_t
      */ 
     enum class PlayerColor: uint8_t {
-        RED = 0, 
-        BLUE = 1
+        BLUE = 0,
+        RED = 1
     };
 
     std::ostream& operator << (std::ostream& os, const PlayerColor& color);

@@ -4,7 +4,7 @@
 
 namespace Model {
 
-    GameState::GameState() : turn(0), players({ Player(PlayerColor::RED), Player(PlayerColor::BLUE) }), board(Board()) {
+    GameState::GameState() : turn(0), players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(Board()) {
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
     }
 
@@ -18,7 +18,7 @@ namespace Model {
 
     const PieceColor& GameState::getCurrentPieceColor() const {
         const int idx = turn % 4;
-        return getCurrentPlayer().getPieceColors().at(idx > 1 ? idx - 2 : idx);
+        return getCurrentPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
     }
 
     void GameState::performMove(const Move& move) {
