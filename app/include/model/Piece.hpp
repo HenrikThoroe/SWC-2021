@@ -22,6 +22,9 @@ namespace Model {
         ///A unique identifier for each shape.
         uint8_t id;
 
+        Piece(Piece* other) = delete;
+        Piece(Piece& other) = delete;
+
         /**
          * Each entry contains information of the shape of the piece and it's attach points in the given rotation.
          * The shape is described by a set of vectors where each vector points to a position of the shape.
