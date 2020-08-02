@@ -18,6 +18,8 @@ namespace Model {
             typedef std::array<std::array<int8_t, 20>, 20> RawFieldSet;
 
             Board();
+            Board(Board* other) = delete;
+            Board(Board& other) = delete;
 
             /// Deploys a piece on the current board instance.
             void dropPiece(const DeployedPiece& piece);
