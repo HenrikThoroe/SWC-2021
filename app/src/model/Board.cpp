@@ -46,6 +46,14 @@ namespace Model {
         }
     }
 
+    void Board::makeDropPosition(const Util::Position& position, const PieceColor& color) {
+        if (color == PieceColor::NONE || color == PieceColor::OBSTRUCTED) {
+            return;
+        }
+
+        dropPositions[static_cast<uint8_t>(color) - 1][position.y][position.x] = 1;
+    }
+
     const PieceColor& Board::at(const Util::Position& position) const {
         return at(position.x, position.y);
     }

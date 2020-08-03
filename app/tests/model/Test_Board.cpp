@@ -14,6 +14,16 @@ TEST_CASE("Test Board", "[model]") {
     board.dropPiece(piece2);
     board.dropPiece(piece3);
 
+    SECTION("Can Force Drop Positions") {
+        auto board2 = Board();
+
+        board2.makeDropPosition(Position(0, 0), PieceColor::RED);
+        board2.makeDropPosition(Position(10, 11), PieceColor::BLUE);
+
+        REQUIRE(board2.canDrop(PieceColor::RED, 0, 0));
+        REQUIRE(board2.canDrop(PieceColor::BLUE, 10, 11));
+    }
+
     SECTION("Can Drop Pieces") {
         REQUIRE(board.at(0 ,  0) == PieceColor::BLUE);
         REQUIRE(board.at(19,  0) == PieceColor::BLUE);
