@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "DeployedPiece.hpp"
+
 #include "PieceCollection.hpp"
 #include "Position.hpp"
 
