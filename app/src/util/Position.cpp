@@ -25,4 +25,9 @@ namespace Util {
         return move(direction);
     }
 
+    std::ostream& operator << (std::ostream& os, const Position& pos) {
+        os << "Position { x: " << pos.x << ", y: " << pos.y << " }";
+        return os;
+    }
+
 }
