@@ -51,7 +51,7 @@ namespace Model {
     }  
 
     std::vector<Util::Position> Board::getDropPositions(const PieceColor& color) const {
-        if (color == PieceColor::RED || color == PieceColor::BLUE || color == PieceColor::GREEN || color == PieceColor::YELLOW) {
+        if (color != PieceColor::NONE && color != PieceColor::OBSTRUCTED) {
             const RawFieldSet& fields = dropPositions[uint8_t(color) - 1];
             std::vector<Util::Position> results {};
 
