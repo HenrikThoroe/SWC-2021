@@ -58,7 +58,7 @@ namespace Model {
             for (int row = 0; row < 20; ++row) {
                 for (int col = 0; col < 20; ++col) {
                     if (fields[row][col] > 0) {
-                        results.emplace_back(Util::Position(col, row));
+                        results.emplace_back(col, row);
                     }
                 }
             }
