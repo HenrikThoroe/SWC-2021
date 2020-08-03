@@ -1,4 +1,5 @@
 #include "DeployedPiece.hpp"
+
 #include "Position.hpp"
 #include "PieceCollection.hpp"
 
