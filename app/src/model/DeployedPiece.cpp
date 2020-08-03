@@ -6,9 +6,10 @@
 namespace Model {
 
     DeployedPiece::DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color) : pieceId(id), origin(origin), rotation(rotation), color(color) {
+        const uint8_t rot = static_cast<uint8_t>(rotation);
         const Piece& piece = PieceCollection::getPiece(pieceId);
-        const Piece::Shape& shape = std::get<0>(piece.rotations.at(uint8_t(rotation)));
-        const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations.at(uint8_t(rotation)));
+        const Piece::Shape& shape = std::get<0>(piece.rotations.at(rot));
+        const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations.at(rot));
 
         for (const Util::Vector2D& path : shape) {
             occupiedPositions.push_back(origin + path);
