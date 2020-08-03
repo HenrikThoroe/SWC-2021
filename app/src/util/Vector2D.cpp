@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include "Vector2D.hpp"
 
@@ -33,7 +33,7 @@ namespace Util {
     }
 
     double Vector2D::length() const {
-        return sqrt(pow(x, 2) + pow(y, 2));
+        return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
     }
 
     Vector2D Vector2D::operator + (const Vector2D& offset) const {
