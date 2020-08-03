@@ -8,7 +8,6 @@ namespace Model {
 
     Player::Player(const Player* player) : color(player->color) {}
 
-    // ToDo: Set real piece colors when offical docs are released
     const std::array<std::array<PieceColor, 2>, 2> Player::pieceColors = {{
         { PieceColor::BLUE, PieceColor::YELLOW },
         { PieceColor::RED, PieceColor::GREEN }
