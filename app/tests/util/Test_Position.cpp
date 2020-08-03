@@ -13,6 +13,13 @@ TEST_CASE("Position Test", "[util]") {
     REQUIRE(added.y == -4);
 
     SECTION("Can Detect Neighbours") {
+        auto edges = pos.getEdges();
+
+        REQUIRE(edges[0] == Util::Position(1, 3));
+        REQUIRE(edges[1] == Util::Position(3, 3));
+        REQUIRE(edges[2] == Util::Position(2, 2));
+        REQUIRE(edges[3] == Util::Position(2, 4));
+
         REQUIRE_FALSE(pos.isNextTo(pos));
 
         REQUIRE(pos.isNextTo(pos + Util::Vector2D(-1, -1)));
@@ -25,5 +32,7 @@ TEST_CASE("Position Test", "[util]") {
 
         REQUIRE(pos.isNextTo(pos + Util::Vector2D(-1, 0)));
         REQUIRE(pos.isNextTo(pos + Util::Vector2D(1, 0)));
+
+
     }
 }

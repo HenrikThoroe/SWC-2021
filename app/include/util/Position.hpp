@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <array>
 
 #include "Vector2D.hpp"
 
@@ -11,6 +12,8 @@ namespace Util {
             Position(int x, int y);
 
             bool isNextTo(const Position& other) const;
+
+            std::array<Position, 4> getEdges() const;
 
             Position move(const Vector2D& direction) const;
 
