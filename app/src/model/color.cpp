@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "color.hpp"
 
 namespace Model {
@@ -22,6 +24,8 @@ namespace Model {
             case PieceColor::OBSTRUCTED:
                 os << "Obstructed";
                 break;
+            default:
+                throw std::runtime_error("Unknown Piece Color");
         }
 
         return os;
@@ -35,6 +39,8 @@ namespace Model {
             case PlayerColor::BLUE:
                 os << "BLUE";
                 break;
+            default:
+                throw std::runtime_error("Unknown Player Color"); 
         }
 
         return os;
