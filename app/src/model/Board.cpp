@@ -66,7 +66,7 @@ namespace Model {
             return results;
         }
 
-        throw std::runtime_error("Cannot Access Drop Positions. Only RED, BLUE, GREEN and YELLOW are allowed.");
+        throw std::runtime_error("Cannot access drop positions. Only RED, BLUE, GREEN and YELLOW are allowed.");
     }
 
     bool Board::canDrop(const PieceColor& color, const Util::Position& position) const {
