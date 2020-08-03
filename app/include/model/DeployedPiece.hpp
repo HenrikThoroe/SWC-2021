@@ -26,6 +26,7 @@ namespace Model {
             const PieceColor color;
 
             DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color);
+            DeployedPiece(uint8_t pieceId, PieceColor color, Rotation rotation, Util::Vector2D vectorToOrigin, Util::Position dropPosition);
             DeployedPiece(const DeployedPiece& other);
             DeployedPiece(const DeployedPiece* other);
 
