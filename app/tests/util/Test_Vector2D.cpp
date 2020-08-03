@@ -64,5 +64,7 @@ TEST_CASE("Mathematical Vector Test", "[util]") {
         REQUIRE(scaled.y == -3 * 6);
         REQUIRE_FALSE(vec == sec);
         REQUIRE(vec * 2 == third);
+        REQUIRE(vec - Util::Vector2D(2, 8) == Util::Vector2D(3, -11));
+        REQUIRE(-vec == Util::Vector2D(-5, 3));
     }
 }

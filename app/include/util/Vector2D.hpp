@@ -36,6 +36,10 @@ namespace Util {
 
             Vector2D operator * (const int& factor) const;
 
+            Vector2D operator - (const Vector2D& sub) const;
+
+            Vector2D operator - () const;
+
             bool operator == (const Vector2D& other) const;
 
             friend std::ostream& operator << (std::ostream& os, const Vector2D& vec);

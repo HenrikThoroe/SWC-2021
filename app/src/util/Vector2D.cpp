@@ -44,6 +44,14 @@ namespace Util {
         return scaled(factor);
     }
 
+    Vector2D Vector2D::operator - (const Vector2D& sub) const {
+        return Vector2D(x - sub.x, y - sub.y);
+    }
+
+    Vector2D Vector2D::operator - () const {
+        return Vector2D(-x, -y);
+    }
+
     bool Vector2D::operator == (const Vector2D& other) const{
         return x == other.x && y == other.y;
     }
