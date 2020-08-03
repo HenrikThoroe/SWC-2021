@@ -17,7 +17,7 @@ namespace Model {
         typedef std::vector<Util::Vector2D> Shape;
         typedef std::array<Util::Vector2D, 2> AttachPoint;
         typedef std::vector<AttachPoint> AttachPoints;
-        typedef std::tuple<Shape, AttachPoints> Rotation;
+        typedef std::tuple<Shape, AttachPoints> ShapeRotation;
 
         ///A unique identifier for each shape.
         uint8_t id;
@@ -33,7 +33,7 @@ namespace Model {
          * 
          * @brief An array which contains the information to construct the piece in all possible rotations.
          */ 
-        std::array<Rotation, 4> rotations;
+        std::array<ShapeRotation, 4> rotations;
     };
 
 }
