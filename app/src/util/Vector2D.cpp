@@ -11,13 +11,13 @@ namespace Util {
     Vector2D::Vector2D(const Vector2D* other) : x(other->x), y(other->y) {};
 
     void Vector2D::scale(const int& factor) {
-        x = factor * x;
-        y = factor * y;
+        x *= factor;
+        y *= factor;
     }
 
     void Vector2D::shift(const Vector2D& other) {
-        x = x + other.x;
-        y = y + other.y;
+        x += other.x;
+        y += other.y;
     }
 
     Vector2D Vector2D::scaled(const int& factor) const {
