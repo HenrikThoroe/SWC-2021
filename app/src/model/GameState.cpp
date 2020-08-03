@@ -5,6 +5,20 @@
 namespace Model {
 
     GameState::GameState() : turn(0), players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board() {
+        const Util::Position topLeft = Util::Position(0, 0);
+        const Util::Position topRight = Util::Position(19, 0);
+        const Util::Position bottomLeft = Util::Position(0, 19);
+        const Util::Position bottomRight = Util::Position(19, 19);
+
+        for (uint8_t c = 1; c <= 4; ++c) {
+            const PieceColor color = static_cast<PieceColor>(c);
+
+            board.makeDropPosition(topLeft, color);
+            board.makeDropPosition(topRight, color);
+            board.makeDropPosition(bottomLeft, color);
+            board.makeDropPosition(bottomRight, color);
+        }
+
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
     }
 
