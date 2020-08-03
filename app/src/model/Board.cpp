@@ -7,6 +7,8 @@ namespace Model {
     Board::Board() {}
 
     void Board::dropPiece(const DeployedPiece& piece) {
+        const uint8_t colorIndex = static_cast<uint8_t>(piece.color) - 1;
+
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = piece.color;
             
@@ -20,11 +22,13 @@ namespace Model {
                 continue;
             }
 
-            dropPositions[uint8_t(piece.color) - 1][pos.y][pos.x] += 1;
+            dropPositions[colorIndex][pos.y][pos.x] += 1;
         }
     }
 
     void Board::removePiece(const DeployedPiece& piece) {
+        const uint8_t colorIndex = static_cast<uint8_t>(piece.color) - 1;
+
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = PieceColor::NONE;
             
@@ -38,7 +42,7 @@ namespace Model {
                 continue;
             }
             
-            dropPositions[uint8_t(piece.color) - 1][pos.y][pos.x] -= 1;
+            dropPositions[colorIndex][pos.y][pos.x] -= 1;
         }
     }
 
