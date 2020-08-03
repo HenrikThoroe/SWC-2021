@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/local/bin/python3",
+    "python.pythonPath": "scripts\\venv\\Scripts\\python.exe",
     "files.associations": {
         "cctype": "cpp",
         "cmath": "cpp",
