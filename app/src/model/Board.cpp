@@ -56,7 +56,7 @@ namespace Model {
 
     std::vector<Util::Position> Board::getDropPositions(const PieceColor& color) const {
         if (color != PieceColor::NONE && color != PieceColor::OBSTRUCTED) {
-            const RawFieldSet& fields = dropPositions[uint8_t(color) - 1];
+            const RawFieldSet& fields = dropPositions[static_cast<uint8_t>(color) - 1];
             std::vector<Util::Position> results {};
 
             for (int row = 0; row < 20; ++row) {
@@ -74,17 +74,17 @@ namespace Model {
     }
 
     bool Board::canDrop(const PieceColor& color, const Util::Position& position) const {
-        return dropPositions[uint8_t(color) - 1][position.y][position.x] > 0;
+        return dropPositions[static_cast<uint8_t>(color) - 1][position.y][position.x] > 0;
     }
 
     bool Board::canDrop(const PieceColor& color, int x, int y) const { 
-        return dropPositions[uint8_t(color) - 1][y][x] > 0;
+        return dropPositions[static_cast<uint8_t>(color) - 1][y][x] > 0;
     }
 
     std::ostream& operator << (std::ostream& os, const Board& board) {
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
-                os << int(board.fields[row][col]);
+                os << static_cast<int>(board.fields[row][col]);
 
                 if (col < 19) {
                     os << " | ";

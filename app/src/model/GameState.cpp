@@ -22,7 +22,7 @@ namespace Model {
     }
 
     void GameState::performMove(const Move& move) {
-        availablePieces[int(move.color) - 1][move.pieceId] -= 1;
+        availablePieces[static_cast<int>(move.color) - 1][move.pieceId] -= 1;
         board.dropPiece(move);
         performedMoves.push(move);
         turn += 1;
@@ -31,7 +31,7 @@ namespace Model {
     void GameState::revertLastMove() {
         DeployedPiece& piece = performedMoves.top();
 
-        availablePieces[int(piece.color) - 1][piece.pieceId] += 1;
+        availablePieces[static_cast<int>(piece.color) - 1][piece.pieceId] += 1;
         board.removePiece(piece);
         performedMoves.pop();
         turn -= 1;
@@ -50,7 +50,7 @@ namespace Model {
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {
-        os << "Turn: " << int(state.turn) << std::endl;
+        os << "Turn: " << static_cast<int>(state.turn) << std::endl;
         os << "Player: " << state.getCurrentPlayer().color << std::endl;
         os << "Color: " << state.getCurrentPieceColor() << std::endl;
         os << "Board: " << std::endl << state.board;

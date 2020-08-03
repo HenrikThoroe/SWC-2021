@@ -14,7 +14,7 @@ namespace Model {
     }};
 
     const std::array<PieceColor, 2>& Player::getPieceColors() const {
-        return Player::pieceColors.at(uint8_t(color));
+        return Player::pieceColors.at(static_cast<uint8_t>(color));
     }
 
     void Player::invertColor() {
