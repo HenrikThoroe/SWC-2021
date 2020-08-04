@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "GameState.hpp"
+#include "PieceCollection.hpp"
 
 namespace Model {
 
@@ -71,8 +72,45 @@ namespace Model {
         return true;
     }
 
-    const std::vector<Move>& GameState::getPossibleMoves() const {
-        throw std::runtime_error("Not Implemented");
+    std::vector<Move> GameState::getPossibleMoves() const {
+        const PieceColor& color = getCurrentPieceColor();
+        const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
+        std::vector<Move> moves {};
+
+        // Iterate all available drop positions for current color
+        for (const Util::Position& dropPosition : dropPositions) {
+
+            // Iterate all piece shapes
+            for (int pieceId = 0; pieceId < 21; ++pieceId) {
+
+                // Filter all shapes which are unavailable for current color
+                if (availablePieces[static_cast<int>(color) - 1][pieceId] <= 0) {
+                    continue;
+                }
+
+                // Iterate all rotations
+                for (uint8_t rot = 0; rot < 4; ++rot) {
+                    const Rotation rotation = static_cast<Rotation>(rot);
+                    const Piece& piece = PieceCollection::getPiece(pieceId);
+                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[rot]);
+
+                    // Iterate all attach vectors of the shape 
+                    for (const Piece::AttachPoint& info : attachPoints) {
+                        const Util::Vector2D& offsetVector = info[1];
+                        const Util::Vector2D& attachVector = info[0];
+                        const Util::Position origin = dropPosition - attachVector + offsetVector;
+                        const DeployedPiece deployed = DeployedPiece(pieceId, origin, rotation, color);
+
+                        // Add piece to result vector if it can be deployed on the board
+                        if (canBeDeployed(deployed)) {
+                            moves.push_back(deployed);
+                        }
+                    }
+                }
+            }
+        }
+
+        return moves;
     }
 
     uint64_t GameState::hash() const {

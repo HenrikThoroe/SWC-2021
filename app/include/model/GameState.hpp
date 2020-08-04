@@ -7,6 +7,7 @@
 #include "Board.hpp"
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
+#include "Piece.hpp"
 
 namespace Model {
 
@@ -46,7 +47,7 @@ namespace Model {
             const PieceColor& getCurrentPieceColor() const;
 
             /// Finds and returns the possible moves on the current game board.
-            const std::vector<Move>& getPossibleMoves() const;
+            std::vector<Move> getPossibleMoves() const;
 
             /// Performs the given move on the board.
             void performMove(const Move& move);
