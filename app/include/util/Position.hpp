@@ -19,6 +19,8 @@ namespace Util {
 
             Position operator + (const Vector2D& direction) const;
 
+            Position operator - (const Vector2D& direction) const;
+
             friend std::ostream& operator << (std::ostream& os, const Position& pos);
     };
 

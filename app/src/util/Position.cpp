@@ -34,6 +34,10 @@ namespace Util {
         return move(direction);
     }
 
+    Position Position::operator - (const Vector2D& direction) const {
+        return move(-direction);
+    }
+
     std::ostream& operator << (std::ostream& os, const Position& pos) {
         os << "Position { x: " << pos.x << ", y: " << pos.y << " }";
         return os;

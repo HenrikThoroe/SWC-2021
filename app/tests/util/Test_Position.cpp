@@ -12,6 +12,12 @@ TEST_CASE("Position Test", "[util]") {
     REQUIRE(added.x == 6);
     REQUIRE(added.y == -4);
 
+    SECTION("Operators Are Working") {
+        REQUIRE(pos + Util::Vector2D(2, 1) == Util::Position(4, 4));
+        REQUIRE(pos - Util::Vector2D(2, 1) == Util::Position(0, 2));
+        REQUIRE(pos - Util::Vector2D(2, 1) + Util::Vector2D(1, 1) == Util::Position(1, 3));
+    }
+
     SECTION("Can Detect Neighbours") {
         auto edges = pos.getEdges();
 
