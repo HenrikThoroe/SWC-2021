@@ -54,6 +54,9 @@ namespace Model {
             /// Reverts the last performed move.
             void revertLastMove();
 
+            /// Checks whether the specified piece can be bedployed on the board.
+            bool canBeDeployed(const DeployedPiece& piece) const;
+
             /// Hashes the current state.
             uint64_t hash() const;
 

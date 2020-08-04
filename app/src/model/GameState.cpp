@@ -51,6 +51,26 @@ namespace Model {
         turn -= 1;
     }
 
+    bool GameState::canBeDeployed(const DeployedPiece& piece) const {
+        for (const Util::Position& position : piece.getOccupiedPositions()) {
+            if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
+                return false;
+            }
+
+            if (board.at(position) != PieceColor::NONE) {
+                return false;
+            }
+
+            for (const Util::Position& edge : position.getEdges()) {
+                if (board.at(edge) == piece.color) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     const std::vector<Move>& GameState::getPossibleMoves() const {
         throw std::runtime_error("Not Implemented");
     }
