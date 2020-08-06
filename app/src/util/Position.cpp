@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <inttypes.h>
 
 #include "Position.hpp"
 
@@ -20,8 +21,8 @@ namespace Util {
     }
 
     const std::array<Position, 4>& Position::getEdges() const {
-        static std::unordered_map<int, std::array<Position, 4>> cache {};
-        int key = x + x * y;
+        static std::unordered_map<uint64_t, std::array<Position, 4>> cache {};
+        uint64_t key = (static_cast<int64_t>(x) << 32) xor y;
 
         if (cache.find(key) == cache.end()) {
             cache.insert({ 
