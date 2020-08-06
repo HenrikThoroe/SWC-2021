@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include "Position.hpp"
 
 namespace Util {
@@ -17,13 +19,22 @@ namespace Util {
         return other.x >= minX && other.x <= maxX && other.y >= minY && other.y <= maxY;
     }
 
-    std::array<Position, 4> Position::getEdges() const {
-        return {
-            Position(x - 1, y),
-            Position(x + 1, y),
-            Position(x, y - 1),
-            Position(x, y + 1)
-        };
+    const std::array<Position, 4>& Position::getEdges() const {
+        static std::unordered_map<int, std::array<Position, 4>> cache {};
+        int key = x + x * y;
+
+        if (cache.find(key) == cache.end()) {
+            cache.insert({ 
+                key, {
+                    Position(x - 1, y), 
+                    Position(x + 1, y),
+                    Position(x, y - 1), 
+                    Position(x, y + 1)
+                } 
+            });
+        }
+
+        return cache.at(key);
     }
 
     Position Position::move(const Vector2D& direction) const {
