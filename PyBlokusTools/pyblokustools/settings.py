@@ -1,5 +1,6 @@
 class Settings():
-    WORK_DIRECTORY = '.pybt-cache'
+    WORK_DIRECTORY  = '.pybt-cache'
+    COMPILER_OUTPUT = 'compilerOutput.txt'
     
     SOURCES_DIR = 'app/src'
     HEADERS_DIR = 'app/include'

@@ -237,5 +237,6 @@ $RECYCLE.BIN/
 
 
 ## Project specific ##
-# Scripts cache
+# Scripts
 .pybt-cache
+compilerOutput.txt

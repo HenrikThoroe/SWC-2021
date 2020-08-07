@@ -2,6 +2,7 @@ from typing import Optional, List
 
 import os
 from pathlib import Path
+import subprocess
 
 from .settings import Settings
 from .helpers.hashing import Hasher
@@ -113,15 +114,18 @@ class Compiler():
         for header_dir in header_dirs:
             comp_args.append(f'-I{os.path.realpath(header_dir)}')
         
-        #? Build main compile_commands
-        compile_commands = []
+        #? Build main compile_command
         compile_command_root = 'g++ ' + ' '.join(comp_args)
         
         #? Map sourcefiles to compile_command_root
-        compiled_out_dir = os.path.join(cache_dir, 'compiled')
-        for source_file in to_compile:
-            #Make sure output directory exists
-            Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
+        with open(Settings.COMPILER_OUTPUT, "ab") as file:
+            file.truncate(0) # Empty file for this compiler iteration
             
-            compile_commands.append(f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}')
-        
+            compiled_out_dir = os.path.join(cache_dir, 'compiled')
+            for source_file in to_compile:
+                #Make sure output directory exists
+                Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
+                
+                comp_cmd = f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}'
+            
+                file.write(subprocess.Popen(comp_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
