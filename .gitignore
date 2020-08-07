@@ -237,5 +237,5 @@ $RECYCLE.BIN/
 
 
 ## Project specific ##
-# Scripts settings
-scripts/helpers/PyBlokusTools/pyblokustools/data/config.json
+# Scripts cache
+.pybt-cache
