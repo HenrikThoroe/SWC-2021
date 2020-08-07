@@ -1,6 +1,8 @@
 class Settings():
-    SOURCES_DIR = '/app/src'
-    HEADERS_DIR = '/app/include'
+    WORK_DIRECTORY = '.pybt-cache'
+    
+    SOURCES_DIR = 'app/src'
+    HEADERS_DIR = 'app/include'
     
     SOURCES_EXT = '.cpp'
     HEADERS_EXT = '.hpp'

@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 import os
+from pathlib import Path
 
 from .settings import Settings
 from .helpers.hashing import Hasher
@@ -44,7 +45,7 @@ class Compiler():
         Returns:
             List[str] -- List of all files
         """
-        return [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk('.') for filename in filenames if filename.endswith(extension)]
+        return [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk(sourceDir) for filename in filenames if filename.endswith(extension)]
     
     @staticmethod
     def filterFiles(fileList: List[str], excludedFiles: List[str]) -> List[str]:
@@ -73,6 +74,7 @@ class Compiler():
     
     @staticmethod
     def make(CWD: str, debug: bool=False, cache: Optional[CompileCache]=None, makeAll: bool=False) -> None:
+        cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
         # Init cache
         cache = cache if cache else CompileCache()
         
@@ -111,11 +113,15 @@ class Compiler():
         for header_dir in header_dirs:
             comp_args.append(f'-I{os.path.realpath(header_dir)}')
         
-        #? Add source files to comp_args
+        #? Build main compile_commands
+        compile_commands = []
+        compile_command_root = 'g++ ' + ' '.join(comp_args)
+        
+        #? Map sourcefiles to compile_command_root
+        compiled_out_dir = os.path.join(cache_dir, 'compiled')
         for source_file in to_compile:
-            comp_args.append(os.path.realpath(source_file))
+            #Make sure output directory exists
+            Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
             
+            compile_commands.append(f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}')
         
-        compile_command = 'g++ ' + ' '.join(comp_args)
-        
-        print(compile_command)
