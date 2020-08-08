@@ -1,16 +1,47 @@
-from typing import Optional, List
+from __future__ import annotations
+from typing import Optional, List, Dict
 
 import os
 from pathlib import Path
 import subprocess
+import json
 
 from .settings import Settings
 from .helpers.hashing import Hasher
 
 
 class CompileCache():
-    def __init__(self):
-        self.fileHashes = {} #? Dict containing file->hash values to detect changes
+    def __init__(self, fileHashes: Dict[str, str]={}):
+        self.fileHashes = fileHashes #? Dict containing file->hash values to detect changes
+    
+    def dumps(self) -> str:
+        """Dump the CompileCache instance to a string
+
+        Returns:
+            str -- JSON formatted CompilerCache
+        """
+        dump = {
+            'fileHashes' : self.fileHashes
+        }
+        return json.dumps(dump)
+    
+    @staticmethod
+    def loads(dump: str) -> CompileCache:
+        """Load a CompileCache instance from a json dumo
+
+        Arguments:
+            dump {str} -- Dump as a string
+
+        Returns:
+            CompileCache -- Reconstructed instance
+        """
+        load = json.loads(dump)
+        
+        try:
+            return CompileCache(**load)
+        except:
+            return CompileCache()
+        
     
     def getChangedSourcesAndUpdate(self, currentFiles: List[str]) -> List[str]:
         """Get all source files that changed and update hashes internally
@@ -74,10 +105,17 @@ class Compiler():
         return [os.path.normpath(path) for path in fileList]
     
     @staticmethod
-    def make(CWD: str, debug: bool=False, cache: Optional[CompileCache]=None, makeAll: bool=False) -> None:
-        cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
+    def make(CWD: str, debug: bool=False, makeAll: bool=False) -> None:
         # Init cache
-        cache = cache if cache else CompileCache()
+        cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
+        cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
+        
+        cache = None
+        try:
+            with open(cache_file, 'r') as file:
+                cache = CompileCache.loads(file.read())
+        except:
+            cache = CompileCache()
         
         # Get all cpp files and filter them
         source_files = Compiler.normalizeFilePaths(
@@ -129,3 +167,6 @@ class Compiler():
                 comp_cmd = f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}'
             
                 file.write(subprocess.Popen(comp_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
+        
+        with open(os.path.join(cache_dir, Settings.CACHE_FILE), 'w') as file:
+            file.write(cache.dumps())
