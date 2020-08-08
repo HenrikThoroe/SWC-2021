@@ -131,15 +131,15 @@ class Compiler():
     
     @staticmethod
     def make(
-        CWD: str,
-        sources_dir: Union[str, List[str]]=Settings.SOURCES_DIR,
-        headers_dir: Union[str, List[str]]=Settings.HEADERS_DIR,
-        debug: bool=False,
-        makeAll: bool=False,
-        extraFlags: List[str]=[],
-        extraExcludes: List[str]=[],
+        CWD           : str,
+        sources_dir   : Union[str, List[str]] = Settings.SOURCES_DIR,
+        headers_dir   : Union[str, List[str]] = Settings.HEADERS_DIR,
+        debug         : bool                  = False,
+        makeAll       : bool                  = False,
+        extraFlags    : List[str]             = [],
+        extraExcludes : List[str]             = [],
         ) -> None:
-        # Init cache
+        #? Init cache
         cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
         cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
         
@@ -153,6 +153,7 @@ class Compiler():
         #? Normalize extraExcludes
         extraExcludes = Compiler.normalizeFilePaths(extraExcludes)
         
+        #? Get files
         # Get all cpp files and filter them
         source_files = Compiler.filterFiles(
             Compiler.normalizeFilePaths(
@@ -160,20 +161,29 @@ class Compiler():
                     sources_dir, Settings.SOURCES_EXT
                 )
             ),
-            [*extraExcludes, *(lambda: Settings.SOURCES_EXCLUDE_PROD if debug else Settings.SOURCES_EXCLUDE_DEBUG)()]
+            [
+                *extraExcludes,
+                *(lambda: Settings.SOURCES_EXCLUDE_PROD if debug else Settings.SOURCES_EXCLUDE_DEBUG)()
+            ]
         )
         
+        # Determine which files need to be compiled
         to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files)
         
+        # Get all hpp files and filter them
         header_files = Compiler.filterFiles(
             Compiler.normalizeFilePaths(
                 Compiler.gatherFiles(
                     headers_dir, Settings.HEADERS_EXT
                 )
             ),
-            [*extraExcludes, *(lambda: Settings.HEADERS_EXCLUDE_PROD if debug else Settings.HEADERS_EXCLUDE_DEBUG)()]
+            [
+                *extraExcludes,
+                *(lambda: Settings.HEADERS_EXCLUDE_PROD if debug else Settings.HEADERS_EXCLUDE_DEBUG)()
+            ]
         )
         
+        #? Filter out duplicate header directorys
         header_dirs = set()
         for header in header_files:
             pos = header.rfind('\\')
@@ -182,16 +192,18 @@ class Compiler():
             
             header_dirs.add(header[:pos+1])
         
-        comp_args = [*extraFlags, *Settings.COMP_SHARED_FLAGS, *(lambda: Settings.COMP_PROD_FLAGS if debug else Settings.COMP_DEBUG_FALGS)()]
+        #? Make shared compilation args
+        comp_args = [
+            *extraFlags,
+            *Settings.COMP_SHARED_FLAGS,
+            *(lambda: Settings.COMP_PROD_FLAGS if debug else Settings.COMP_DEBUG_FALGS)()
+        ]
         
         #? Add header directorys to comp_args
         for header_dir in header_dirs:
             comp_args.append(f'-I{os.path.realpath(header_dir)}')
         
-        #? Build main compile_command
-        compile_command_root = 'g++ ' + ' '.join(comp_args)
-        
-        #? Map sourcefiles to compile_command_root
+        #? Compile sourcefiles
         compiled_all_success = True
         with open(Settings.COMPILER_OUTPUT, "ab") as file:
             file.truncate(0) # Empty file for this compiler iteration
@@ -200,8 +212,6 @@ class Compiler():
             for source_file in to_compile:
                 #Make sure output directory exists
                 Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
-                
-                comp_cmd = f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}'
 
                 proc = subprocess.run(
                     [
@@ -226,7 +236,7 @@ class Compiler():
                     cache.removeFileFromCache(source_file)
         
         #? Dump cache      
-        with open(os.path.join(cache_dir, Settings.CACHE_FILE), 'w') as file:
+        with open(cache_file, 'w') as file:
             file.write(cache.dumps())
         
         if compiled_all_success:
