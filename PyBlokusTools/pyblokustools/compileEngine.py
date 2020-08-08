@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, IO
 
 import os
 from pathlib import Path
@@ -132,13 +132,15 @@ class Compiler():
     @staticmethod
     def make(
         CWD           : str,
+        outputFile    : str,
         sources_dir   : Union[str, List[str]] = Settings.SOURCES_DIR,
         headers_dir   : Union[str, List[str]] = Settings.HEADERS_DIR,
         debug         : bool                  = False,
         makeAll       : bool                  = False,
+        forceLink     : bool                  = False,
         extraFlags    : List[str]             = [],
         extraExcludes : List[str]             = [],
-        ) -> None:
+    ) -> bool:
         #? Init cache
         cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
         cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
@@ -163,7 +165,7 @@ class Compiler():
             ),
             [
                 *extraExcludes,
-                *(lambda: Settings.SOURCES_EXCLUDE_PROD if debug else Settings.SOURCES_EXCLUDE_DEBUG)()
+                *(lambda: Settings.SOURCES_EXCLUDE_DEBUG if debug else Settings.SOURCES_EXCLUDE_PROD)()
             ]
         )
         
@@ -179,16 +181,59 @@ class Compiler():
             ),
             [
                 *extraExcludes,
-                *(lambda: Settings.HEADERS_EXCLUDE_PROD if debug else Settings.HEADERS_EXCLUDE_DEBUG)()
+                *(lambda: Settings.HEADERS_EXCLUDE_DEBUG if debug else Settings.HEADERS_EXCLUDE_PROD)()
             ]
         )
         
+        #? Shared variables
+        compiled_out_dir = os.path.join(cache_dir, 'compiled')
+        
+        #? Compilation and linking
+        with open(Settings.COMPILER_OUTPUT, "ab") as compilerOutputFile:
+            compilerOutputFile.truncate(0) # Empty file for this compiler iteration
+            
+            #* Compiler
+            print(colorT("Compiling...", Colors.BLUE))
+            compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, extraFlags)
+        
+            #? Dump cache      
+            with open(cache_file, 'w') as cacheFile:
+                cacheFile.write(cache.dumps())
+        
+            if not compiled_all_success and not forceLink:
+                print(colorT("Compilation finished with errors", Colors.RED))
+                return False
+            print(colorT("Compilation finished successfully", Colors.GREEN))
+
+            #* Linker
+            print(colorT("Linking...", Colors.BLUE))
+            linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile)
+            
+            if not linked_all_success:
+                print(colorT("Linking finished with errors", Colors.RED))
+                return False
+            print(colorT("Linking finished successfully", Colors.GREEN))
+            
+            return True
+
+    @staticmethod
+    def _compile(
+        logFile          : IO[bytes],
+        cache            : CompileCache, 
+        debug            : bool,
+        compiled_out_dir : str,
+        to_compile       : List[str],
+        header_files     : List[str],
+        extraFlags       : List[str],
+    ) -> bool:
         #? Filter out duplicate header directorys
         header_dirs = set()
         for header in header_files:
             pos = header.rfind('\\')
             if pos == -1:
-                raise ValueError("HeaderFile is not in a subdirectory")
+                pos = header.rfind('/')
+                if pos == -1:
+                    raise ValueError("HeaderFile is not in a subdirectory")
             
             header_dirs.add(header[:pos+1])
         
@@ -196,7 +241,7 @@ class Compiler():
         comp_args = [
             *extraFlags,
             *Settings.COMP_SHARED_FLAGS,
-            *(lambda: Settings.COMP_PROD_FLAGS if debug else Settings.COMP_DEBUG_FALGS)()
+            *(lambda: Settings.COMP_DEBUG_FALGS if debug else Settings.COMP_PROD_FLAGS)()
         ]
         
         #? Add header directorys to comp_args
@@ -205,41 +250,64 @@ class Compiler():
         
         #? Compile sourcefiles
         compiled_all_success = True
-        with open(Settings.COMPILER_OUTPUT, "ab") as file:
-            file.truncate(0) # Empty file for this compiler iteration
-            
-            compiled_out_dir = os.path.join(cache_dir, 'compiled')
-            for source_file in to_compile:
-                #Make sure output directory exists
-                Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
+        for source_file in to_compile:
+            #Make sure output directory exists
+            Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
 
-                proc = subprocess.run(
-                    [
-                        'g++',
-                        *comp_args,
-                        os.path.realpath(source_file),
-                        '-o',
-                        os.path.realpath(
-                            os.path.join(
-                                compiled_out_dir,
-                                os.path.splitext(source_file)[0] + ".o"
-                            )
+            proc = subprocess.run(
+                [
+                    'g++',
+                    *comp_args,
+                    os.path.realpath(source_file),
+                    '-o',
+                    os.path.realpath(
+                        os.path.join(
+                            compiled_out_dir,
+                            os.path.splitext(source_file)[0] + ".o"
                         )
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT
                     )
-                file.write(proc.stdout)
-                
-                if proc.returncode != 0:
-                    compiled_all_success = False
-                    cache.removeFileFromCache(source_file)
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT
+            )
+            logFile.write(proc.stdout)
+            
+            if proc.returncode != 0:
+                compiled_all_success = False
+                cache.removeFileFromCache(source_file)
         
-        #? Dump cache      
-        with open(cache_file, 'w') as file:
-            file.write(cache.dumps())
+        return compiled_all_success
+    
+    @staticmethod
+    def _link(
+        logFile          : IO[bytes],
+        debug            : bool,
+        source_files     : List[str],
+        compiled_out_dir : str,
+        outputFile       : str,
+    ) -> bool:
+        #? Translate all sourceFilesPaths to objectFilePaths
+        object_files = [
+            os.path.realpath(
+                os.path.join(
+                    compiled_out_dir,
+                    os.path.splitext(source_file)[0] + ".o"
+                )
+            ) for source_file in source_files
+        ]
         
-        if compiled_all_success:
-            print(colorT("Compilation finished successfully", Colors.GREEN))
-        else:
-            print(colorT("Compilation finished with errors", Colors.RED))
+        proc = subprocess.run(
+            [
+                'g++',
+                *Settings.LINK_SHARED_FLAGS,
+                *(lambda: Settings.LINK_DEBUG_FALGS if debug else Settings.LINK_PROD_FLAGS)(),
+                '-o',
+                os.path.realpath(outputFile),
+                *object_files
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+        logFile.write(proc.stdout)
+        
+        return proc.returncode == 0
