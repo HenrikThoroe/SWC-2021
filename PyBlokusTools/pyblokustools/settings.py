@@ -24,7 +24,7 @@ class Settings():
     COMP_DEBUG_FALGS  = ['-g3', '-fsanitize=address', '-fsanitize-address-use-after-scope', '-Wall']
 
     LINK_SHARED_FLAGS = []
-    LINK_PROD_FLAGS   = []
+    LINK_PROD_FLAGS   = ['-flto']
     LINK_DEBUG_FALGS  = []
     
     @staticmethod
@@ -40,7 +40,12 @@ class Settings():
             Returns:
                 List[str] -- Normalized paths
             """
-            return [os.path.normpath(os.path.normcase(path)) for path in paths]
+            if isinstance(paths, list):   
+                return [os.path.normpath(os.path.normcase(path)) for path in paths]
+            elif isinstance(paths, str):
+                return os.path.normpath(os.path.normcase(paths))
+            else:
+                raise NotImplementedError(f"Can not normalize paths of type {type(paths)}")
         
         Settings.SOURCES_DIR = normalizePaths(Settings.SOURCES_DIR)
         Settings.HEADERS_DIR = normalizePaths(Settings.HEADERS_DIR)
