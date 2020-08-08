@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 import os
 from pathlib import Path
@@ -8,6 +8,10 @@ import json
 
 from .settings import Settings
 from .helpers.hashing import Hasher
+from .helpers.coloring import Colors, colorT
+
+#? Compile settings to normalize paths
+Settings.compileSettings()
 
 
 class CompileCache():
@@ -63,11 +67,25 @@ class CompileCache():
                 self.fileHashes[path] = new_hash
             
         return ret
+    
+    def removeFileFromCache(self, path: str) -> bool:
+        """Remove a file from the cache instance
+
+        Arguments:
+            path {str} -- File path to remove
+
+        Returns:
+            bool -- If file was present in cache
+        """
+        if path not in self.fileHashes:
+            return False
         
+        del self.fileHashes[path]
+        return True
 
 class Compiler():
     @staticmethod
-    def gatherFiles(sourceDir: str, extension: str) -> List[str]:
+    def gatherFiles(sourceDir: Union[str, List[str]], extension: str) -> List[str]:
         """Get all .cpp files in sourceDir
 
         Arguments:
@@ -77,6 +95,13 @@ class Compiler():
         Returns:
             List[str] -- List of all files
         """
+        if isinstance(sourceDir, list):
+            ret = []
+            for source in sourceDir:
+                ret += [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk(source) for filename in filenames if filename.endswith(extension)]
+            
+            return ret
+        
         return [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk(sourceDir) for filename in filenames if filename.endswith(extension)]
     
     @staticmethod
@@ -90,7 +115,7 @@ class Compiler():
         Returns:
             List[str] -- Filtered file list
         """
-        return list(filter(lambda file: os.path.normpath(file) not in excludedFiles, fileList))
+        return list(filter(lambda file: file not in excludedFiles, fileList))
     
     @staticmethod
     def normalizeFilePaths(fileList: List[str]) -> List[str]:
@@ -102,10 +127,18 @@ class Compiler():
         Returns:
             List[str] -- List of normalized file paths
         """
-        return [os.path.normpath(path) for path in fileList]
+        return [os.path.normpath(os.path.normcase(path)) for path in fileList]
     
     @staticmethod
-    def make(CWD: str, debug: bool=False, makeAll: bool=False) -> None:
+    def make(
+        CWD: str,
+        sources_dir: Union[str, List[str]]=Settings.SOURCES_DIR,
+        headers_dir: Union[str, List[str]]=Settings.HEADERS_DIR,
+        debug: bool=False,
+        makeAll: bool=False,
+        extraFlags: List[str]=[],
+        extraExcludes: List[str]=[],
+        ) -> None:
         # Init cache
         cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
         cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
@@ -117,25 +150,28 @@ class Compiler():
         except:
             cache = CompileCache()
         
+        #? Normalize extraExcludes
+        extraExcludes = Compiler.normalizeFilePaths(extraExcludes)
+        
         # Get all cpp files and filter them
-        source_files = Compiler.normalizeFilePaths(
-            Compiler.filterFiles(
+        source_files = Compiler.filterFiles(
+            Compiler.normalizeFilePaths(
                 Compiler.gatherFiles(
-                    Settings.SOURCES_DIR, Settings.SOURCES_EXT
-                ),
-                Settings.SOURCES_EXCLUDE_PROD if debug else Settings.SOURCES_EXCLUDE_DEBUG
-            )
+                    sources_dir, Settings.SOURCES_EXT
+                )
+            ),
+            [*extraExcludes, *(lambda: Settings.SOURCES_EXCLUDE_PROD if debug else Settings.SOURCES_EXCLUDE_DEBUG)()]
         )
         
         to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files)
         
-        header_files = Compiler.normalizeFilePaths(
-            Compiler.filterFiles(
+        header_files = Compiler.filterFiles(
+            Compiler.normalizeFilePaths(
                 Compiler.gatherFiles(
-                    Settings.HEADERS_DIR, Settings.HEADERS_EXT
-                ),
-                Settings.HEADERS_EXCLUDE_PROD if debug else Settings.HEADERS_EXCLUDE_DEBUG
-            )
+                    headers_dir, Settings.HEADERS_EXT
+                )
+            ),
+            [*extraExcludes, *(lambda: Settings.HEADERS_EXCLUDE_PROD if debug else Settings.HEADERS_EXCLUDE_DEBUG)()]
         )
         
         header_dirs = set()
@@ -146,7 +182,7 @@ class Compiler():
             
             header_dirs.add(header[:pos+1])
         
-        comp_args = [*Settings.COMP_SHARED_FLAGS, *(lambda: Settings.COMP_PROD_FLAGS if debug else Settings.COMP_DEBUG_FALGS)()]
+        comp_args = [*extraFlags, *Settings.COMP_SHARED_FLAGS, *(lambda: Settings.COMP_PROD_FLAGS if debug else Settings.COMP_DEBUG_FALGS)()]
         
         #? Add header directorys to comp_args
         for header_dir in header_dirs:
@@ -156,6 +192,7 @@ class Compiler():
         compile_command_root = 'g++ ' + ' '.join(comp_args)
         
         #? Map sourcefiles to compile_command_root
+        compiled_all_success = True
         with open(Settings.COMPILER_OUTPUT, "ab") as file:
             file.truncate(0) # Empty file for this compiler iteration
             
@@ -165,8 +202,34 @@ class Compiler():
                 Path(os.path.join(compiled_out_dir, os.path.dirname(source_file))).mkdir(parents=True, exist_ok=True)
                 
                 comp_cmd = f'{compile_command_root} {os.path.realpath(source_file)} -o {os.path.realpath(os.path.join(compiled_out_dir, os.path.splitext(source_file)[0] + ".o"))}'
-            
-                file.write(subprocess.Popen(comp_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read())
+
+                proc = subprocess.run(
+                    [
+                        'g++',
+                        *comp_args,
+                        os.path.realpath(source_file),
+                        '-o',
+                        os.path.realpath(
+                            os.path.join(
+                                compiled_out_dir,
+                                os.path.splitext(source_file)[0] + ".o"
+                            )
+                        )
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
+                    )
+                file.write(proc.stdout)
+                
+                if proc.returncode != 0:
+                    compiled_all_success = False
+                    cache.removeFileFromCache(source_file)
         
+        #? Dump cache      
         with open(os.path.join(cache_dir, Settings.CACHE_FILE), 'w') as file:
             file.write(cache.dumps())
+        
+        if compiled_all_success:
+            print(colorT("Compilation finished successfully", Colors.GREEN))
+        else:
+            print(colorT("Compilation finished with errors", Colors.RED))

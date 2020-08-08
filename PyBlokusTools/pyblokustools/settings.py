@@ -1,3 +1,7 @@
+from typing import List
+
+import os
+
 class Settings():
     WORK_DIRECTORY  = '.pybt-cache'
     COMPILER_OUTPUT = 'compilerOutput.txt'
@@ -22,3 +26,27 @@ class Settings():
     LINK_SHARED_FLAGS = []
     LINK_PROD_FLAGS   = []
     LINK_DEBUG_FALGS  = []
+    
+    @staticmethod
+    def compileSettings() -> None:
+        """Make settings usable
+        """
+        def normalizePaths(paths: List[str]) -> List[str]:
+            """Normalize all paths
+
+            Arguments:
+                paths {List[str]} -- Non normalized paths in unix representation
+
+            Returns:
+                List[str] -- Normalized paths
+            """
+            return [os.path.normpath(os.path.normcase(path)) for path in paths]
+        
+        Settings.SOURCES_DIR = normalizePaths(Settings.SOURCES_DIR)
+        Settings.HEADERS_DIR = normalizePaths(Settings.HEADERS_DIR)
+        
+        Settings.SOURCES_EXCLUDE_PROD  = normalizePaths(Settings.SOURCES_EXCLUDE_PROD)
+        Settings.SOURCES_EXCLUDE_DEBUG = normalizePaths(Settings.SOURCES_EXCLUDE_DEBUG)
+        
+        Settings.HEADERS_EXCLUDE_PROD  = normalizePaths(Settings.HEADERS_EXCLUDE_PROD)
+        Settings.HEADERS_EXCLUDE_DEBUG = normalizePaths(Settings.HEADERS_EXCLUDE_DEBUG)
