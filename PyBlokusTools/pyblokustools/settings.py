@@ -1,37 +1,42 @@
-from typing import List
+from typing import Union, List, overload
 
 import os
 
 class Settings():
-    WORK_DIRECTORY  = '.pybt-cache'
-    COMPILER_OUTPUT = 'compilerOutput.txt'
-    CACHE_FILE      = 'compilecache.json'
+    WORK_DIRECTORY  : str = '.pybt-cache'
+    COMPILER_OUTPUT : str = 'compilerOutput.txt'
+    CACHE_FILE      : str = 'compilecache.json'
     
-    SOURCES_DIR = 'app/src'
-    HEADERS_DIR = 'app/include'
+    SOURCES_DIR : str = 'app/src'
+    HEADERS_DIR : str = 'app/include'
     
-    SOURCES_EXT = '.cpp'
-    HEADERS_EXT = '.hpp'
+    SOURCES_EXT : str = '.cpp'
+    HEADERS_EXT : str = '.hpp'
     
-    SOURCES_EXCLUDE_PROD  = []
-    SOURCES_EXCLUDE_DEBUG = []
+    SOURCES_EXCLUDE_PROD  : List[str] = []
+    SOURCES_EXCLUDE_DEBUG : List[str] = []
     
-    HEADERS_EXCLUDE_PROD  = []
-    HEADERS_EXCLUDE_DEBUG = []
+    HEADERS_EXCLUDE_PROD  : List[str] = []
+    HEADERS_EXCLUDE_DEBUG : List[str] = []
     
-    COMP_SHARED_FLAGS = ['-c', '-std=c++17', '-m64']
-    COMP_PROD_FLAGS   = ['-Ofast', '-flto', '-mpopcnt', '-fwhole-program', '-march=broadwell', '-static']
-    COMP_DEBUG_FALGS  = ['-g3', '-fsanitize=address', '-fsanitize-address-use-after-scope', '-Wall']
+    COMP_SHARED_FLAGS : List[str] = ['-c', '-std=c++17', '-m64']
+    COMP_PROD_FLAGS   : List[str] = ['-Ofast', '-flto', '-mpopcnt', '-fwhole-program', '-march=broadwell', '-static']
+    COMP_DEBUG_FALGS  : List[str] = ['-g3', '-fsanitize=address', '-fsanitize-address-use-after-scope', '-Wall']
 
-    LINK_SHARED_FLAGS = []
-    LINK_PROD_FLAGS   = ['-flto']
-    LINK_DEBUG_FALGS  = []
+    LINK_SHARED_FLAGS : List[str] = []
+    LINK_PROD_FLAGS   : List[str] = ['-flto']
+    LINK_DEBUG_FALGS  : List[str] = []
     
     @staticmethod
     def compileSettings() -> None:
         """Make settings usable
         """
-        def normalizePaths(paths: List[str]) -> List[str]:
+        @overload
+        def normalizePaths(paths: str) -> str: ...
+        @overload
+        def normalizePaths(paths: List[str]) -> List[str]: ...
+    
+        def normalizePaths(paths: Union[str, List[str]]) -> Union[str, List[str]]:
             """Normalize all paths
 
             Arguments:
