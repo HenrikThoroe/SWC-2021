@@ -92,9 +92,9 @@ namespace Model {
                 const Piece& piece = PieceCollection::getPiece(pieceId);
 
                 // Iterate all rotations
-                for (uint8_t rot = 0; rot < 4; ++rot) {
-                    const Rotation rotation = static_cast<Rotation>(rot);
-                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[rot]);
+                for (const Rotation& rotation : piece.uniqueRotations) {
+                    // const Rotation rotation = static_cast<Rotation>(rot);
+                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[static_cast<uint8_t>(rotation)]);
 
                     // Iterate all attach vectors of the shape 
                     for (const Piece::AttachPoint& info : attachPoints) {
