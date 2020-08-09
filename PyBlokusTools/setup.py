@@ -18,6 +18,9 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     entry_points = {
-        "console_scripts": ['blokustest = pyblokustools.scripts.runTests:runTests']
+        "console_scripts": [
+            'blokustest = pyblokustools.scripts.runTests:runTests',
+            'blokusprod = pyblokustools.scripts.compileProduction:compileProduction',
+            ]
         },
 )
