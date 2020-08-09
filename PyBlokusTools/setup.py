@@ -20,6 +20,7 @@ setuptools.setup(
     entry_points = {
         "console_scripts": [
             'blokustest = pyblokustools.scripts.runTests:runTests',
+            'blokusbench = pyblokustools.scripts.runBenchmarks:runBenchmarks',
             'blokusprod = pyblokustools.scripts.compileProduction:compileProduction',
             ]
         },
