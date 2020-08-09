@@ -298,7 +298,7 @@ class Compiler():
             #* Linker
             if cache.needsNewLinking(source_files, outputFile) or makeAll:
                 print(colorT("Linking...", Colors.BLUE))
-                linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile)
+                linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile, extraFlags)
                 
                 if not linked_all_success:
                     print(colorT("Linking finished with errors", Colors.RED))
@@ -321,7 +321,6 @@ class Compiler():
         to_compile       : List[str],
         header_files     : List[str],
         comp_args        : List[str],
-        extraFlags       : List[str],
     ) -> bool:
         #? Filter out duplicate header directorys
         header_dirs = set()
@@ -375,6 +374,7 @@ class Compiler():
         source_files     : List[str],
         compiled_out_dir : str,
         outputFile       : str,
+        extraFlags       : List[str],
     ) -> bool:
         #? Translate all sourceFilesPaths to objectFilePaths
         object_files = [
@@ -392,6 +392,7 @@ class Compiler():
         proc = subprocess.run(
             [
                 'g++',
+                *extraFlags,
                 *Settings.LINK_SHARED_FLAGS,
                 *(lambda: Settings.LINK_DEBUG_FALGS if debug else Settings.LINK_PROD_FLAGS)(),
                 '-o',
