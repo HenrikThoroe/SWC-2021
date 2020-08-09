@@ -1,4 +1,7 @@
+from typing import List
+
 import os
+import subprocess
 import argparse
 
 from pyblokustools.compileEngine import Compiler
@@ -8,6 +11,9 @@ from pyblokustools.version import VERSION
 
 def runTests() -> None:
     assertPlatform()
+    
+    def parseOn_args(value: str) -> List[str]:
+        return value.split()
     
     parser = argparse.ArgumentParser(
         prog='blokustest',
@@ -28,6 +34,34 @@ def runTests() -> None:
         action='store_true',
         help='recompile all files required',
         )
+    parser.add_argument(
+        '-d',
+        '--debug',
+        action='store_true',
+        help='compile in debug mode',
+        )
+    parser.add_argument(
+        '-F',
+        '--forcelink',
+        action='store_true',
+        help='relink even if not outdated',
+        )
+    parser.add_argument(
+        '-e',
+        '--extraflags',
+        action='store',
+        type=parseOn_args,
+        help='extra compiler flags',
+        default=[]
+        )
+    parser.add_argument(
+        '-t',
+        '--testflags',
+        action='store',
+        type=parseOn_args,
+        help='flags passed to the test',
+        default=[]
+        )
     
     args = parser.parse_args()
 
@@ -36,11 +70,28 @@ def runTests() -> None:
 
     out_file = 'dist/testsRun.out'
 
-    compiled: bool = Compiler.make(os.getcwd(), out_file, ['app/src', 'app/tests'], ['app/include', 'app/tests'], extraExcludes=['app/src/main.cpp'], makeAll=args.all)
+    compiled: bool = Compiler.make(
+        CWD           = os.getcwd(),
+        outputFile    = out_file,
+        sources_dir   = ['app/src', 'app/tests'],
+        headers_dir   = ['app/include', 'app/tests'],
+        extraExcludes = ['app/src/main.cpp'],
+        debug         = args.debug,
+        makeAll       = args.all,
+        forceLink     = args.forcelink,
+        extraFlags    = args.extraflags,
+        sources_incRe = r".*/(?!Bench_)[^/]*$"
+        )
 
     if not compiled:
         print(colorT("Tests will not be run as compilation failed", Colors.ORANGE))
         raise SystemExit()
 
     print(colorT("\nRunning tests:\n", Colors.PURPLE))
-    os.system(f'./{out_file}')
+    subprocess.run(
+            [
+                f'./{out_file}',
+                *args.testflags
+            ],
+            stderr=subprocess.STDOUT
+        )
