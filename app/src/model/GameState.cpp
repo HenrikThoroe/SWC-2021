@@ -93,7 +93,6 @@ namespace Model {
 
                 // Iterate all rotations
                 for (const Rotation& rotation : piece.uniqueRotations) {
-                    // const Rotation rotation = static_cast<Rotation>(rot);
                     const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[static_cast<uint8_t>(rotation)]);
 
                     // Iterate all attach vectors of the shape 
