@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, List, Dict, Union, IO
+from typing import Optional, List, Dict, Tuple, Union, IO
 
 import os
 from pathlib import Path
@@ -15,8 +15,11 @@ Settings.compileSettings()
 
 
 class CompileCache():
-    def __init__(self, fileHashes: Dict[str, str]={}):
-        self.fileHashes = fileHashes #? Dict containing file->hash values to detect changes
+    def __init__(self, fileHashes: Dict[str, Tuple[str, str, List[str]]]={}):
+        #? Dict containing file->hash values to detect changes (path->[lastCompiledFileHash, lastCompiledCompArgsHash, [outputFile]])
+        self.fileHashes     = fileHashes
+        #? List containing all source files that need to be updated after successfull linking
+        self.pendingLinkage = []
     
     def dumps(self) -> str:
         """Dump the CompileCache instance to a string
@@ -47,11 +50,12 @@ class CompileCache():
             return CompileCache()
         
     
-    def getChangedSourcesAndUpdate(self, currentFiles: List[str]) -> List[str]:
+    def getChangedSourcesAndUpdate(self, currentFiles: List[str], compArgsHash: str) -> List[str]:
         """Get all source files that changed and update hashes internally
 
         Arguments:
             currentFiles {List[str]} -- Files to check
+            compArgsHash {str}       -- Hash of shared compilation args
 
         Returns:
             List[str] -- List of all files that changed
@@ -59,12 +63,17 @@ class CompileCache():
         ret = []
         
         for path in currentFiles:
-            new_hash = Hasher.hash(path)
-            if path not in self.fileHashes or not self.fileHashes[path] == new_hash:
+            new_hash = Hasher.hashFile(path)
+            if (
+                path not in self.fileHashes
+                or not self.fileHashes[path][0] == new_hash
+                or not self.fileHashes[path][1] == compArgsHash
+                ):
                 #? File not in cache
                 #? File changed
+                #? Compilation args changed
                 ret.append(path)
-                self.fileHashes[path] = new_hash
+                self.fileHashes[path] = (new_hash, compArgsHash, [])
             
         return ret
     
@@ -83,6 +92,35 @@ class CompileCache():
         del self.fileHashes[path]
         return True
 
+    def needsNewLinking(self, sourceFiles: List[str], outputFile: str) -> bool:
+        """Check if new linking is required, run `AFTER` getChangedSourcesAndUpdate
+
+        Arguments:
+            sourceFiles {List[str]} -- `ALL` source files
+            outputFile  {str}       -- Path of output binary
+
+        Returns:
+            bool -- Needs new linking
+        """
+        ret = False
+        
+        for path in sourceFiles:
+            if outputFile not in self.fileHashes[path][2]:
+                #? Not yet linked with file
+                ret = True
+                self.pendingLinkage.append(path)
+        
+        return ret
+
+    def commitPendingLinkage(self, outputFile: str) -> None:
+        """Update state of all files that were pending linking
+
+        Arguments:
+            outputFile {str} -- Path of output binary
+        """
+        for path in self.pendingLinkage:
+            self.fileHashes[path][2].append(outputFile)
+    
 class Compiler():
     @staticmethod
     def gatherFiles(sourceDir: Union[str, List[str]], extension: str) -> List[str]:
@@ -152,6 +190,15 @@ class Compiler():
         except:
             cache = CompileCache()
         
+        #? Make shared compilation args
+        comp_args = [
+            *extraFlags,
+            *Settings.COMP_SHARED_FLAGS,
+            *(lambda: Settings.COMP_DEBUG_FALGS if debug else Settings.COMP_PROD_FLAGS)()
+        ]
+        # Compute shared compilation args hash
+        comp_args_hash = Hasher.hashList(comp_args)
+        
         #? Normalize extraExcludes
         extraExcludes = Compiler.normalizeFilePaths(extraExcludes)
         
@@ -170,7 +217,7 @@ class Compiler():
         )
         
         # Determine which files need to be compiled
-        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files)
+        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, comp_args_hash)
         
         # Get all hpp files and filter them
         header_files = Compiler.filterFiles(
@@ -193,26 +240,35 @@ class Compiler():
             compilerOutputFile.truncate(0) # Empty file for this compiler iteration
             
             #* Compiler
-            print(colorT("Compiling...", Colors.BLUE))
-            compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, extraFlags)
-        
-            #? Dump cache      
-            with open(cache_file, 'w') as cacheFile:
-                cacheFile.write(cache.dumps())
-        
-            if not compiled_all_success and not forceLink:
-                print(colorT("Compilation finished with errors", Colors.RED))
-                return False
-            print(colorT("Compilation finished successfully", Colors.GREEN))
+            if to_compile:
+                print(colorT("Compiling...", Colors.BLUE))
+                compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, comp_args, extraFlags)
+            
+                #? Dump cache      
+                with open(cache_file, 'w') as cacheFile:
+                    cacheFile.write(cache.dumps())
+            
+                if not compiled_all_success and not forceLink:
+                    print(colorT("Compilation finished with errors", Colors.RED))
+                    return False
+                print(colorT("Compilation finished successfully", Colors.GREEN))
+            else:
+                print(colorT("No changes, no need to recompile", Colors.GREEN))
 
             #* Linker
-            print(colorT("Linking...", Colors.BLUE))
-            linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile)
-            
-            if not linked_all_success:
-                print(colorT("Linking finished with errors", Colors.RED))
-                return False
-            print(colorT("Linking finished successfully", Colors.GREEN))
+            if cache.needsNewLinking(source_files, outputFile) or makeAll:
+                print(colorT("Linking...", Colors.BLUE))
+                linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile)
+                
+                if not linked_all_success:
+                    print(colorT("Linking finished with errors", Colors.RED))
+                    return False
+                print(colorT("Linking finished successfully", Colors.GREEN))
+                
+                cache.commitPendingLinkage(outputFile)
+                #? Dump cache      
+                with open(cache_file, 'w') as cacheFile:
+                    cacheFile.write(cache.dumps())
             
             return True
 
@@ -224,6 +280,7 @@ class Compiler():
         compiled_out_dir : str,
         to_compile       : List[str],
         header_files     : List[str],
+        comp_args        : List[str],
         extraFlags       : List[str],
     ) -> bool:
         #? Filter out duplicate header directorys
@@ -236,13 +293,6 @@ class Compiler():
                     raise ValueError("HeaderFile is not in a subdirectory")
             
             header_dirs.add(header[:pos+1])
-        
-        #? Make shared compilation args
-        comp_args = [
-            *extraFlags,
-            *Settings.COMP_SHARED_FLAGS,
-            *(lambda: Settings.COMP_DEBUG_FALGS if debug else Settings.COMP_PROD_FLAGS)()
-        ]
         
         #? Add header directorys to comp_args
         for header_dir in header_dirs:
@@ -295,6 +345,9 @@ class Compiler():
                 )
             ) for source_file in source_files
         ]
+        
+        #Make sure output directory exists
+        Path(os.path.join(os.path.dirname(os.path.realpath(outputFile)))).mkdir(parents=True, exist_ok=True)
         
         proc = subprocess.run(
             [
