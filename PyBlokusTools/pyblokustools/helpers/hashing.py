@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, Sequence
 
 import hashlib
 import json
@@ -28,11 +28,11 @@ class Hasher():
         return sha256.hexdigest()
     
     @staticmethod
-    def hashList(list: List[Union[str, int, dict, list]]) -> str:
+    def hashList(list: Sequence[Union[str, int, dict, list]]) -> str:
         """Hash a list (SHA256)
 
         Arguments:
-            list {List[Union[str, int, dict, list]]} -- List to hash
+            list {Sequence[Union[str, int, dict, list]]} -- List to hash
 
         Returns:
             str -- [description]

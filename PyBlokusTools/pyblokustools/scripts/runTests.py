@@ -14,7 +14,7 @@ def runTests() -> None:
         description='Run all unittests for SWC-2021 Blokus.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thøre'
         )
-    parser.version = f'BlokusTest v{VERSION}'
+    parser.version = f'BlokusTest v{VERSION}' # type: ignore
     
     parser.add_argument(
         '-v',

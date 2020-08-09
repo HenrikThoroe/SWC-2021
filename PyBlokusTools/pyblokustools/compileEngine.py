@@ -17,9 +17,9 @@ Settings.compileSettings()
 class CompileCache():
     def __init__(self, fileHashes: Dict[str, Tuple[str, str, List[str]]]={}):
         #? Dict containing file->hash values to detect changes (path->[lastCompiledFileHash, lastCompiledCompArgsHash, [outputFile]])
-        self.fileHashes     = fileHashes
+        self.fileHashes                = fileHashes
         #? List containing all source files that need to be updated after successfull linking
-        self.pendingLinkage = []
+        self.pendingLinkage: List[str] = []
     
     def dumps(self) -> str:
         """Dump the CompileCache instance to a string
