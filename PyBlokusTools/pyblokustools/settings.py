@@ -20,12 +20,12 @@ class Settings():
     HEADERS_EXCLUDE_DEBUG : List[str] = []
     
     COMP_SHARED_FLAGS : List[str] = ['-c', '-std=c++17', '-m64']
-    COMP_PROD_FLAGS   : List[str] = ['-Ofast', '-flto', '-mpopcnt', '-fwhole-program', '-static'] #? '-march=broadwell' in real production
+    COMP_PROD_FLAGS   : List[str] = ['-Ofast', '-flto', '-mpopcnt', '-static'] #? '-march=broadwell' in real production
     COMP_DEBUG_FALGS  : List[str] = ['-g3', '-fsanitize=address', '-fsanitize-address-use-after-scope', '-Wall']
 
-    LINK_SHARED_FLAGS : List[str] = []
-    LINK_PROD_FLAGS   : List[str] = ['-flto']
-    LINK_DEBUG_FALGS  : List[str] = []
+    LINK_SHARED_FLAGS : List[str] = [*list(filter(lambda opt: opt not in ['-c'], COMP_SHARED_FLAGS))]
+    LINK_PROD_FLAGS   : List[str] = [*COMP_PROD_FLAGS, '-fuse-linker-plugin']
+    LINK_DEBUG_FALGS  : List[str] = [*COMP_DEBUG_FALGS]
     
     @staticmethod
     def compileSettings() -> None:
