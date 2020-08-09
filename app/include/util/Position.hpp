@@ -13,7 +13,7 @@ namespace Util {
 
             bool isNextTo(const Position& other) const;
 
-            const std::array<Position, 4>& getEdges() const;
+            std::array<Position, 4> getEdges() const;
 
             Position move(const Vector2D& direction) const;
 

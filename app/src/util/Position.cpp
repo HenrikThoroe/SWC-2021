@@ -20,22 +20,13 @@ namespace Util {
         return other.x >= minX && other.x <= maxX && other.y >= minY && other.y <= maxY;
     }
 
-    const std::array<Position, 4>& Position::getEdges() const {
-        static std::unordered_map<uint64_t, std::array<Position, 4>> cache {};
-        uint64_t key = (static_cast<int64_t>(x) << 32) xor y;
-
-        if (cache.find(key) == cache.end()) {
-            cache.insert({ 
-                key, {
-                    Position(x - 1, y), 
-                    Position(x + 1, y),
-                    Position(x, y - 1), 
-                    Position(x, y + 1)
-                } 
-            });
-        }
-
-        return cache.at(key);
+    std::array<Position, 4> Position::getEdges() const {
+        return {
+            Position(x - 1, y), 
+            Position(x + 1, y),
+            Position(x, y - 1), 
+            Position(x, y + 1)
+        };
     }
 
     Position Position::move(const Vector2D& direction) const {
