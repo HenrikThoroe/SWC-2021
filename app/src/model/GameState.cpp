@@ -78,6 +78,9 @@ namespace Model {
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
         std::vector<Move> moves {};
 
+        // Reserve 300 items to prevent repeated resizing of moves vector
+        moves.reserve(300);
+
         // Iterate all available drop positions for current color
         for (const Util::Position& dropPosition : dropPositions) {
 
