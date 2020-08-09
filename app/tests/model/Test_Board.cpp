@@ -28,10 +28,10 @@ TEST_CASE("Test Board", "[model]") {
         REQUIRE(board.at(0 ,  0) == PieceColor::BLUE);
         REQUIRE(board.at(19,  0) == PieceColor::BLUE);
         REQUIRE(board.at(10, 12) == PieceColor::YELLOW);
-        REQUIRE(board.at(10, 11) == PieceColor::YELLOW);
-        REQUIRE(board.at(11, 11) == PieceColor::YELLOW);
-        REQUIRE(board.at(9 , 11) == PieceColor::YELLOW);
-        REQUIRE(board.at(8 , 11) == PieceColor::YELLOW);
+        REQUIRE(board.at(9, 12) == PieceColor::YELLOW);
+        REQUIRE(board.at(8, 12) == PieceColor::YELLOW);
+        REQUIRE(board.at(7 , 12) == PieceColor::YELLOW);
+        REQUIRE(board.at(9 , 13) == PieceColor::YELLOW);
     }
 
     SECTION("Has Valid Drop Positions") {
@@ -43,12 +43,12 @@ TEST_CASE("Test Board", "[model]") {
         REQUIRE_FALSE(board.canDrop(PieceColor::BLUE, 1, 0));
         REQUIRE(board.canDrop(PieceColor::BLUE, 18, 1));
 
-        REQUIRE(board.canDrop(PieceColor::YELLOW, 9, 13));
+        REQUIRE(board.canDrop(PieceColor::YELLOW, 11, 11));
         REQUIRE(board.canDrop(PieceColor::YELLOW, 11, 13));
-        REQUIRE(board.canDrop(PieceColor::YELLOW, 7, 12));
-        REQUIRE(board.canDrop(PieceColor::YELLOW, 7, 10));
-        REQUIRE(board.canDrop(PieceColor::YELLOW, 12, 12));
-        REQUIRE(board.canDrop(PieceColor::YELLOW, 12, 10));
+        REQUIRE(board.canDrop(PieceColor::YELLOW, 6, 11));
+        REQUIRE(board.canDrop(PieceColor::YELLOW, 6, 13));
+        REQUIRE(board.canDrop(PieceColor::YELLOW, 10, 14));
+        REQUIRE(board.canDrop(PieceColor::YELLOW, 8, 14));
 
         REQUIRE(dropPositionsBlue.size() == 2);
         REQUIRE(dropPositionsYellow.size() == 6);
