@@ -12,7 +12,7 @@ def runTests() -> None:
     parser = argparse.ArgumentParser(
         prog='blokustest',
         description='Run all unittests for SWC-2021 Blokus.',
-        epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thøre'
+        epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
     parser.version = f'BlokusTest v{VERSION}' # type: ignore
     

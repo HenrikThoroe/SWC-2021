@@ -5,7 +5,7 @@ from pyblokustools.version import VERSION
 setuptools.setup(
     name="PyBlokusTools",
     version=VERSION,
-    author="Rubin Raithel, Henrik Thøre",
+    author="Rubin Raithel, Henrik Thorøe",
     author_email="dev@rubinraithel.de",
     description="Tools for the SWC-2021 Blokus project",
     url="https://github.com/HenrikThoroe/SWC-2021/tree/master/scripts",
