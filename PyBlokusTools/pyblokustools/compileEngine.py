@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import json
+import re
 
 from .settings import Settings
 from .helpers.hashing import Hasher
@@ -15,11 +16,17 @@ Settings.compileSettings()
 
 
 class CompileCache():
-    def __init__(self, fileHashes: Dict[str, Tuple[str, str, List[str]]]={}):
+    def __init__(
+        self,
+        fileHashes: Dict[str, Tuple[str, str, List[str]]]={},
+        linkFilesHashes: Dict[str, str]={}
+    ) -> None:
         #? Dict containing file->hash values to detect changes (path->[lastCompiledFileHash, lastCompiledCompArgsHash, [outputFile]])
         self.fileHashes                = fileHashes
         #? List containing all source files that need to be updated after successfull linking
         self.pendingLinkage: List[str] = []
+        #? Dict containing outputFile->LastLinkFilesListHash
+        self.linkFilesHashes           = linkFilesHashes
     
     def dumps(self) -> str:
         """Dump the CompileCache instance to a string
@@ -28,7 +35,8 @@ class CompileCache():
             str -- JSON formatted CompilerCache
         """
         dump = {
-            'fileHashes' : self.fileHashes
+            'fileHashes'      : self.fileHashes,
+            'linkFilesHashes' : self.linkFilesHashes,
         }
         return json.dumps(dump)
     
@@ -104,11 +112,22 @@ class CompileCache():
         """
         ret = False
         
+        sourceFilesHash = Hasher.hashList(sourceFiles)
+        
         for path in sourceFiles:
-            if outputFile not in self.fileHashes[path][2]:
+            if (
+                outputFile not in self.fileHashes[path][2]
+                or outputFile not in self.linkFilesHashes
+                or self.linkFilesHashes[outputFile] != sourceFilesHash
+                ):
                 #? Not yet linked with file
+                #? Never linked before
+                #? Not linked with combination of files
                 ret = True
                 self.pendingLinkage.append(path)
+        
+        if ret:
+            self.linkFilesHashes[outputFile] = sourceFilesHash
         
         return ret
 
@@ -156,6 +175,19 @@ class Compiler():
         return list(filter(lambda file: file not in excludedFiles, fileList))
     
     @staticmethod
+    def filterFilesRe(fileList: List[str], includeRe: str) -> List[str]:
+        """Filter all fileNAMES and only keep those that match the regular expression
+
+        Arguments:
+            fileList  {List[str]} -- Original file list
+            includeRe {str}       -- Regular expression of fileNAMES to keep
+
+        Returns:
+            List[str] -- Filtered file list
+        """
+        return list(filter(lambda file: bool(re.match(includeRe, file)), fileList))
+    
+    @staticmethod
     def normalizeFilePaths(fileList: List[str]) -> List[str]:
         """Normalize file paths
 
@@ -178,6 +210,8 @@ class Compiler():
         forceLink     : bool                  = False,
         extraFlags    : List[str]             = [],
         extraExcludes : List[str]             = [],
+        sources_incRe : str                   = r'.',
+        headers_incRe : str                   = r'.',
     ) -> bool:
         #? Init cache
         cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
@@ -204,32 +238,38 @@ class Compiler():
         
         #? Get files
         # Get all cpp files and filter them
-        source_files = Compiler.filterFiles(
-            Compiler.normalizeFilePaths(
-                Compiler.gatherFiles(
-                    sources_dir, Settings.SOURCES_EXT
-                )
+        source_files = Compiler.filterFilesRe(
+            Compiler.filterFiles(
+                Compiler.normalizeFilePaths(
+                    Compiler.gatherFiles(
+                        sources_dir, Settings.SOURCES_EXT
+                    )
+                ),
+                [
+                    *extraExcludes,
+                    *(lambda: Settings.SOURCES_EXCLUDE_DEBUG if debug else Settings.SOURCES_EXCLUDE_PROD)()
+                ]
             ),
-            [
-                *extraExcludes,
-                *(lambda: Settings.SOURCES_EXCLUDE_DEBUG if debug else Settings.SOURCES_EXCLUDE_PROD)()
-            ]
+            sources_incRe
         )
         
         # Determine which files need to be compiled
         to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, comp_args_hash)
         
         # Get all hpp files and filter them
-        header_files = Compiler.filterFiles(
-            Compiler.normalizeFilePaths(
-                Compiler.gatherFiles(
-                    headers_dir, Settings.HEADERS_EXT
-                )
+        header_files = Compiler.filterFilesRe(
+            Compiler.filterFiles(
+                Compiler.normalizeFilePaths(
+                    Compiler.gatherFiles(
+                        headers_dir, Settings.HEADERS_EXT
+                    )
+                ),
+                [
+                    *extraExcludes,
+                    *(lambda: Settings.HEADERS_EXCLUDE_DEBUG if debug else Settings.HEADERS_EXCLUDE_PROD)()
+                ]
             ),
-            [
-                *extraExcludes,
-                *(lambda: Settings.HEADERS_EXCLUDE_DEBUG if debug else Settings.HEADERS_EXCLUDE_PROD)()
-            ]
+            headers_incRe
         )
         
         #? Shared variables
