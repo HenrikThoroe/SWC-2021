@@ -282,7 +282,7 @@ class Compiler():
             #* Compiler
             if to_compile:
                 print(colorT("Compiling...", Colors.BLUE))
-                compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, comp_args, extraFlags)
+                compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, comp_args)
             
                 #? Dump cache      
                 with open(cache_file, 'w') as cacheFile:
