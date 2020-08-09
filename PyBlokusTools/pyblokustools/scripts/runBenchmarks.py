@@ -91,7 +91,7 @@ def runBenchmarks() -> None:
     subprocess.run(
             [
                 f'./{out_file}',
-                *args.testflags
+                *args.benchflags
             ],
             stderr=subprocess.STDOUT
         )
