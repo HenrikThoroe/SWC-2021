@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "Vector2D.hpp"
+#include "Rotation.hpp"
 
 namespace Model {
 
@@ -21,6 +22,15 @@ namespace Model {
 
         ///A unique identifier for each shape.
         uint8_t id;
+
+        /**
+         * A piece can be interpretated in four ratations. If a piece is symmetric two or more rotations will produce equal shapes.
+         * To get rid of the extra work of exploring two equal moves this vector contains all rotations which produce different shapes.
+         * All rotations not included in the vector would produce equal output to the rotations which are included.
+         * 
+         * @brief A collection storing all rotations of the piece which lead to an unique shape. 
+         */
+        std::vector<Rotation> uniqueRotations;
 
         Piece(Piece* other) = delete;
         Piece(Piece& other) = delete;
