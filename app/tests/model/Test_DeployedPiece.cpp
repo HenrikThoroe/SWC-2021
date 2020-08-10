@@ -18,7 +18,6 @@ TEST_CASE("DeployedPiece Test", "[model]") {
     SECTION("Basic") {
         auto occupied = simple.getOccupiedPositions();
         auto attachPoints = simple.getAttachPoints();
-        auto validation = simple.getValidationPoints();
 
         REQUIRE(occupied.size() == 1);
         REQUIRE(attachPoints.size() == 4);
@@ -29,17 +28,11 @@ TEST_CASE("DeployedPiece Test", "[model]") {
         REQUIRE(attachPoints[1] == Position(1, -1));
         REQUIRE(attachPoints[2] == Position(-1, 1));
         REQUIRE(attachPoints[3] == Position(1, 1));
-
-        REQUIRE(validation[0] == Position(-2, -2));
-        REQUIRE(validation[1] == Position(2, -2));
-        REQUIRE(validation[2] == Position(-2, 2));
-        REQUIRE(validation[3] == Position(2, 2));
     }
 
     SECTION("Complex") {
         auto occupied = complex.getOccupiedPositions();
         auto attachPoints = complex.getAttachPoints();
-        auto validation = complex.getValidationPoints();
 
         std::array<Position, 6> expectedAttachPoints = {
             Position(-1, -1),
@@ -50,18 +43,8 @@ TEST_CASE("DeployedPiece Test", "[model]") {
             Position(1, 4)
         };
 
-        std::array<Position, 6> expectedValidationPoints = {
-            Position(-2, -2),
-            Position(2, -2),
-            Position(3, -1),
-            Position(3, 3),
-            Position(-2, 5),
-            Position(2, 5)
-        };
-
         REQUIRE(occupied.size() == 5);
         REQUIRE(attachPoints.size() == 6);
-        REQUIRE(validation.size() == 6);
 
         for (auto& expected : expectedAttachPoints) {
             bool included = false;

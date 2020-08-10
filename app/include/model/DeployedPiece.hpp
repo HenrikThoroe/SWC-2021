@@ -25,7 +25,8 @@ namespace Model {
             /// The color of the piece.
             const PieceColor color;
 
-            DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color);
+            /// @arg initializeFields - A flag indicating if `prepareOccupiedFields` and `prepareAttachPoints` should be called in the constructor. **If set to false remember to manually call these methods.**
+            DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color, bool initializeFields = true);
             DeployedPiece(uint8_t pieceId, PieceColor color, Rotation rotation, Util::Vector2D vectorToOrigin, Util::Position dropPosition);
             DeployedPiece(const DeployedPiece& other);
             DeployedPiece(const DeployedPiece* other);
@@ -34,7 +35,11 @@ namespace Model {
 
             const std::vector<Util::Position>& getAttachPoints() const;
 
-            const std::vector<Util::Position>& getValidationPoints() const;
+            /// Calculates the occupied positions of the piece.
+            void prepareOccupiedFields();
+
+            /// Calculates the attach points of the piece.
+            void prepareAttachPoints();
 
         private:
             /// A set of all positions which are occupied by the piece.
@@ -42,9 +47,6 @@ namespace Model {
 
             /// A set of all positions where other pieces with the same color could be attached.
             std::vector<Util::Position> attachPoints;
-
-            /// A set of all positions where another piece of the same color is expected. If this is not the case, the deployed piece is invalid.
-            std::vector<Util::Position> validationPoints;
     };
 
 }

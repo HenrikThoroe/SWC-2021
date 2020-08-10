@@ -5,20 +5,29 @@
 
 namespace Model {
 
-    DeployedPiece::DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color) : pieceId(id), origin(origin), rotation(rotation), color(color) {
-        const uint8_t rot = static_cast<uint8_t>(rotation);
+    DeployedPiece::DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color, bool initializeFields) : pieceId(id), origin(origin), rotation(rotation), color(color) {
+        if (initializeFields) {
+            prepareAttachPoints();
+            prepareOccupiedFields();
+        }
+    }
+
+    void DeployedPiece::prepareOccupiedFields() {
         const Piece& piece = PieceCollection::getPiece(pieceId);
-        const Piece::Shape& shape = std::get<0>(piece.rotations.at(rot));
-        const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations.at(rot));
+        const Piece::Shape& shape = std::get<0>(piece.rotations.at(static_cast<uint8_t>(rotation)));
 
         for (const Util::Vector2D& path : shape) {
             occupiedPositions.push_back(origin + path);
         }
+    }
+
+    void DeployedPiece::prepareAttachPoints() {
+        const Piece& piece = PieceCollection::getPiece(pieceId);
+        const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations.at(static_cast<uint8_t>(rotation)));
 
         for (const Piece::AttachPoint& attachPoint : attachPoints) {
             const Util::Position absolutePoint = origin + attachPoint.at(0);
             this->attachPoints.push_back(absolutePoint);
-            this->validationPoints.push_back(absolutePoint + attachPoint.at(1));
         }
     }
 
@@ -37,7 +46,4 @@ namespace Model {
         return attachPoints;
     }
 
-    const std::vector<Util::Position>& DeployedPiece::getValidationPoints() const {
-        return validationPoints;
-    }
 }

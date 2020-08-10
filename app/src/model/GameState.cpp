@@ -108,10 +108,17 @@ namespace Model {
 
                         const Util::Vector2D& attachVector = info[0];
                         const Util::Position origin = dropPosition - attachVector + offsetVector;
-                        const DeployedPiece deployed = DeployedPiece(pieceId, origin, rotation, color);
+                        DeployedPiece deployed = DeployedPiece(pieceId, origin, rotation, color, false);
+
+                        // Calculate occupied fields to enable validity check
+                        deployed.prepareOccupiedFields();
 
                         // Add piece to result vector if it can be deployed on the board
                         if (canBeDeployed(deployed)) {
+
+                            // Finalize deployed piece when valid
+                            deployed.prepareAttachPoints();
+                            
                             moves.push_back(deployed);
                         }
                     }
