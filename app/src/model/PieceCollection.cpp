@@ -2,7 +2,7 @@
 
 namespace Model {
 
-    const std::array<Piece, 21> PieceCollection::allPieces = {
+    const std::array<Piece, 21> PieceCollection::allPieces {
         Piece {
             0, 
             

@@ -5,7 +5,7 @@
 
 namespace Model {
 
-    GameState::GameState() : turn(0), players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board() {
+    GameState::GameState() : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(19, 0);
         const Util::Position bottomLeft = Util::Position(0, 19);
