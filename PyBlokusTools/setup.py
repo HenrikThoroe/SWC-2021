@@ -14,7 +14,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX",
-        "Operating System :: MacOS",
     ],
     python_requires='>=3.8',
     entry_points = {
