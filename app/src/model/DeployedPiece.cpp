@@ -12,6 +12,12 @@ namespace Model {
         }
     }
 
+    DeployedPiece::DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color, std::vector<Util::Position> occupiedPositions, std::vector<Util::Position> attachPoints) : 
+        pieceId(id), origin(origin), rotation(rotation), color(color) {
+            this->occupiedPositions = occupiedPositions;
+            this->attachPoints = attachPoints;
+    }
+
     void DeployedPiece::prepareOccupiedFields() {
         const Piece& piece = PieceCollection::getPiece(pieceId);
         const Piece::Shape& shape = std::get<0>(piece.rotations.at(static_cast<uint8_t>(rotation)));
@@ -34,9 +40,9 @@ namespace Model {
     DeployedPiece::DeployedPiece(uint8_t pieceId, PieceColor color, Rotation rotation, Util::Vector2D vectorToOrigin, Util::Position dropPosition) 
         : DeployedPiece(pieceId, dropPosition.move(vectorToOrigin), rotation, color) {}
 
-    DeployedPiece::DeployedPiece(const DeployedPiece& other) : DeployedPiece(other.pieceId, other.origin, other.rotation, other.color) {}
+    DeployedPiece::DeployedPiece(const DeployedPiece& other) : DeployedPiece(other.pieceId, other.origin, other.rotation, other.color, other.occupiedPositions, other.attachPoints) {}
 
-    DeployedPiece::DeployedPiece(const DeployedPiece* other) : DeployedPiece(other->pieceId, other->origin, other->rotation, other->color) {}
+    DeployedPiece::DeployedPiece(const DeployedPiece* other) : DeployedPiece(other->pieceId, other->origin, other->rotation, other->color, other->occupiedPositions, other->attachPoints) {}
 
     const std::vector<Util::Position>& DeployedPiece::getOccupiedPositions() const {
         return occupiedPositions;

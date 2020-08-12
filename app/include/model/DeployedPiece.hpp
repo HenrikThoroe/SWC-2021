@@ -27,6 +27,7 @@ namespace Model {
 
             /// @arg initializeFields - A flag indicating if `prepareOccupiedFields` and `prepareAttachPoints` should be called in the constructor. **If set to false remember to manually call these methods.**
             DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color, bool initializeFields = true);
+            DeployedPiece(uint8_t id, Util::Position origin, Rotation rotation, PieceColor color, std::vector<Util::Position> occupiedPositions, std::vector<Util::Position> attachPoints);
             DeployedPiece(uint8_t pieceId, PieceColor color, Rotation rotation, Util::Vector2D vectorToOrigin, Util::Position dropPosition);
             DeployedPiece(const DeployedPiece& other);
             DeployedPiece(const DeployedPiece* other);
