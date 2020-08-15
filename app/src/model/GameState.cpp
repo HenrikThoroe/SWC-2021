@@ -95,6 +95,7 @@ namespace Model {
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
+        int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 4 * 21 };
 
         // Reserve 400 items to prevent repeated resizing of moves vector
         moves.reserve(400);
@@ -112,9 +113,13 @@ namespace Model {
 
                 const Piece& piece = PieceCollection::getPiece(pieceId);
 
+                indexCache[3] = pieceId * 1600;
+
                 // Iterate all rotations
                 for (const Rotation& rotation : piece.uniqueRotations) {
                     const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[static_cast<uint8_t>(rotation)]);
+
+                    indexCache[2] = static_cast<uint8_t>(rotation) * 400;
 
                     // Iterate all attach vectors of the shape 
                     for (const Piece::AttachPoint& info : attachPoints) {
@@ -131,12 +136,13 @@ namespace Model {
                             continue;
                         }
 
+                        // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
                         const int index = 
                             origin.x +
                             origin.y * 20 +
-                            static_cast<uint8_t>(rotation) * 20 * 20 + 
-                            pieceId * 20 * 20 * 4 + 
-                            (static_cast<uint8_t>(color) - 1) * 20 * 20 * 4 * 21;
+                            indexCache[2] + 
+                            indexCache[3] + 
+                            indexCache[4];
 
                         const DeployedPiece* deployed = &allPieces[index];
 
