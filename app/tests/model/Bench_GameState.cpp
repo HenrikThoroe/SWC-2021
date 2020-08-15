@@ -14,7 +14,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
     BENCHMARK_ADVANCED("Move Calculation") (Catch::Benchmark::Chronometer meter) {
         for (int x = 0; x < 35; ++x) {
-            std::vector<Move> moves;
+            std::vector<const Move*> moves;
 
             meter.measure([&moves, &state] {
                 moves = state.getPossibleMoves();
@@ -26,7 +26,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
             int index = rand() % moves.size();
 
-            state.performMove(moves[index]);
+            state.performMove(*moves[index]);
         }
 
         for (int x = 0; x < 35; ++x) {
@@ -34,9 +34,21 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         }
     };
 
+    BENCHMARK("Get Possible Moves") {
+        return state.getPossibleMoves();
+    };
+
+    BENCHMARK_ADVANCED("Assign Possible Moves") (Catch::Benchmark::Chronometer meter) {
+        std::vector<const Move*> out {};
+        meter.measure([&out, &state] {
+            state.assignPossibleMoves(out);
+        });
+        return out;
+    };
+
     BENCHMARK_ADVANCED("Can Be Deployed") (Catch::Benchmark::Chronometer meter) {
         for (int x = 0; x < 35; ++x) {
-            std::vector<Move> moves = state.getPossibleMoves();
+            std::vector<const Move*> moves = state.getPossibleMoves();
 
             if (moves.size() == 0) {
                 FAIL(state);
@@ -44,8 +56,8 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
             meter.measure([&state, &moves] {
                 bool res = true;
-                for (const Move& move : moves) {
-                    res = res && state.canBeDeployed(move);
+                for (const Move* move : moves) {
+                    res = res && state.canBeDeployed(*move);
                 } 
 
                 return res;
@@ -53,7 +65,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
             int index = rand() % moves.size();
 
-            state.performMove(moves[index]);
+            state.performMove(*moves[index]);
         }
 
         for (int x = 0; x < 35; ++x) {
