@@ -29,4 +29,18 @@ TEST_CASE("Bench Board", "[benchmark]") {
             board.removePiece(piece2);
         });
     };
+
+    BENCHMARK_ADVANCED("Get Drop Positions") (Catch::Benchmark::Chronometer meter) {
+        board.dropPiece(piece2);
+        board.dropPiece(piece3);
+        board.dropPiece(piece1);
+
+        meter.measure([&board] {
+            return board.getDropPositions(PieceColor::BLUE);
+        });
+
+        board.removePiece(piece2);
+        board.removePiece(piece3);
+        board.removePiece(piece1);
+    };
 }
