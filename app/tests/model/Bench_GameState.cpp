@@ -57,7 +57,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             meter.measure([&state, &moves] {
                 bool res = true;
                 for (const Move* move : moves) {
-                    res = res && state.canBeDeployed(*move);
+                    res = res && state.canBeDeployed(move);
                 } 
 
                 return res;

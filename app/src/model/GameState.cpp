@@ -66,7 +66,11 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) const {
-        for (const Util::Position& position : piece.getOccupiedPositions()) {
+        return canBeDeployed(&piece);
+    }
+
+    bool GameState::canBeDeployed(const DeployedPiece* piece) const {
+        for (const Util::Position& position : piece->getOccupiedPositions()) {
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
                 return false;
             }
@@ -76,7 +80,7 @@ namespace Model {
             }
 
             for (const Util::Position& edge : position.getEdges()) {
-                if (board.at(edge) == piece.color) {
+                if (board.at(edge) == piece->color) {
                     return false;
                 }
             }
@@ -147,7 +151,7 @@ namespace Model {
                         const DeployedPiece* deployed = &allPieces[index];
 
                         // Add piece to result vector if it can be deployed on the board
-                        if (canBeDeployed(*deployed)) {
+                        if (canBeDeployed(deployed)) {
                             moves.push_back(deployed);
                         }
                     }
