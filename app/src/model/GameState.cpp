@@ -21,6 +21,19 @@ namespace Model {
         }
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
+        allPieces.reserve(20 * 20 * 21 * 4 * 4);
+
+        for (uint8_t color = 0; color < 4; ++color) {
+            for (uint8_t pieceId = 0; pieceId < 21; ++pieceId) {
+                for (uint8_t rotation = 0; rotation < 4; ++rotation) {
+                    for (int row = 0; row < 20; ++row) {
+                        for (int col = 0; col < 20; ++col) {
+                            allPieces.emplace_back(pieceId, Util::Position(col, row), static_cast<Rotation>(rotation), static_cast<PieceColor>(color + 1));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     const uint8_t& GameState::getTurn() const {
@@ -72,14 +85,19 @@ namespace Model {
         return true;
     }
 
-    std::vector<Move> GameState::getPossibleMoves() const {
+    std::vector<const Move*> GameState::getPossibleMoves() const {
+        std::vector<const Move*> moves {};
+        assignPossibleMoves(moves);
+        return moves;
+    }
+
+    void GameState::assignPossibleMoves(std::vector<const Move*>& moves) const {
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
-        std::vector<Move> moves {};
 
-        // Reserve 300 items to prevent repeated resizing of moves vector
-        moves.reserve(300);
+        // Reserve 400 items to prevent repeated resizing of moves vector
+        moves.reserve(400);
 
         // Iterate all available drop positions for current color
         for (const Util::Position& dropPosition : dropPositions) {
@@ -108,25 +126,28 @@ namespace Model {
 
                         const Util::Vector2D& attachVector = info[0];
                         const Util::Position origin = dropPosition - attachVector + offsetVector;
-                        DeployedPiece deployed = DeployedPiece(pieceId, origin, rotation, color, false);
 
-                        // Calculate occupied fields to enable validity check
-                        deployed.prepareOccupiedFields();
+                        if (origin.y < 0 || origin.x < 0 || origin.y > 19 || origin.x > 19) {
+                            continue;
+                        }
+
+                        const int index = 
+                            origin.x +
+                            origin.y * 20 +
+                            static_cast<uint8_t>(rotation) * 20 * 20 + 
+                            pieceId * 20 * 20 * 4 + 
+                            (static_cast<uint8_t>(color) - 1) * 20 * 20 * 4 * 21;
+
+                        const DeployedPiece* deployed = &allPieces[index];
 
                         // Add piece to result vector if it can be deployed on the board
-                        if (canBeDeployed(deployed)) {
-
-                            // Finalize deployed piece when valid
-                            deployed.prepareAttachPoints();
-                            
+                        if (canBeDeployed(*deployed)) {
                             moves.push_back(deployed);
                         }
                     }
                 }
             }
         }
-
-        return moves;
     }
 
     uint64_t GameState::hash() const {
