@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <stack>
 #include <map>
+#include <bitset>
 
 #include "Board.hpp"
 #include "Player.hpp"
