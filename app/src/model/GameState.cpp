@@ -22,6 +22,7 @@ namespace Model {
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
         allPieces.reserve(20 * 20 * 21 * 4 * 4);
+        undeployablePiecesHistory.push(std::bitset<134400> {});
 
         for (uint8_t color = 0; color < 4; ++color) {
             for (uint8_t pieceId = 0; pieceId < 21; ++pieceId) {
@@ -50,7 +51,8 @@ namespace Model {
     }
 
     void GameState::performMove(const Move& move) {
-        availablePieces[static_cast<int>(move.color) - 1][move.pieceId] -= 1;
+        undeployablePiecesHistory.push(undeployablePieces);
+        availablePieces[static_cast<uint8_t>(move.color) - 1][move.pieceId] -= 1;
         board.dropPiece(move);
         performedMoves.push(move);
         turn += 1;
@@ -59,43 +61,63 @@ namespace Model {
     void GameState::revertLastMove() {
         DeployedPiece& piece = performedMoves.top();
 
-        availablePieces[static_cast<int>(piece.color) - 1][piece.pieceId] += 1;
+        availablePieces[static_cast<uint8_t>(piece.color) - 1][piece.pieceId] += 1;
         board.removePiece(piece);
         performedMoves.pop();
         turn -= 1;
+        undeployablePieces = undeployablePiecesHistory.top();
+        undeployablePiecesHistory.pop();
     }
 
-    bool GameState::canBeDeployed(const DeployedPiece& piece) const {
+    bool GameState::canBeDeployed(const DeployedPiece& piece) {
         return canBeDeployed(&piece);
     }
 
-    bool GameState::canBeDeployed(const DeployedPiece* piece) const {
+    bool GameState::canBeDeployed(const DeployedPiece* piece) {
+        if (undeployablePieces[createIndex(piece)] == true) {
+            return false;
+        }
+
         for (const Util::Position& position : piece->getOccupiedPositions()) {
-            if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
-                return false;
-            }
 
             if (board.at(position) != PieceColor::NONE) {
+                undeployablePieces[createIndex(piece)] = true;
                 return false;
             }
 
             for (const Util::Position& edge : position.getEdges()) {
                 if (board.at(edge) == piece->color) {
+                    undeployablePieces[createIndex(piece)] = true;
                     return false;
                 }
             }
+
+            if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
+                undeployablePieces[createIndex(piece)] = true;
+                return false;
+            }
+
         }
 
         return true;
     }
 
-    std::vector<const Move*> GameState::getPossibleMoves() const {
+    inline int GameState::createIndex(const DeployedPiece* piece) const {
+        return 
+            piece->origin.x +
+            piece->origin.y * 20 +
+            static_cast<uint8_t>(piece->rotation) * 400 + 
+            piece->pieceId * 1600 + 
+            (static_cast<uint8_t>(piece->color) - 1) * 33600;
+    }
+
+    std::vector<const Move*> GameState::getPossibleMoves() {
         std::vector<const Move*> moves {};
         assignPossibleMoves(moves);
         return moves;
     }
 
-    void GameState::assignPossibleMoves(std::vector<const Move*>& moves) const {
+    void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
