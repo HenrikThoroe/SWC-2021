@@ -34,6 +34,21 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         }
     };
 
+    BENCHMARK_ADVANCED("Perform Move") (Catch::Benchmark::Chronometer meter) {
+        std::vector<const Move*> moves = state.getPossibleMoves();
+
+        if (moves.size() == 0) {
+            FAIL(state);
+        }
+
+        int index = rand() % moves.size();
+
+        meter.measure([&state, &moves, &index] {
+            state.performMove(*moves[index]);
+            state.revertLastMove();
+        });
+    };
+
     BENCHMARK("Get Possible Moves") {
         return state.getPossibleMoves();
     };
@@ -62,6 +77,24 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
                 return res;
             });
+
+            int index = rand() % moves.size();
+
+            state.performMove(*moves[index]);
+        }
+
+        for (int x = 0; x < 35; ++x) {
+            state.revertLastMove();
+        }
+    };
+
+    BENCHMARK("Full Run") {
+        for (int x = 0; x < 35; ++x) {
+            std::vector<const Move*> moves = state.getPossibleMoves();
+
+            if (moves.size() == 0) {
+                FAIL(state);
+            }
 
             int index = rand() % moves.size();
 
