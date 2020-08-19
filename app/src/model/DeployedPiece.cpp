@@ -52,4 +52,14 @@ namespace Model {
         return attachPoints;
     }
 
+    std::ostream& operator << (std::ostream& os, const DeployedPiece& piece) {
+        os << "DeployedPiece {";
+        os << " id: " << static_cast<int>(piece.pieceId);
+        os << ", origin: " << piece.origin;
+        os << ", color: " << piece.color;
+        os << ", rotation: " << static_cast<int>(piece.rotation) << " }";
+
+        return os;
+    }
+
 }

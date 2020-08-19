@@ -2,6 +2,7 @@
 
 #include <inttypes.h>
 #include <vector>
+#include <iostream>
 
 #include "Piece.hpp"
 #include "Rotation.hpp"
@@ -41,6 +42,8 @@ namespace Model {
 
             /// Calculates the attach points of the piece.
             void prepareAttachPoints();
+
+            friend std::ostream& operator << (std::ostream& os, const DeployedPiece& piece);
 
         private:
             /// A set of all positions which are occupied by the piece.
