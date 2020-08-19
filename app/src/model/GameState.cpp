@@ -80,7 +80,12 @@ namespace Model {
 
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
-            if (board.at(position) != PieceColor::NONE) {
+            if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
+                undeployablePieces[createIndex(piece)] = true;
+                return false;
+            }
+
+            if (board[position] != PieceColor::NONE) {
                 undeployablePieces[createIndex(piece)] = true;
                 return false;
             }
@@ -90,11 +95,6 @@ namespace Model {
                     undeployablePieces[createIndex(piece)] = true;
                     return false;
                 }
-            }
-
-            if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
-                undeployablePieces[createIndex(piece)] = true;
-                return false;
             }
 
         }
@@ -122,6 +122,7 @@ namespace Model {
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
         int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 4 * 21 };
+        std::bitset<134400> usedPieces {};
 
         // Reserve 400 items to prevent repeated resizing of moves vector
         moves.reserve(400);
@@ -133,7 +134,7 @@ namespace Model {
             for (int pieceId = 0; pieceId < 21; ++pieceId) {
 
                 // Filter all shapes which are unavailable for current color
-                if (availablePieces[colorId][pieceId] <= 0) {
+                if (availablePieces[colorId][pieceId] == 0) {
                     continue;
                 }
 
@@ -151,7 +152,7 @@ namespace Model {
                     for (const Piece::AttachPoint& info : attachPoints) {
                         const Util::Vector2D& offsetVector = info[1];
 
-                        if (getTurn() > 3 && board.at(dropPosition + offsetVector) != color) {
+                        if (getTurn() > 3 && board[dropPosition + offsetVector] != color) {
                             continue;
                         }
 
@@ -170,11 +171,16 @@ namespace Model {
                             indexCache[3] + 
                             indexCache[4];
 
+                        if (undeployablePieces[index] || usedPieces[index]) {
+                            continue;
+                        }
+
                         const DeployedPiece* deployed = &allPieces[index];
 
                         // Add piece to result vector if it can be deployed on the board
                         if (canBeDeployed(deployed)) {
                             moves.push_back(deployed);
+                            usedPieces[index] = true;
                         }
                     }
                 }
@@ -193,7 +199,15 @@ namespace Model {
     std::ostream& operator << (std::ostream& os, const GameState& state) {
         os << "Turn: " << static_cast<int>(state.turn) << std::endl;
         os << "Player: " << state.getCurrentPlayer().color << std::endl;
-        os << "Color: " << state.getCurrentPieceColor() << std::endl;
+        os << "Color: " << state.getCurrentPieceColor() << " (" << static_cast<int>(state.getCurrentPieceColor()) << ")" << std::endl;
+        os << "Available: ";
+        
+        for (int pieceId : state.availablePieces[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1]) {
+            os << pieceId << " ";
+        }
+
+        os << std::endl;
+
         os << "Board: " << std::endl << state.board;
         return os;
     }
