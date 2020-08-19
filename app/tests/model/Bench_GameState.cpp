@@ -89,7 +89,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
     };
 
     BENCHMARK("Full Run") {
-        for (int x = 0; x < 35; ++x) {
+        for (int x = 0; x < 30; ++x) {
             std::vector<const Move*> moves = state.getPossibleMoves();
 
             if (moves.size() == 0) {
@@ -101,7 +101,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             state.performMove(*moves[index]);
         }
 
-        for (int x = 0; x < 35; ++x) {
+        for (int x = 0; x < 30; ++x) {
             state.revertLastMove();
         }
     };
