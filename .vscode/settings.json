@@ -96,6 +96,8 @@
         "xlocmon": "cpp",
         "xloctime": "cpp",
         "xmemory0": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "filesystem": "cpp",
+        "*.ipp": "cpp"
     }
 }
