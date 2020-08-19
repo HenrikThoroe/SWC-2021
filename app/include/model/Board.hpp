@@ -47,6 +47,8 @@ namespace Model {
 
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 
+            const PieceColor& operator [] (const Util::Position& position) const;
+
         private:
             /// A 20x20 array which stores the piece color for each position of the board.
             FieldSet fields {};
