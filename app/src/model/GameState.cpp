@@ -74,25 +74,27 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
-        if (undeployablePieces[createIndex(piece)] == true) {
+        int index = createIndex(piece);
+
+        if (undeployablePieces[index] == true) {
             return false;
         }
 
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
-                undeployablePieces[createIndex(piece)] = true;
+                undeployablePieces[index] = true;
                 return false;
             }
 
             if (board[position] != PieceColor::NONE) {
-                undeployablePieces[createIndex(piece)] = true;
+                undeployablePieces[index] = true;
                 return false;
             }
 
             for (const Util::Position& edge : position.getEdges()) {
                 if (board.at(edge) == piece->color) {
-                    undeployablePieces[createIndex(piece)] = true;
+                    undeployablePieces[index] = true;
                     return false;
                 }
             }
