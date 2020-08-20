@@ -154,6 +154,7 @@ namespace Model {
                     for (const Piece::AttachPoint& info : attachPoints) {
                         const Util::Vector2D& offsetVector = info[1];
 
+                        // Ensure a piece of the same color is located at the corner of the new piece
                         if (getTurn() > 3 && board[dropPosition + offsetVector] != color) {
                             continue;
                         }
@@ -173,6 +174,7 @@ namespace Model {
                             indexCache[3] + 
                             indexCache[4];
 
+                        // Skip if the piece cannot be deployed or is already included
                         if (undeployablePieces[index] || usedPieces[index]) {
                             continue;
                         }
