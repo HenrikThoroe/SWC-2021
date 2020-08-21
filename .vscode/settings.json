@@ -87,6 +87,17 @@
         "vector": "cpp",
         "future": "cpp",
         "random": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "condition_variable": "cpp",
+        "resumable": "cpp",
+        "xhash": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp",
+        "xmemory0": "cpp",
+        "xtree": "cpp",
+        "filesystem": "cpp",
+        "*.ipp": "cpp"
     }
 }

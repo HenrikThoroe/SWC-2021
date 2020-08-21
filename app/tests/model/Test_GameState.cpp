@@ -8,6 +8,13 @@ TEST_CASE("Test Game State", "[model]") {
     GameState state = GameState();
     Move m1 = Move(20, PieceColor::BLUE, Rotation::ONEHALFPI, Vector2D(1, 1), Position(0, 0));
 
+    SECTION("Validate Move") {
+        Move m2 = Move(20, PieceColor::BLUE, Rotation::PI, Vector2D(1, 1), Position(0, 0));
+
+        REQUIRE(state.canBeDeployed(m1));
+        REQUIRE_FALSE(state.canBeDeployed(m2));
+    }
+
     state.performMove(m1);
 
     SECTION("Can Perform Move") {

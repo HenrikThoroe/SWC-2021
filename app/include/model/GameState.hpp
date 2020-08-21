@@ -3,10 +3,12 @@
 #include <inttypes.h>
 #include <stack>
 #include <map>
+#include <bitset>
 
 #include "Board.hpp"
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
+#include "Piece.hpp"
 
 namespace Model {
 
@@ -31,6 +33,20 @@ namespace Model {
             /// A collection of all remaining piece shapes stored as an array of their IDs for each color.
             std::array<std::array<uint8_t, 21>, 4> availablePieces {};
 
+            /// A cache which stores stores all deployed pieces possible on the board.
+            /// @note Size: 134,400 * 84 Bytes = 11,289,600 Byte ~= 11 Megabyte
+            std::vector<DeployedPiece> allPieces {};
+
+            /// A bitset which indicates which piece cannot be deployed on the state. 
+            /// Each bit is logically connected to the DeployedPiece in `allPieces` at the same index. 
+            std::bitset<134400> undeployablePieces {};
+
+            /// A history of `undeployablePieces` to revert a moves.
+            std::stack<std::bitset<134400>> undeployablePiecesHistory {};
+
+            /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
+            int createIndex(const DeployedPiece* piece) const;
+
         public:
             GameState();
             GameState(GameState* other) = delete;
@@ -46,13 +62,22 @@ namespace Model {
             const PieceColor& getCurrentPieceColor() const;
 
             /// Finds and returns the possible moves on the current game board.
-            const std::vector<Move>& getPossibleMoves() const;
+            std::vector<const Move*> getPossibleMoves();
+
+            /// Fills the passed vector with the moves possible on the current game state.
+            void assignPossibleMoves(std::vector<const Move*>& moves);
 
             /// Performs the given move on the board.
             void performMove(const Move& move);
 
             /// Reverts the last performed move.
             void revertLastMove();
+
+            /// Checks whether the specified piece can be bedployed on the board.
+            bool canBeDeployed(const DeployedPiece& piece);
+
+            /// Checks whether the specified piece can be bedployed on the board.
+            bool canBeDeployed(const DeployedPiece* piece);
 
             /// Hashes the current state.
             uint64_t hash() const;

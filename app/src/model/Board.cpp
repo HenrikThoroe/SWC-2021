@@ -46,13 +46,31 @@ namespace Model {
         }
     }
 
+    void Board::makeDropPosition(const Util::Position& position, const PieceColor& color) {
+        if (color == PieceColor::NONE || color == PieceColor::OBSTRUCTED) {
+            return;
+        }
+
+        dropPositions[static_cast<uint8_t>(color) - 1][position.y][position.x] = 1;
+    }
+
     const PieceColor& Board::at(const Util::Position& position) const {
         return at(position.x, position.y);
     }
 
     const PieceColor& Board::at(int x, int y) const {
+        static const PieceColor& outOfRange = PieceColor::OBSTRUCTED;
+
+        if (x < 0 || y < 0 || x > 19 || y > 19) {
+            return outOfRange;
+        }
+        
         return fields[y][x];
     }  
+
+    const PieceColor& Board::operator [] (const Util::Position& position) const {
+        return fields[position.y][position.x];
+    }
 
     std::vector<Util::Position> Board::getDropPositions(const PieceColor& color) const {
         if (color != PieceColor::NONE && color != PieceColor::OBSTRUCTED) {
