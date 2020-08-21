@@ -44,6 +44,10 @@ namespace Model {
             /// A history of `undeployablePieces` to revert a moves.
             std::stack<std::bitset<134400>> undeployablePiecesHistory {};
 
+            std::array<uint64_t, 1600> hashpool {};
+
+            uint64_t hashValue = 0;
+
             /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
             int createIndex(const DeployedPiece* piece) const;
 

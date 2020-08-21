@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <random>
 
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
@@ -35,6 +36,14 @@ namespace Model {
                 }
             }
         }
+
+        std::random_device rd;
+        std::mt19937_64 eng(rd());
+        std::uniform_int_distribution<uint64_t> distr;
+
+        for (int i = 0; i < 1600; ++i) {
+            hashpool[i] = distr(eng);
+        }
     }
 
     const uint8_t& GameState::getTurn() const {
@@ -56,6 +65,11 @@ namespace Model {
         board.dropPiece(move);
         performedMoves.push(move);
         turn += 1;
+
+        for (const Util::Position& pos : move.getOccupiedPositions()) {
+            const int index = pos.y + pos.x * 20 + (static_cast<uint8_t>(move.color) - 1) * 400;
+            hashValue ^= hashpool[index];
+        }
     }
 
     void GameState::revertLastMove() {
@@ -67,6 +81,11 @@ namespace Model {
         turn -= 1;
         undeployablePieces = undeployablePiecesHistory.top();
         undeployablePiecesHistory.pop();
+
+        for (const Util::Position& pos : piece.getOccupiedPositions()) {
+            const int index = pos.y + pos.x * 20 + (static_cast<uint8_t>(piece.color) - 1) * 400;
+            hashValue ^= hashpool[index];
+        }
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
@@ -193,7 +212,7 @@ namespace Model {
     }
 
     uint64_t GameState::hash() const {
-        throw std::runtime_error("Not Implemented");
+        return hashValue;
     }
 
     int GameState::evaluate() const {
