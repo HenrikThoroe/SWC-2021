@@ -30,4 +30,25 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.getCurrentPlayer().color == PlayerColor::BLUE);
         REQUIRE(state.getCurrentPieceColor() == PieceColor::BLUE);
     }
+
+    SECTION("Can Hash") {
+        for (int x = 0; x < 30; ++x) {
+            std::vector<const Move*> moves = state.getPossibleMoves();
+
+            if (moves.size() == 0) {
+                FAIL(state);
+            }
+
+            int index = rand() % moves.size();
+
+            state.performMove(*moves[index]);
+
+            WARN(state.hash());
+        }
+
+        for (int x = 0; x < 30; ++x) {
+            state.revertLastMove();
+            WARN(state.hash());
+        }
+    }
 }
