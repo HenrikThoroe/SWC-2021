@@ -20,7 +20,7 @@ class Settings():
     HEADERS_EXCLUDE_DEBUG : List[str] = []
     
     COMP_SHARED_FLAGS : List[str] = ['-c', '-std=c++17', '-m64']
-    COMP_PROD_FLAGS   : List[str] = ['-Ofast', '-flto', '-mpopcnt', '-static'] #? '-march=broadwell' in real production
+    COMP_PROD_FLAGS   : List[str] = ['-Ofast', '-flto', '-mpopcnt'] #? '-march=broadwell' in real production
     COMP_DEBUG_FALGS  : List[str] = ['-g3', '-fsanitize=address', '-fsanitize-address-use-after-scope', '-Wall']
 
     LINK_SHARED_FLAGS : List[str] = [*list(filter(lambda opt: opt not in ['-c'], COMP_SHARED_FLAGS))]
