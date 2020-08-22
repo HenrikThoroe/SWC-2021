@@ -3,6 +3,7 @@
 
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
+#include "bitAt.hpp"
 
 namespace Model {
 
@@ -41,7 +42,7 @@ namespace Model {
         std::mt19937_64 eng(rd());
         std::uniform_int_distribution<uint64_t> distr;
 
-        for (int i = 0; i < 1600; ++i) {
+        for (int i = 0; i < 134400; ++i) {
             hashpool[i] = distr(eng);
         }
     }
@@ -66,10 +67,7 @@ namespace Model {
         performedMoves.push(move);
         turn += 1;
 
-        for (const Util::Position& pos : move.getOccupiedPositions()) {
-            const int index = pos.y + pos.x * 20 + (static_cast<uint8_t>(move.color) - 1) * 400;
-            hashValue ^= hashpool[index];
-        }
+        hashValue ^= hashpool[createIndex(&move)];
     }
 
     void GameState::revertLastMove() {
@@ -82,10 +80,7 @@ namespace Model {
         undeployablePieces = undeployablePiecesHistory.top();
         undeployablePiecesHistory.pop();
 
-        for (const Util::Position& pos : piece.getOccupiedPositions()) {
-            const int index = pos.y + pos.x * 20 + (static_cast<uint8_t>(piece.color) - 1) * 400;
-            hashValue ^= hashpool[index];
-        }
+        hashValue ^= hashpool[createIndex(&piece)];
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
@@ -213,6 +208,24 @@ namespace Model {
 
     uint64_t GameState::hash() const {
         return hashValue;
+    }
+
+    std::bitset<800> GameState::uniqueHash() const {
+        std::bitset<800> out {};
+
+        for (int row = 0; row < 20; ++row) {
+            for (int col = 0; col < 20; ++col) {
+                Util::Position pos = Util::Position(row, col);
+                int idx = col + row * 20;
+                uint8_t value = static_cast<uint8_t>(board.at(pos));
+
+                for (int i = 0; i < 2; ++i) {
+                    out[idx * 2 + i] = Util::bitAt(value, 7 - i);
+                }
+            }   
+        }
+
+        return out;
     }
 
     int GameState::evaluate() const {

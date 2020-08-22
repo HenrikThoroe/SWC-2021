@@ -44,8 +44,10 @@ namespace Model {
             /// A history of `undeployablePieces` to revert a moves.
             std::stack<std::bitset<134400>> undeployablePiecesHistory {};
 
-            std::array<uint64_t, 1600> hashpool {};
+            /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~1MB
+            std::array<uint64_t, 134400> hashpool {};
 
+            /// The current hash value of the game state.
             uint64_t hashValue = 0;
 
             /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
@@ -85,6 +87,9 @@ namespace Model {
 
             /// Hashes the current state.
             uint64_t hash() const;
+
+            /// Creates a unique hash for the game state which has no collisions.
+            std::bitset<800> uniqueHash() const;
 
             /// Evaluates the current state.
             int evaluate() const;
