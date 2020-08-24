@@ -45,6 +45,8 @@ namespace Model {
         for (int i = 0; i < 134400; ++i) {
             hashpool[i] = distr(eng);
         }
+
+        movesCache.reserve(2000);
     }
 
     const uint8_t& GameState::getTurn() const {
@@ -134,6 +136,14 @@ namespace Model {
     }
 
     void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
+
+        if (movesCache.contains(hashValue)) {
+            moves = movesCache[hashValue].value;
+            movesCache[hashValue].accesses += 1;
+            movesCache[hashValue].turn = turn;
+            return;
+        }
+
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
@@ -204,14 +214,16 @@ namespace Model {
                 }
             }
         }
+
+        movesCache[hashValue] = { moves, 0, turn };
     }
 
     uint64_t GameState::hash() const {
         return hashValue;
     }
 
-    std::bitset<800> GameState::uniqueHash() const {
-        std::bitset<800> out {};
+    std::bitset<808> GameState::uniqueHash() const {
+        std::bitset<808> out {};
 
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
@@ -224,6 +236,15 @@ namespace Model {
                 }
             }   
         }
+
+        out[800] = Util::bitAt(turn, 2);
+        out[801] = Util::bitAt(turn, 3);
+        out[802] = Util::bitAt(turn, 4);
+        out[803] = Util::bitAt(turn, 5);
+        out[804] = Util::bitAt(turn, 6);
+        out[805] = Util::bitAt(turn, 7);
+        out[806] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 0);
+        out[807] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 1);
 
         return out;
     }

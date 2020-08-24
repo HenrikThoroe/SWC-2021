@@ -2,18 +2,25 @@
 
 #include <inttypes.h>
 #include <stack>
-#include <map>
 #include <bitset>
 
 #include "Board.hpp"
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
+#include "robin_map.hpp"
 
 namespace Model {
 
     class GameState {
         private:
+
+            struct MoveCacheEntry {
+                std::vector<const Move*> value;
+                uint32_t accesses;
+                uint8_t turn;
+            };
+
             /// Collection of all available players.
             const std::array<Player, 2> players;
 
@@ -22,7 +29,7 @@ namespace Model {
 
             /// A cache to improve move calculation speed.
             /// @warning Hashtable implementation will be changed to a more performant one.
-            std::map<uint64_t, std::vector<DeployedPiece>> moves;
+            tsl::robin_map<uint64_t, MoveCacheEntry> movesCache;
 
             /// A board instance which stores the state of the deloyed pieces.
             Board board;
@@ -89,7 +96,7 @@ namespace Model {
             uint64_t hash() const;
 
             /// Creates a unique hash for the game state which has no collisions.
-            std::bitset<800> uniqueHash() const;
+            std::bitset<808> uniqueHash() const;
 
             /// Evaluates the current state.
             int evaluate() const;
