@@ -88,21 +88,37 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         }
     };
 
-    BENCHMARK("Full Run") {
-        for (int x = 0; x < 30; ++x) {
-            std::vector<const Move*> moves = state.getPossibleMoves();
+    BENCHMARK("Full Run Static") {
+        std::vector<const Move*> moves {};
 
-            if (moves.size() == 0) {
-                FAIL(state);
+        for (int i = 0; i < 2000; ++i) {       
+            for (int x = 0; x < 20; ++x) {
+                moves.clear();
+                state.assignPossibleMoves(moves);
+                state.performMove(*moves[0]);
             }
 
-            int index = rand() % moves.size();
-
-            state.performMove(*moves[index]);
+            for (int x = 0; x < 20; ++x) {
+                state.revertLastMove();
+            }
         }
+    };
 
-        for (int x = 0; x < 30; ++x) {
-            state.revertLastMove();
+    BENCHMARK("Full Run Dynamic") {
+        std::vector<const Move*> moves {};
+        int index;
+
+        for (int i = 0; i < 2000; ++i) {       
+            for (int x = 0; x < 20; ++x) {
+                moves.clear();
+                state.assignPossibleMoves(moves);
+                index = rand() % moves.size();
+                state.performMove(*moves[index]);
+            }
+
+            for (int x = 0; x < 20; ++x) {
+                state.revertLastMove();
+            }
         }
     };
 
