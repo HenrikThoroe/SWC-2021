@@ -55,7 +55,7 @@ TEST_CASE("Test Game State", "[model]") {
     }
 
     SECTION("Has no Collisions") {
-        std::unordered_map<uint64_t, std::bitset<800>> map {};
+        std::unordered_map<uint64_t, std::bitset<808>> map {};
 
         for (int it = 0; it < 10000; ++it) {
             for (int x = 0; x < 25; ++x) {
