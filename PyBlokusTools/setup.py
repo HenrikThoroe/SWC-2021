@@ -7,7 +7,7 @@ setuptools.setup(
     version=VERSION,
     author="Rubin Raithel, Henrik Thorøe",
     author_email="dev@rubinraithel.de",
-    description="Tools for the SWC-2021 Blokus project",
+    description="Tools for the SWC-2021 Blokus Project",
     url="https://github.com/HenrikThoroe/SWC-2021/tree/master/scripts",
     packages=setuptools.find_packages(),
     classifiers=[
