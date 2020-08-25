@@ -42,7 +42,7 @@ class CompileCache():
     
     @staticmethod
     def loads(dump: str) -> CompileCache:
-        """Load a CompileCache instance from a json dumo
+        """Load a CompileCache instance from a json dump
 
         Arguments:
             dump {str} -- Dump as a string
