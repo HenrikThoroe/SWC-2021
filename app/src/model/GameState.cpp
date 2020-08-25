@@ -249,6 +249,30 @@ namespace Model {
         return out;
     }
 
+    void GameState::freeMemory() {
+        uint8_t maxAccesses = 0;
+
+        for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
+            if (entry.second.turn < turn) {
+                movesCache.erase(entry.first);
+            }
+        }
+
+        while (movesCache.size() > 1000) {
+            for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
+                if (entry.second.accesses == maxAccesses) {
+                    movesCache.erase(entry.first);
+                }
+
+                if (movesCache.size() <= 1000) {
+                    break;
+                }
+            }
+
+            maxAccesses += 1;
+        }
+    }
+
     int GameState::evaluate() const {
         throw std::runtime_error("Not Implemented");
     }
