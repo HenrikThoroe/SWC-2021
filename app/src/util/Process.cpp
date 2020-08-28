@@ -60,30 +60,32 @@ namespace Util {
         return out;
     }
 
-    uint64_t Process::rss() const {
+    uint64_t Process::readEntry(const std::string& name, uint64_t factor, int suffixLength) const {
         std::unordered_map<std::string, std::string> stats = readStats();
 
-        if (stats.find("VmRSS") != stats.end()) {
-            std::string rssStr = readStats().at("VmRSS");
-            std::string value = rssStr.substr(0, rssStr.size() - 3);
+        if (stats.find(name) != stats.end()) {
+            std::string valStr = readStats().at(name);
+            std::string value = valStr.substr(0, valStr.size() - suffixLength);
 
-            return std::stoi(value) * 1000;
+            return std::stoull(value) * factor;
         }
 
         return 0;
     }
 
+    uint64_t Process::rss() const {
+        return readEntry("VmRSS", 1000, 3);
+    }
+
     uint64_t Process::virtualMemory() const {
-        std::unordered_map<std::string, std::string> stats = readStats();
+        return readEntry("VmSize", 1000, 3);
+    }
 
-        if (stats.find("VmSize") != stats.end()) {
-            std::string rssStr = readStats().at("VmSize");
-            std::string value = rssStr.substr(0, rssStr.size() - 3);
-
-            return std::stoi(value) * 1000;
-        }
-
-        return 0;
+    void Process::printSystemStatus() const {
+        std::cout << "--- System Status ---" << std::endl;
+        std::cout << "RSS:            " << rss() << " Byte" << std::endl;
+        std::cout << "Virtual Memory: " << virtualMemory() << " Byte" << std::endl;
+        std::cout << "---------------------" << std::endl;
     }
 
 }
