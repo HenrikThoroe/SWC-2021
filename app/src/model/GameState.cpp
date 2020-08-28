@@ -249,8 +249,9 @@ namespace Model {
         return out;
     }
 
-    void GameState::freeMemory() {
+    void GameState::freeMemory(double percent) {
         uint8_t maxAccesses = 0;
+        uint64_t targetSize = static_cast<uint64_t>(static_cast<double>(movesCache.size()) * (1 - (percent > 1 ? 1 : percent < 0 ? 0 : percent)));
 
         for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
             if (entry.second.turn < turn) {
@@ -258,19 +259,21 @@ namespace Model {
             }
         }
 
-        while (movesCache.size() > 1000) {
+        while (movesCache.size() > targetSize) {
             for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
                 if (entry.second.accesses == maxAccesses) {
                     movesCache.erase(entry.first);
                 }
 
-                if (movesCache.size() <= 1000) {
+                if (movesCache.size() <= targetSize) {
                     break;
                 }
             }
 
             maxAccesses += 1;
         }
+
+        movesCache.rehash(targetSize * 300);
     }
 
     int GameState::evaluate() const {
