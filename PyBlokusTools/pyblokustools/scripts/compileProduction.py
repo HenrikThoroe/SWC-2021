@@ -20,6 +20,7 @@ def compileProduction() -> None:
         description='Compile SWC-2021 Blokus in production mode.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
+    
     parser.version = f'BlokusProd v{VERSION}' # type: ignore
     
     parser.add_argument(
@@ -91,8 +92,7 @@ def compileProduction() -> None:
     
     args = parser.parse_args()
 
-    print(colorT("Trying to compile in production mode", Colors.WHITE))
-    print(colorT("Compiling:\n", Colors.PURPLE))
+    print(colorT("Compiling in production mode", Colors.WHITE))
 
     out_file = 'dist/prodSWC-2021.out'
 

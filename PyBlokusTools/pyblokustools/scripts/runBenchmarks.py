@@ -20,6 +20,7 @@ def runBenchmarks() -> None:
         description='Run all benchmarks for SWC-2021 Blokus.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
+    
     parser.version = f'BlokusBench v{VERSION}' # type: ignore
     
     parser.add_argument(
@@ -65,8 +66,7 @@ def runBenchmarks() -> None:
     
     args = parser.parse_args()
 
-    print(colorT("Trying to run benchmarks", Colors.WHITE))
-    print(colorT("Compiling first:\n", Colors.PURPLE))
+    print(colorT("Running benchmarks", Colors.WHITE))
 
     out_file = 'dist/benchmarksRun.out'
 

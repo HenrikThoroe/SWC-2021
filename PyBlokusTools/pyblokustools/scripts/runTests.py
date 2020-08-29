@@ -20,6 +20,7 @@ def runTests() -> None:
         description='Run all unittests for SWC-2021 Blokus.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
+    
     parser.version = f'BlokusTest v{VERSION}' # type: ignore
     
     parser.add_argument(
@@ -65,8 +66,7 @@ def runTests() -> None:
     
     args = parser.parse_args()
 
-    print(colorT("Trying to run unittests", Colors.WHITE))
-    print(colorT("Compiling first:\n", Colors.PURPLE))
+    print(colorT("Running unittests", Colors.WHITE))
 
     out_file = 'dist/testsRun.out'
 

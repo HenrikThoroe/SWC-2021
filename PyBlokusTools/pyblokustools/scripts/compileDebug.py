@@ -20,6 +20,7 @@ def compileDebug() -> None:
         description='Compile SWC-2021 Blokus in debug mode.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
+    
     parser.version = f'BlokusDebug v{VERSION}' # type: ignore
     
     parser.add_argument(
@@ -100,8 +101,7 @@ def compileDebug() -> None:
     
     args = parser.parse_args()
 
-    print(colorT("Trying to run with gdb in debug mode", Colors.WHITE))
-    print(colorT("Compiling first:\n", Colors.PURPLE))
+    print(colorT("Running with gdb in debug mode", Colors.WHITE))
 
     out_file = 'dist/debugSWC-2021.out'
 

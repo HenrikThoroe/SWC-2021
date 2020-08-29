@@ -293,7 +293,7 @@ class Compiler():
                     return False
                 print(colorT("Compilation finished successfully", Colors.GREEN))
             else:
-                print(colorT("No changes, no need to recompile", Colors.GREEN))
+                print(colorT("Using cached object files...", Colors.GREEN))
 
             #* Linker
             if cache.needsNewLinking(source_files, outputFile) or makeAll:
