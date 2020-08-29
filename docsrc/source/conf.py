@@ -18,7 +18,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'BlockusC++-AI'
+project = 'Blokus AI'
 copyright = '2020, Henrik Thorøe, Rubin Raithel'
 author = 'Henrik Thorøe, Rubin Raithel'
 
