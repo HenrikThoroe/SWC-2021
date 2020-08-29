@@ -12,6 +12,5 @@ class Colors():
 def colorT(text: str, rgb: Tuple[int, int, int]) -> str:
     return f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m{text}\033[0m"
 
-
 def colorB(text: str, rgb: Tuple[int, int, int]) -> str:
     return f"\033[48;2;{rgb[0]};{rgb[1]};{rgb[2]}m{text}\033[0m"

@@ -50,7 +50,7 @@ class Settings():
             elif isinstance(paths, str):
                 return os.path.normpath(os.path.normcase(paths))
             else:
-                raise NotImplementedError(f"Can not normalize paths of type {type(paths)}")
+                raise NotImplementedError(f"Cannot normalize paths of type {type(paths)}")
         
         Settings.SOURCES_DIR = normalizePaths(Settings.SOURCES_DIR)
         Settings.HEADERS_DIR = normalizePaths(Settings.HEADERS_DIR)
