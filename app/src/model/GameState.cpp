@@ -225,24 +225,26 @@ namespace Model {
     std::bitset<808> GameState::uniqueHash() const {
         std::bitset<808> out {};
 
+        // Iterate all positions
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
                 Util::Position pos = Util::Position(row, col);
                 int idx = col + row * 20;
                 uint8_t value = static_cast<uint8_t>(board.at(pos));
 
+                // Iterate last two bits of color at position
                 for (int i = 0; i < 2; ++i) {
                     out[idx * 2 + i] = Util::bitAt(value, 7 - i);
                 }
             }   
         }
 
-        out[800] = Util::bitAt(turn, 2);
-        out[801] = Util::bitAt(turn, 3);
-        out[802] = Util::bitAt(turn, 4);
-        out[803] = Util::bitAt(turn, 5);
-        out[804] = Util::bitAt(turn, 6);
-        out[805] = Util::bitAt(turn, 7);
+        // Add the turn to the hash value. Only the last 6 bits are important
+        for (int i = 2; i < 8; ++i) {
+            out[800 + (i - 2)] = Util::bitAt(turn, i);
+        }
+
+        // Add current piece color to the hash 
         out[806] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 0);
         out[807] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 1);
 
