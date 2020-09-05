@@ -101,7 +101,7 @@ namespace Model {
             /// Evaluates the current state.
             int evaluate() const;
 
-            void freeMemory(double percent = 0.5);
+            void freeMemory(float percent = 0.5);
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };

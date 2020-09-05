@@ -249,7 +249,7 @@ namespace Model {
         return out;
     }
 
-    void GameState::freeMemory(double percent) {
+    void GameState::freeMemory(float percent) {
         uint8_t maxAccesses = 0;
         uint64_t targetSize = static_cast<uint64_t>(static_cast<double>(movesCache.size()) * (1 - (percent > 1 ? 1 : percent < 0 ? 0 : percent)));
 
