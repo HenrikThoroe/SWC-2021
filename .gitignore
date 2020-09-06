@@ -240,3 +240,6 @@ $RECYCLE.BIN/
 # Scripts
 .pybt-cache
 compilerOutput.txt
+
+# Own working/testing directory
+.dev
