@@ -3,12 +3,12 @@
 #include <inttypes.h>
 #include <stack>
 #include <bitset>
+#include "robin_map.hpp"
 
 #include "Board.hpp"
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
-#include "robin_map.hpp"
 
 namespace Model {
 
