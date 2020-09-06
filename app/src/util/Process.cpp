@@ -83,8 +83,8 @@ namespace Util {
 
     void Process::printSystemStatus() const {
         std::cout << "--- System Status ---" << std::endl;
-        std::cout << "RSS:            " << rss() << " Byte" << std::endl;
-        std::cout << "Virtual Memory: " << virtualMemory() << " Byte" << std::endl;
+        std::cout << "RSS:            " << std::to_string(static_cast<double>(rss()) / 1000000) << " MB" << std::endl;
+        std::cout << "Virtual Memory: " << std::to_string(static_cast<double>(virtualMemory()) / 1000000) << " MB" << std::endl;
         std::cout << "---------------------" << std::endl;
     }
 
