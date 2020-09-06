@@ -252,19 +252,31 @@ namespace Model {
     }
 
     void GameState::freeMemory(float percent) {
-        uint8_t maxAccesses = 0;
-        uint64_t targetSize = static_cast<uint64_t>(static_cast<double>(movesCache.size()) * (1 - (percent > 1 ? 1 : percent < 0 ? 0 : percent)));
+        float normalizedPercent = percent > 1 ? 1 : percent < 0 ? 0 : percent;
+        uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
+        std::vector<std::vector<uint64_t>> accessMap {};
 
         for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
             if (entry.second.turn < turn) {
                 movesCache.erase(entry.first);
+            } else {
+                while (entry.second.accesses >= accessMap.size()) {
+                    accessMap.push_back({});
+                }
+                
+                accessMap.at(entry.second.accesses).push_back(entry.first);
             }
         }
 
-        while (movesCache.size() > targetSize) {
-            for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
-                if (entry.second.accesses == maxAccesses) {
-                    movesCache.erase(entry.first);
+        for (uint64_t index = 0; index < accessMap.size(); ++index) {
+            for (const uint64_t& key : accessMap.at(index)) {
+                try {
+                    if (movesCache.contains(key)) {
+                        movesCache.erase(key);
+                    }
+                } catch (const std::bad_alloc&) {
+                    std::cerr << "Bad Alloc when Freeing Game State Memory" << std::endl;
+                    continue;
                 }
 
                 if (movesCache.size() <= targetSize) {
@@ -272,10 +284,10 @@ namespace Model {
                 }
             }
 
-            maxAccesses += 1;
+            if (movesCache.size() <= targetSize) {
+                break;
+            }
         }
-
-        movesCache.rehash(targetSize * 300);
     }
 
     int GameState::evaluate() const {
