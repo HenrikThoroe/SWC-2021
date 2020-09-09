@@ -8,6 +8,7 @@
 
 namespace Util {
 
+    //TODO: `Process::readStats` is using an inefficient but developer friendly way to read system information. If the impact of this method is too high, a more efficient solution should be implemented.
     std::unordered_map<std::string, std::string> Process::readStats() const {
         std::ifstream file("/proc/self/status");
         std::unordered_map<std::string, std::string> out;

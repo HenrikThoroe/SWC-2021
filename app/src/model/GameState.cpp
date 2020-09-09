@@ -270,10 +270,10 @@ namespace Model {
 
         for (uint64_t index = 0; index < accessMap.size(); ++index) {
             for (const uint64_t& key : accessMap.at(index)) {
+
+                //TODO: In some szenarios, when many entries have to be erased (4GB+), `erase` throws an error. Until the reason is determined the error should be catched.
                 try {
-                    if (movesCache.contains(key)) {
-                        movesCache.erase(key);
-                    }
+                    movesCache.erase(key);
                 } catch (const std::bad_alloc&) {
                     std::cerr << "Bad Alloc when Freeing Game State Memory" << std::endl;
                     continue;
