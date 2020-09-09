@@ -19,6 +19,9 @@ namespace App {
         // Middleware between EventLoop and tcpClient
         App::MessageBroker messageBroker;
 
+        // Queue for scheduled background tasks
+        mutable std::queue<Task> backgroundQueue;
+
     public:
         // Construct a new EventLoop.
         EventLoop(int argc, char *argv[]);
@@ -67,6 +70,13 @@ namespace App {
          * @returns Is game over
          */
         bool _actOnMessage(const Communication::Message& msg);
+
+        /**
+         * @brief Run a background task
+         * 
+         * @param task TaskObject to execute
+         */
+        void _runTask(const Task& task) const;
     };
 
 }

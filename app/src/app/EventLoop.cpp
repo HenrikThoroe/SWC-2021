@@ -59,14 +59,21 @@ namespace App {
 
         while (!gameOver) {
             // Main event loop in here
-            for (const Communication::Message& msg : messageBroker.getMessages()) {
-                gameOver = _actOnMessage(msg);
-                if (gameOver) {
-                    messageBroker.clearCache();
-                    break;
+            if (messageBroker.fetchMessages()) {
+                //? Messages in queue
+                for (const std::string& msg : messageBroker.getMessages()) {
+                    gameOver = _actOnMessage(msg);
+                    if (gameOver) {
+                        break;
+                    }
                 }
+
+            } else {
+                //? Can do background work
+                // Shouldnt last to long as we only check for new messages in a new itteration
+                _runTask(backgroundQueue.front());
+                backgroundQueue.pop();
             }
-            messageBroker.clearCache();
         }
     }
 
@@ -111,4 +118,7 @@ namespace App {
         return false;
     }
 
+    void EventLoop::_runTask(const Task& task) const {
+        //TODO: implement
+    }
 }
