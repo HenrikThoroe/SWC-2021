@@ -43,19 +43,15 @@ namespace App {
     // Private methods
     
     void EventLoop::_startConnection(const std::string& address, const uint8_t& port) {
-        App::TCPClient* tcpClient = messageBroker.getTCPClient();
-        tcpClient->connectWithIP(tcpClient->resolveToIP(address), port);
+        messageBroker.connect(address, port);
 
-        messageBroker.dispatch("<protocol>");
-        messageBroker.dispatch(messageBroker.createJoinRequestMessage());
+        messageBroker.sendJoinRequest();
     }
     
     void EventLoop::_startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation) {
-        App::TCPClient* tcpClient = messageBroker.getTCPClient();
-        tcpClient->connectWithIP(tcpClient->resolveToIP(address), port);
+        messageBroker.connect(address, port);
 
-        messageBroker.dispatch("<protocol>");
-        messageBroker.dispatch(messageBroker.createJoinReservedRequestMessage(reservation));
+        messageBroker.sendJoinReservedRequest(reservation);
     }
 
     void EventLoop::_loop() {
