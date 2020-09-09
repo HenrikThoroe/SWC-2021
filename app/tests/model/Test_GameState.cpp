@@ -30,4 +30,59 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.getCurrentPlayer().color == PlayerColor::BLUE);
         REQUIRE(state.getCurrentPieceColor() == PieceColor::BLUE);
     }
+
+    SECTION("Can Create and Revert Hashes") {
+        std::stack<uint64_t> hashes {};
+
+        for (int x = 0; x < 30; ++x) {
+            std::vector<const Move*> moves = state.getPossibleMoves();
+
+            if (moves.size() == 0) {
+                FAIL(state);
+            }
+
+            int index = rand() % moves.size();
+
+            state.performMove(*moves[index]);
+            hashes.push(state.hash());
+        }
+
+        for (int x = 0; x < 30; ++x) {
+            REQUIRE(hashes.top() == state.hash());
+            hashes.pop();
+            state.revertLastMove();
+        }
+    }
+
+    SECTION("Has no Collisions") {
+        std::unordered_map<uint64_t, std::bitset<808>> map {};
+
+        for (int it = 0; it < 10000; ++it) {
+            for (int x = 0; x < 25; ++x) {
+                std::vector<const Move*> moves = state.getPossibleMoves();
+
+                if (moves.size() == 0) {
+                    FAIL(state);
+                }
+
+                int index = rand() % moves.size();
+
+                state.performMove(*moves[index]);
+                
+                if (map.find(state.hash()) == map.end()) {
+                    map[state.hash()] = state.uniqueHash();
+                } else {
+                    INFO(state);
+                    INFO(state.hash());
+                    INFO(map[state.hash()]);
+                    INFO(state.uniqueHash());
+                    REQUIRE(map[state.hash()] == state.uniqueHash());
+                }
+            }
+
+            for (int x = 0; x < 25; ++x) {
+                state.revertLastMove();
+            }
+        }
+    }
 }

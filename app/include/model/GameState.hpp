@@ -2,8 +2,8 @@
 
 #include <inttypes.h>
 #include <stack>
-#include <map>
 #include <bitset>
+#include "robin_map.hpp"
 
 #include "Board.hpp"
 #include "Player.hpp"
@@ -14,6 +14,13 @@ namespace Model {
 
     class GameState {
         private:
+
+            struct MoveCacheEntry {
+                std::vector<const Move*> value;
+                uint32_t accesses;
+                uint8_t turn;
+            };
+
             /// Collection of all available players.
             const std::array<Player, 2> players;
 
@@ -22,7 +29,7 @@ namespace Model {
 
             /// A cache to improve move calculation speed.
             /// @warning Hashtable implementation will be changed to a more performant one.
-            std::map<uint64_t, std::vector<DeployedPiece>> moves;
+            tsl::robin_map<uint64_t, MoveCacheEntry> movesCache;
 
             /// A board instance which stores the state of the deloyed pieces.
             Board board;
@@ -43,6 +50,12 @@ namespace Model {
 
             /// A history of `undeployablePieces` to revert a moves.
             std::stack<std::bitset<134400>> undeployablePiecesHistory {};
+
+            /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~1MB
+            std::array<uint64_t, 134400> hashpool {};
+
+            /// The current hash value of the game state.
+            uint64_t hashValue = 0;
 
             /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
             int createIndex(const DeployedPiece* piece) const;
@@ -82,8 +95,13 @@ namespace Model {
             /// Hashes the current state.
             uint64_t hash() const;
 
+            /// Creates a unique hash for the game state which has no collisions.
+            std::bitset<808> uniqueHash() const;
+
             /// Evaluates the current state.
             int evaluate() const;
+
+            void freeMemory(float percent = 0.5);
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };

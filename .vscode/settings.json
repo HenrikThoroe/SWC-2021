@@ -98,6 +98,8 @@
         "xmemory0": "cpp",
         "xtree": "cpp",
         "filesystem": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "clocale": "cpp",
+        "shared_mutex": "cpp"
     }
 }

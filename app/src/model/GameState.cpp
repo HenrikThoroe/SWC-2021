@@ -1,7 +1,9 @@
 #include <stdexcept>
+#include <random>
 
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
+#include "bitAt.hpp"
 
 namespace Model {
 
@@ -35,6 +37,16 @@ namespace Model {
                 }
             }
         }
+
+        std::random_device rd;
+        std::mt19937_64 eng(rd());
+        std::uniform_int_distribution<uint64_t> distr;
+
+        for (int i = 0; i < 134400; ++i) {
+            hashpool[i] = distr(eng);
+        }
+
+        movesCache.reserve(2000);
     }
 
     const uint8_t& GameState::getTurn() const {
@@ -56,6 +68,8 @@ namespace Model {
         board.dropPiece(move);
         performedMoves.push(move);
         turn += 1;
+
+        hashValue ^= hashpool[createIndex(&move)];
     }
 
     void GameState::revertLastMove() {
@@ -67,6 +81,8 @@ namespace Model {
         turn -= 1;
         undeployablePieces = undeployablePiecesHistory.top();
         undeployablePiecesHistory.pop();
+
+        hashValue ^= hashpool[createIndex(&piece)];
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
@@ -120,6 +136,14 @@ namespace Model {
     }
 
     void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
+
+        if (movesCache.contains(hashValue)) {
+            moves = movesCache[hashValue].value;
+            movesCache[hashValue].accesses += 1;
+            movesCache[hashValue].turn = turn;
+            return;
+        }
+
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
@@ -190,10 +214,80 @@ namespace Model {
                 }
             }
         }
+
+        movesCache[hashValue] = { moves, 0, turn };
     }
 
     uint64_t GameState::hash() const {
-        throw std::runtime_error("Not Implemented");
+        return hashValue;
+    }
+
+    std::bitset<808> GameState::uniqueHash() const {
+        std::bitset<808> out {};
+
+        // Iterate all positions
+        for (int row = 0; row < 20; ++row) {
+            for (int col = 0; col < 20; ++col) {
+                Util::Position pos = Util::Position(row, col);
+                int idx = col + row * 20;
+                uint8_t value = static_cast<uint8_t>(board.at(pos));
+
+                // Iterate last two bits of color at position
+                for (int i = 0; i < 2; ++i) {
+                    out[idx * 2 + i] = Util::bitAt(value, 7 - i);
+                }
+            }   
+        }
+
+        // Add the turn to the hash value. Only the last 6 bits are important
+        for (int i = 2; i < 8; ++i) {
+            out[800 + (i - 2)] = Util::bitAt(turn, i);
+        }
+
+        // Add current piece color to the hash 
+        out[806] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 0);
+        out[807] = Util::bitAt(static_cast<uint8_t>(getCurrentPieceColor()) - 1, 1);
+
+        return out;
+    }
+
+    void GameState::freeMemory(float percent) {
+        float normalizedPercent = percent > 1 ? 1 : percent < 0 ? 0 : percent;
+        uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
+        std::vector<std::vector<uint64_t>> accessMap {};
+
+        for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
+            if (entry.second.turn < turn) {
+                movesCache.erase(entry.first);
+            } else {
+                while (entry.second.accesses >= accessMap.size()) {
+                    accessMap.push_back({});
+                }
+                
+                accessMap.at(entry.second.accesses).push_back(entry.first);
+            }
+        }
+
+        for (uint64_t index = 0; index < accessMap.size(); ++index) {
+            for (const uint64_t& key : accessMap.at(index)) {
+
+                //TODO: In some szenarios, when many entries have to be erased (4GB+), `erase` throws an error. Until the reason is determined the error should be catched.
+                try {
+                    movesCache.erase(key);
+                } catch (const std::bad_alloc&) {
+                    std::cerr << "Bad Alloc when Freeing Game State Memory" << std::endl;
+                    continue;
+                }
+
+                if (movesCache.size() <= targetSize) {
+                    break;
+                }
+            }
+
+            if (movesCache.size() <= targetSize) {
+                break;
+            }
+        }
     }
 
     int GameState::evaluate() const {
