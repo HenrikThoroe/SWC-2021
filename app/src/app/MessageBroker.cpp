@@ -1,3 +1,5 @@
+#include <optional>
+
 #include "MessageBroker.hpp"
 
 namespace App
@@ -8,13 +10,27 @@ namespace App
         tcpClient.disconnect();
     }
 
-    void MessageBroker::connect(std::string hostname, int port) {
+    void MessageBroker::connect(const std::string hostname, const int port) {
         std::string address = tcpClient.resolveHostname(hostname);
         tcpClient.connect(address, port);
         sendProtocol();
     }
 
-    void MessageBroker::dispatch(std::string& msg) {
+    bool MessageBroker::fetchMessages() {
+        std::optional<std::shared_ptr<MessageQueue>> messages = tcpClient.consumeMessages()
+        if (messages) {
+            messageCache = *messages.value();
+            return true;
+        }
+
+        return false;
+    }
+
+    const MessageQueue& MessageBroker::getMessages() const {
+        return messageCache;
+    }
+
+    void MessageBroker::dispatch(const std::string& msg) { 
         tcpClient.send(msg);
     }
 
@@ -22,7 +38,7 @@ namespace App
         tcpClient.send("<protocol>");
     }
 
-    void MessageBroker::sendMove(Model::Move& move) {
+    void MessageBroker::sendMove(const Model::Move& move) {
         std::string msg = xmlParser.parse(move);
         tcpClient.send(msg);
     }
@@ -35,7 +51,5 @@ namespace App
     void MessageBroker::sendJoinReservedRequest(const std::string& reservation) {
         tcpClient.send('<joinPrepared reservationCode="' + reservation + '" />');
     }
-
-
     
 }

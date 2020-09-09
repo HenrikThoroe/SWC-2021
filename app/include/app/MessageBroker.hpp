@@ -1,20 +1,33 @@
 #pragma once
 
 #include <string>
+#include <queue>
 
 #include "TCPClient.hpp"
 #include "Move.hpp"
+#include "Task.hpp"
 #include "Message.hpp"
 #include "MsgType.hpp"
 
 namespace App
-{
+{   
+    /**
+     * @brief Interface for everything communication related (TCP, XML)
+     * 
+     */
     class MessageBroker
     {
     private:
-        App::TCPClient tcpClient = TCPClient();
-        App:XMLParser  xmlParser = XMLParser();
-        /* data */
+        // TCPClient for communication with server
+        App::TCPClient   tcpClient = TCPClient();
+
+        // XMLParser to parse and serialize xml messages from to to the server
+        App:XMLParser    xmlParser = XMLParser();
+
+        //! Switch to pointer?
+        // Cache for messages recieved from server
+        App:MessageQueue messageCache;
+        
     public:
         MessageBroker(/* args */);
         ~MessageBroker();
@@ -25,14 +38,24 @@ namespace App
          * @param hostname Server address
          * @param port Port to connect to
          */
-        void connect(std::string hostname, int port);
+        void connect(const std::string hostname, const int port);
+
+        /**
+         * @brief Fetch messages from TCPLayer
+         * 
+         * @returns Messages in queue
+         */
+        bool fetchMessages();
+
+        // Get all messages recieved since the last call
+        const MessageQueue& getMessages() const;
 
         /**
          * @brief Dispatch a Message to the gameserver
          * 
          * @param msg Message to send
          */
-        void dispatch(std::string& msg);
+        void dispatch(const std::string& msg);
 
         // Create and dispatch a <protocol> message
         void sendProtocol();
@@ -52,7 +75,7 @@ namespace App
          * 
          * @param move MoveObject to serialize and send
          */
-        void sendMove(Model::Move& move);
+        void sendMove(const Model::Move& move);
 
     };
 
