@@ -13,6 +13,10 @@ typedef std::vector<std::string> MessageQueue;
 
 namespace App
 {
+    /**
+     * @brief An asynchronous TCPClient for cummunicating with the SWC server
+     * 
+     */
     class TCPClient
     {
     private:
