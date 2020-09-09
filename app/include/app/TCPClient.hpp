@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mutex>
-#include <queue>
+#include <vector>
 #include <memory>
 #include <string>
 #include <optional>
@@ -9,7 +9,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/streambuf.hpp>
 
-typedef std::queue<std::string> MessageQueue;
+typedef std::vector<std::string> MessageQueue;
 
 namespace App
 {

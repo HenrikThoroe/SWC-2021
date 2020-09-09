@@ -47,6 +47,7 @@ namespace App
         }
 
         std::shared_ptr<MessageQueue> newRet = std::make_shared<MessageQueue>();
+        newRet->reserve(5);
 
         std::swap(newRet, messages);
 
@@ -94,7 +95,7 @@ namespace App
             return;
         }
 
-        messages->emplace(
+        messages->emplace_back(
             boost::asio::buffers_begin(receiveBuffer.data()),
             boost::asio::buffers_begin(receiveBuffer.data()) + bytes_transferred //- 7 //!
         );
