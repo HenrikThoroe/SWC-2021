@@ -11,7 +11,7 @@ namespace App
     
     TCPClient::~TCPClient() {}
 
-    void TCPClient::connect(std::string address, int port) {
+    void TCPClient::connect(std::string& address, int& port) {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
 
@@ -20,7 +20,7 @@ namespace App
         connected = true;
     }
 
-    std::string TCPClient::resolveHostname(std::string hostname) {
+    std::string TCPClient::resolveHostname(std::string& hostname) {
         boost::asio::ip::tcp::resolver resolver(ioService);
         boost::asio::ip::tcp::resolver::query query(hostname, "");
         boost::asio::ip::tcp::resolver::iterator i = resolver.resolve(query);

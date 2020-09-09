@@ -49,10 +49,10 @@ namespace App
          * @param address Resolved server addres (IP)
          * @param port Port to connect to
          */
-        void connect(std::string address, int port);
+        void connect(std::string& address, int& port);
 
         // Resolve a hostname to an address (IP)
-        std::string resolveHostname(std::string hostname);
+        std::string resolveHostname(std::string& hostname);
 
         // Disconnect from server (gracefully)
         void disconnect();
