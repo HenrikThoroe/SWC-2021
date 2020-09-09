@@ -11,7 +11,7 @@ namespace App
     
     TCPClient::~TCPClient() {}
 
-    void TCPClient::connect(std::string& address, int& port) {
+    void TCPClient::connect(const std::string& address, const int port) {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
 
@@ -20,7 +20,7 @@ namespace App
         connected = true;
     }
 
-    std::string TCPClient::resolveHostname(std::string& hostname) {
+    std::string TCPClient::resolveHostname(const std::string& hostname) {
         boost::asio::ip::tcp::resolver resolver(ioService);
         boost::asio::ip::tcp::resolver::query query(hostname, "");
         boost::asio::ip::tcp::resolver::iterator i = resolver.resolve(query);
@@ -64,7 +64,7 @@ namespace App
         listening = true;
         ioService.reset();
 
-        boost::asio::async_read_until(socket, receiveBuffer, "</room>", [this](const boost::system::error_code& ec, std::size_t bytes_transferred){
+        boost::asio::async_read_until(socket, receiveBuffer, "</room>", [this](const boost::system::error_code& ec, const std::size_t bytes_transferred){
             this->on_read(ec, bytes_transferred);
         });
 
@@ -76,7 +76,7 @@ namespace App
         listener.detach();
     }
 
-    void TCPClient::send(std::string& message) {
+    void TCPClient::send(const std::string& message) {
         boost::system::error_code errorCode;
         boost::asio::write(socket, boost::asio::buffer(message), errorCode);
         if (errorCode) {
@@ -84,7 +84,7 @@ namespace App
         }
     }
 
-    void TCPClient::on_read(const boost::system::error_code& ec, std::size_t& bytes_transferred) {
+    void TCPClient::on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred) {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
 
@@ -107,7 +107,7 @@ namespace App
         //! This model always listens in the background, remove this call and call .listen manually in the event loop
         //! if you want to manually reschedule listening for messages. This is more async but may bump performance a little
         //TODO: Test performance implications
-        boost::asio::async_read_until(socket, receiveBuffer, "</room>", [this](const boost::system::error_code& ec, std::size_t bytes_transferred){
+        boost::asio::async_read_until(socket, receiveBuffer, "</room>", [this](const boost::system::error_code& ec, const std::size_t bytes_transferred){
             this->on_read(ec, bytes_transferred);
         });
     }

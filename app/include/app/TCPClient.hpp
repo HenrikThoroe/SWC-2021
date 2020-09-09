@@ -49,10 +49,10 @@ namespace App
          * @param address Resolved server addres (IP)
          * @param port Port to connect to
          */
-        void connect(std::string& address, int& port);
+        void connect(const std::string& address, const int port);
 
         // Resolve a hostname to an address (IP)
-        std::string resolveHostname(std::string& hostname);
+        std::string resolveHostname(const std::string& hostname);
 
         // Disconnect from server (gracefully)
         void disconnect();
@@ -72,7 +72,7 @@ namespace App
          * 
          * @param message Message to send to server
          */
-        void send(std::string& message);
+        void send(const std::string& message);
     private:
         /**
          * @brief Handler called when a Message is read
@@ -80,7 +80,7 @@ namespace App
          * @param ec Refference to an errorCode that accured during read
          * @param bytes_transferred Number of bytes transferred
          */
-        void on_read(const boost::system::error_code& ec, std::size_t& bytes_transferred);
+        void on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred);
 
     }; 
     
