@@ -113,7 +113,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
                 moves.clear();
                 state.assignPossibleMoves(moves);
                 index = rand() % moves.size();
-                state.performMove(*moves[index]);
+                state.performMove(moves[index]);
             }
 
             for (int x = 0; x < 20; ++x) {
