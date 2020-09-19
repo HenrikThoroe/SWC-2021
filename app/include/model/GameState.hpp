@@ -52,7 +52,7 @@ namespace Model {
             /// Each bit is logically connected to the DeployedPiece in `allPieces` at the same index. 
             std::bitset<134400> undeployablePieces {};
 
-            /// A history of `undeployablePieces` to revert a moves.
+            /// A history of `undeployablePieces` to revert moves.
             std::stack<std::bitset<134400>> undeployablePiecesHistory {};
 
             /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~1MB
