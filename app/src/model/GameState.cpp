@@ -7,7 +7,7 @@
 
 namespace Model {
 
-    GameState::GameState() : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0) {
+    GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(19, 0);
         const Util::Position bottomLeft = Util::Position(0, 19);
@@ -160,7 +160,7 @@ namespace Model {
             for (int pieceId = 0; pieceId < 21; ++pieceId) {
 
                 // Filter all shapes which are unavailable for current color
-                if (availablePieces[colorId][pieceId] == 0) {
+                if (availablePieces[colorId][pieceId] == 0 || (getTurn() < 4 && pieceId != initialPiece)) {
                     continue;
                 }
 

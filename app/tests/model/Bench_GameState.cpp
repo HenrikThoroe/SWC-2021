@@ -8,7 +8,7 @@
 using namespace Model;
 
 TEST_CASE("Bench Game State", "[benchmark]") {
-    auto state = GameState();
+    auto state = GameState(20);
 
     WARN(state.getPossibleMoves().size());
 

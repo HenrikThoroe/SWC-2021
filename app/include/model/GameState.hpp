@@ -13,6 +13,10 @@
 namespace Model {
 
     class GameState {
+        public:
+
+            const int initialPiece;
+
         private:
 
             struct MoveCacheEntry {
@@ -61,7 +65,7 @@ namespace Model {
             int createIndex(const DeployedPiece* piece) const;
 
         public:
-            GameState();
+            GameState(int initialPiece);
             GameState(GameState* other) = delete;
             GameState(GameState& other) = delete;
 
