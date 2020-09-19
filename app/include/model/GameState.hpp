@@ -28,7 +28,7 @@ namespace Model {
             /// Collection of all available players.
             const std::array<Player, 2> players;
 
-            /// A stack (first-in first-out) which tracks the performed moves.
+            /// A stack (first-in last-out) which tracks the performed moves.
             std::stack<DeployedPiece> performedMoves {};
 
             /// A cache to improve move calculation speed.
