@@ -5,7 +5,7 @@ using namespace Model;
 using namespace Util;
 
 TEST_CASE("Test Game State", "[model]") {
-    GameState state = GameState();
+    GameState state = GameState(20);
     Move m1 = Move(20, PieceColor::BLUE, Rotation::ONEHALFPI, Vector2D(1, 1), Position(0, 0));
 
     SECTION("Validate Move") {
