@@ -15,12 +15,24 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE_FALSE(state.canBeDeployed(m2));
     }
 
-    state.performMove(m1);
+    state.performMove(&m1);
 
     SECTION("Can Perform Move") {
         REQUIRE(state.getTurn() == 1);
         REQUIRE(state.getCurrentPlayer().color == PlayerColor::RED);
         REQUIRE(state.getCurrentPieceColor() == PieceColor::RED);
+    }
+
+    state.revertLastMove();
+
+    uint64_t initialHash = state.hash();
+    state.performMove(nullptr);
+
+    SECTION("Can Skip a Move") {
+        REQUIRE(state.getTurn() == 1);
+        REQUIRE(state.getCurrentPlayer().color == PlayerColor::RED);
+        REQUIRE(state.getCurrentPieceColor() == PieceColor::RED);
+        REQUIRE(state.hash() == initialHash);
     }
 
     state.revertLastMove();
@@ -43,7 +55,7 @@ TEST_CASE("Test Game State", "[model]") {
 
             int index = rand() % moves.size();
 
-            state.performMove(*moves[index]);
+            state.performMove(moves[index]);
             hashes.push(state.hash());
         }
 
@@ -67,7 +79,7 @@ TEST_CASE("Test Game State", "[model]") {
 
                 int index = rand() % moves.size();
 
-                state.performMove(*moves[index]);
+                state.performMove(moves[index]);
                 
                 if (map.find(state.hash()) == map.end()) {
                     map[state.hash()] = state.uniqueHash();

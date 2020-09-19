@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <stack>
 #include <bitset>
+#include <optional>
 #include "robin_map.hpp"
 
 #include "Board.hpp"
@@ -29,10 +30,9 @@ namespace Model {
             const std::array<Player, 2> players;
 
             /// A stack (first-in last-out) which tracks the performed moves.
-            std::stack<DeployedPiece> performedMoves {};
+            std::stack<std::optional<DeployedPiece>> performedMoves {};
 
             /// A cache to improve move calculation speed.
-            /// @warning Hashtable implementation will be changed to a more performant one.
             tsl::robin_map<uint64_t, MoveCacheEntry> movesCache;
 
             /// A board instance which stores the state of the deloyed pieces.
@@ -84,8 +84,8 @@ namespace Model {
             /// Fills the passed vector with the moves possible on the current game state.
             void assignPossibleMoves(std::vector<const Move*>& moves);
 
-            /// Performs the given move on the board.
-            void performMove(const Move& move);
+            /// Performs the given move on the board. If nullptr is passed, the move will be skipped according to the official game rules.
+            void performMove(const Move* move);
 
             /// Reverts the last performed move.
             void revertLastMove();

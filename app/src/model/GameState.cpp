@@ -62,27 +62,33 @@ namespace Model {
         return getCurrentPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
     }
 
-    void GameState::performMove(const Move& move) {
-        undeployablePiecesHistory.push(undeployablePieces);
-        availablePieces[static_cast<uint8_t>(move.color) - 1][move.pieceId] -= 1;
-        board.dropPiece(move);
-        performedMoves.push(move);
-        turn += 1;
+    void GameState::performMove(const Move* move) {
+        if (move != nullptr) {
+            availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] -= 1;
+            board.dropPiece(move);
+            hashValue ^= hashpool[createIndex(move)];
+            performedMoves.push(*move);
+        } else {
+            performedMoves.push(std::nullopt);
+        }
 
-        hashValue ^= hashpool[createIndex(&move)];
+        undeployablePiecesHistory.push(undeployablePieces);
+        turn += 1;
     }
 
     void GameState::revertLastMove() {
-        DeployedPiece& piece = performedMoves.top();
+        std::optional<DeployedPiece>& piece = performedMoves.top();
 
-        availablePieces[static_cast<uint8_t>(piece.color) - 1][piece.pieceId] += 1;
-        board.removePiece(piece);
+        if (piece.has_value()) {
+            availablePieces[static_cast<uint8_t>(piece.value().color) - 1][piece.value().pieceId] += 1;
+            board.removePiece(piece.value());
+            hashValue ^= hashpool[createIndex(&piece.value())];
+        }
+        
         performedMoves.pop();
         turn -= 1;
         undeployablePieces = undeployablePiecesHistory.top();
         undeployablePiecesHistory.pop();
-
-        hashValue ^= hashpool[createIndex(&piece)];
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
