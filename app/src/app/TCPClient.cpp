@@ -38,13 +38,9 @@ namespace App
         socket.close();
     }
 
-    std::optional<std::shared_ptr<MessageQueue>> TCPClient::consumeMessages() {
+    std::shared_ptr<MessageQueue> TCPClient::consumeMessages() {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
-
-        if (!hasMessages) {
-            return std::nullopt;
-        }
 
         std::shared_ptr<MessageQueue> newRet = std::make_shared<MessageQueue>();
         newRet->reserve(5);

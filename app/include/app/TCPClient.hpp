@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <vector>
 #include <memory>
@@ -26,9 +27,6 @@ namespace App
         // Queue that holds all received messages in order
         std::shared_ptr<MessageQueue> messages = std::make_shared<MessageQueue>();
 
-        // Bool that indicates messages state
-        bool hasMessages = false;
-
         // Flag if there is a thread currently listenting
         bool listening = false;
 
@@ -43,6 +41,9 @@ namespace App
 
         // The socket used by boost asio
         boost::asio::ip::tcp::socket socket{ioService};
+    public:
+        // Bool that indicates messages received state
+        std::atomic<bool> hasMessages = false;
     public:
         TCPClient(/* args */);
         ~TCPClient();
@@ -64,9 +65,9 @@ namespace App
         /**
          * @brief Get all received messages and empty the MessageQueue (only if not empty)
          * 
-         * @returns Optional SharedPointer to the consumed MessageQueue
+         * @returns SharedPointer to the consumed MessageQueue
          */
-        std::optional<std::shared_ptr<MessageQueue>> consumeMessages();
+        std::shared_ptr<MessageQueue> consumeMessages();
 
         // Listen for incoming messages (Async)
         void listen();
