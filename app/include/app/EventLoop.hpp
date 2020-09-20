@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <string>
 #include <inttypes.h>
 
@@ -17,13 +18,21 @@ namespace App {
     {
     private:
         // Middleware between EventLoop and tcpClient
-        App::MessageBroker messageBroker;
+        App::MessageBroker messageBroker = MessageBroker();
+
+        // Flag for signaling message received
+        std::atomic<bool>& messageReceivedFlag;
 
         // Queue for scheduled background tasks
-        mutable std::queue<Task> backgroundQueue;
+        mutable std::queue<Task> backgroundQueue{};
 
     public:
-        // Construct a new EventLoop.
+        /**
+         * @brief Construct a new EventLoop
+         * 
+         * @param argc Number of console arguments
+         * @param argv Array of pointers to console argument strings (first argument is own filename)
+         */
         EventLoop(int argc, char *argv[]);
 
         // No copy constructors allowed
@@ -33,13 +42,8 @@ namespace App {
         // Destructor
         ~EventLoop();
 
-        /**
-         * @brief Start execution of the main EventLoop -> Yield control to the EL
-         * 
-         * @param argc Number of console arguments
-         * @param argv Array of pointers to console argument strings (first argument is own filename)
-         */
-        void run(int argc, char* argv[]);
+        // Start execution of the main EventLoop -> Yield control to the EL
+        void run();
         
     private:
         /**
@@ -71,12 +75,8 @@ namespace App {
          */
         bool _actOnMessage(const Communication::Message& msg);
 
-        /**
-         * @brief Run a background task
-         * 
-         * @param task TaskObject to execute
-         */
-        void _runTask(const Task& task) const;
+        // Run a background task
+        void _runTask() const;
     };
 
 }

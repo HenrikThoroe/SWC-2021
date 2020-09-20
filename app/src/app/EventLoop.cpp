@@ -1,19 +1,14 @@
 #include <vector>
 #include <stdexcept>
+#include <atomic>
 
 #include "EventLoop.hpp"
+#include "debug.hpp"
 
 namespace App {
     // Lifecycle
 
-    EventLoop::EventLoop() {}
-    
-    EventLoop::~EventLoop() {}
-
-
-    // Public interface
-
-    void EventLoop::run(int argc, char *argv[]) {
+    EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()) {
         // Hostname of gameserver to connect to
         std::string hostname = "localhost";
 
@@ -35,8 +30,32 @@ namespace App {
 
         //? Construct our logic instance
         /* code */
+    }
+    
+    EventLoop::~EventLoop() {}
 
-        _loop();
+
+    // Public interface
+    void EventLoop::run() {
+        bool gameOver = false;
+
+        while (!gameOver) {
+            // Main event loop in here
+            if (messageReceivedFlag) {
+                //? Messages in queue
+                for (const std::string& msg : *messageBroker.getMessages()) {
+                    gameOver = _actOnMessage(msg);
+                    if (gameOver) {
+                        break;
+                    }
+                }
+
+            } else {
+                //? Can do background work
+                // Shouldnt last to long as we only check for new messages in a new itteration
+                _runTask();
+            }
+        }
     }
 
 
@@ -54,30 +73,7 @@ namespace App {
         messageBroker.sendJoinReservedRequest(reservation);
     }
 
-    void EventLoop::_loop() {
-        bool gameOver = false;
-
-        while (!gameOver) {
-            // Main event loop in here
-            if (messageBroker.fetchMessages()) {
-                //? Messages in queue
-                for (const std::string& msg : messageBroker.getMessages()) {
-                    gameOver = _actOnMessage(msg);
-                    if (gameOver) {
-                        break;
-                    }
-                }
-
-            } else {
-                //? Can do background work
-                // Shouldnt last to long as we only check for new messages in a new itteration
-                _runTask(backgroundQueue.front());
-                backgroundQueue.pop();
-            }
-        }
-    }
-
-    bool EventLoop::_actOnMessage(const Communication::Message& msg) {
+    inline bool EventLoop::_actOnMessage(const Communication::Message& msg) {
         switch (msg.type)
         {
         case Communication::MsgType::Joined:
@@ -118,7 +114,22 @@ namespace App {
         return false;
     }
 
-    void EventLoop::_runTask(const Task& task) const {
-        //TODO: implement
+    inline void EventLoop::_runTask() const {
+        // (0: done, 1: paused, 2: failed)
+        switch (backgroundQueue.front().run(messageReceivedFlag))
+        {
+        case 0:
+            backgroundQueue.pop();
+            break;
+        case 1:
+            Util::debugPrint("Background task has been paused");
+            break;
+        case 3:
+            Util::debugPrint("Background task failed; Exception caught and task discarded");
+            break;
+        default:
+            throw std::runtime_error("Got unexpected backgroundTask return code.");
+            break;
+        }
     }
 }
