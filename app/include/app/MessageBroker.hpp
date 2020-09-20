@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+#include <memory>
 #include <string>
 #include <queue>
 
@@ -23,10 +25,6 @@ namespace App
 
         // XMLParser to parse and serialize xml messages from to to the server
         App:XMLParser    xmlParser = XMLParser();
-
-        //! Switch to pointer?
-        // Cache for messages recieved from server
-        App:MessageQueue messageCache;
         
     public:
         MessageBroker(/* args */);
@@ -41,14 +39,11 @@ namespace App
         void connect(const std::string hostname, const int port);
 
         /**
-         * @brief Fetch messages from TCPLayer
+         * @brief Consume all recieved Messages
          * 
-         * @returns Messages in queue
+         * @returns Shared Pointer to MessageQueue
          */
-        bool fetchMessages();
-
-        // Get all messages recieved since the last call
-        const MessageQueue& getMessages() const;
+        std::shared_ptr<MessageQueue> getMessages();
 
         /**
          * @brief Dispatch a Message to the gameserver
@@ -76,6 +71,13 @@ namespace App
          * @param move MoveObject to serialize and send
          */
         void sendMove(const Model::Move& move);
+        
+        /**
+         * @brief Get the TCPClient´s hasMessages
+         * 
+         * @returns Atomic bool
+         */
+        std::atomic<bool>& getHasMessagesFlag();
 
     };
 

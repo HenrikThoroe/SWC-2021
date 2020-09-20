@@ -16,22 +16,16 @@ namespace App
         sendProtocol();
     }
 
-    bool MessageBroker::fetchMessages() {
-        std::optional<std::shared_ptr<MessageQueue>> messages = tcpClient.consumeMessages()
-        if (messages) {
-            messageCache = *messages.value();
-            return true;
-        }
-
-        return false;
-    }
-
-    const MessageQueue& MessageBroker::getMessages() const {
-        return messageCache;
+    std::shared_ptr<MessageQueue> MessageBroker::getMessages() {
+        return tcpClient.consumeMessages();
     }
 
     void MessageBroker::dispatch(const std::string& msg) { 
         tcpClient.send(msg);
+    }
+
+    std::atomic<bool>& MessageBroker::getHasMessagesFlag() {
+        return tcpClient.hasMessages;
     }
 
     void MessageBroker::sendProtocol() {
