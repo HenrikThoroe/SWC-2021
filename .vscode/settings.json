@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "scripts\\venv\\Scripts\\python.exe",
     "files.associations": {
         "cctype": "cpp",
         "cmath": "cpp",
