@@ -23,12 +23,12 @@ namespace Model {
         }
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
-        allPieces.reserve(20 * 20 * 21 * 4 * 4);
-        undeployablePiecesHistory.push(std::bitset<134400> {});
+        allPieces.reserve(20 * 20 * 21 * 4 * 8);
+        undeployablePiecesHistory.push(std::bitset<268800> {});
 
         for (uint8_t color = 0; color < 4; ++color) {
             for (uint8_t pieceId = 0; pieceId < 21; ++pieceId) {
-                for (uint8_t rotation = 0; rotation < 4; ++rotation) {
+                for (uint8_t rotation = 0; rotation < 8; ++rotation) {
                     for (int row = 0; row < 20; ++row) {
                         for (int col = 0; col < 20; ++col) {
                             allPieces.emplace_back(pieceId, Util::Position(col, row), static_cast<Rotation>(rotation), static_cast<PieceColor>(color + 1));
@@ -42,7 +42,7 @@ namespace Model {
         std::mt19937_64 eng(rd());
         std::uniform_int_distribution<uint64_t> distr;
 
-        for (int i = 0; i < 134400; ++i) {
+        for (int i = 0; i < 268800; ++i) {
             hashpool[i] = distr(eng);
         }
 
@@ -131,8 +131,8 @@ namespace Model {
             piece->origin.x +
             piece->origin.y * 20 +
             static_cast<uint8_t>(piece->rotation) * 400 + 
-            piece->pieceId * 1600 + 
-            (static_cast<uint8_t>(piece->color) - 1) * 33600;
+            piece->pieceId * 3200 + 
+            (static_cast<uint8_t>(piece->color) - 1) * 67200;
     }
 
     std::vector<const Move*> GameState::getPossibleMoves() {
@@ -153,8 +153,8 @@ namespace Model {
         const PieceColor& color = getCurrentPieceColor();
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
-        int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 4 * 21 };
-        std::bitset<134400> usedPieces {};
+        int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 8 * 21 };
+        std::bitset<268800> usedPieces {};
 
         // Reserve 400 items to prevent repeated resizing of moves vector
         moves.reserve(400);
@@ -172,7 +172,7 @@ namespace Model {
 
                 const Piece& piece = PieceCollection::getPiece(pieceId);
 
-                indexCache[3] = pieceId * 1600;
+                indexCache[3] = pieceId * 3200;
 
                 // Iterate all rotations
                 for (const Rotation& rotation : piece.uniqueRotations) {

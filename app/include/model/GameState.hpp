@@ -45,18 +45,18 @@ namespace Model {
             std::array<std::array<uint8_t, 21>, 4> availablePieces {};
 
             /// A cache which stores stores all deployed pieces possible on the board.
-            /// @note Size: 134,400 * 84 Bytes = 11,289,600 Byte ~= 11 Megabyte
+            /// @note Size: 268,800 * 84 Bytes = 22,579,200 Byte ~= 22 Megabyte
             std::vector<DeployedPiece> allPieces {};
 
             /// A bitset which indicates which piece cannot be deployed on the state. 
             /// Each bit is logically connected to the DeployedPiece in `allPieces` at the same index. 
-            std::bitset<134400> undeployablePieces {};
+            std::bitset<268800> undeployablePieces {};
 
             /// A history of `undeployablePieces` to revert moves.
-            std::stack<std::bitset<134400>> undeployablePiecesHistory {};
+            std::stack<std::bitset<268800>> undeployablePiecesHistory {};
 
-            /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~1MB
-            std::array<uint64_t, 134400> hashpool {};
+            /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~2MB
+            std::array<uint64_t, 268800> hashpool {};
 
             /// The current hash value of the game state.
             uint64_t hashValue = 0;
