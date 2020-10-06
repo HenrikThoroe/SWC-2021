@@ -21,12 +21,11 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             });
 
             if (moves.size() == 0) {
-                FAIL(state);
+                state.performMove(nullptr);
+            } else {
+                int index = rand() % moves.size();
+                state.performMove(moves[index]);
             }
-
-            int index = rand() % moves.size();
-
-            state.performMove(moves[index]);
         }
 
         for (int x = 0; x < 30; ++x) {
@@ -66,7 +65,8 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             std::vector<const Move*> moves = state.getPossibleMoves();
 
             if (moves.size() == 0) {
-                FAIL(state);
+                state.performMove(nullptr);
+                continue;
             }
 
             meter.measure([&state, &moves] {
