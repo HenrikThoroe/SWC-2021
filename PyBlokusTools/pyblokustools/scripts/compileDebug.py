@@ -124,11 +124,4 @@ def compileDebug() -> None:
         raise SystemExit()
 
     print(colorT("\nRunning in GDB:\n", Colors.PURPLE))
-    subprocess.run(
-            [
-                'gdb',
-                f'./{out_file}',
-                *args.gdbflags
-            ],
-            stderr=subprocess.STDOUT
-        )
+    os.execvp('gdb', ['gdb', f'./{out_file}' ,*args.gdbflags])

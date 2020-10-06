@@ -88,10 +88,4 @@ def runBenchmarks() -> None:
         raise SystemExit()
 
     print(colorT("\nRunning benchmarks:\n", Colors.PURPLE))
-    subprocess.run(
-            [
-                f'./{out_file}',
-                *args.benchflags
-            ],
-            stderr=subprocess.STDOUT
-        )
+    os.execv(f'./{out_file}', ['benchmarksRun.out' ,*args.benchflags])
