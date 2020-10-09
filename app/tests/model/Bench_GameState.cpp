@@ -8,7 +8,7 @@
 using namespace Model;
 
 TEST_CASE("Bench Game State", "[benchmark]") {
-    auto state = GameState();
+    auto state = GameState(20);
 
     WARN(state.getPossibleMoves().size());
 
@@ -21,12 +21,11 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             });
 
             if (moves.size() == 0) {
-                FAIL(state);
+                state.performMove(nullptr);
+            } else {
+                int index = rand() % moves.size();
+                state.performMove(moves[index]);
             }
-
-            int index = rand() % moves.size();
-
-            state.performMove(*moves[index]);
         }
 
         for (int x = 0; x < 30; ++x) {
@@ -44,7 +43,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         int index = rand() % moves.size();
 
         meter.measure([&state, &moves, &index] {
-            state.performMove(*moves[index]);
+            state.performMove(moves[index]);
             state.revertLastMove();
         });
     };
@@ -66,7 +65,8 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             std::vector<const Move*> moves = state.getPossibleMoves();
 
             if (moves.size() == 0) {
-                FAIL(state);
+                state.performMove(nullptr);
+                continue;
             }
 
             meter.measure([&state, &moves] {
@@ -80,7 +80,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
             int index = rand() % moves.size();
 
-            state.performMove(*moves[index]);
+            state.performMove(moves[index]);
         }
 
         for (int x = 0; x < 30; ++x) {
@@ -95,7 +95,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             for (int x = 0; x < 20; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                state.performMove(*moves[0]);
+                state.performMove(moves[0]);
             }
 
             for (int x = 0; x < 20; ++x) {
@@ -113,7 +113,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
                 moves.clear();
                 state.assignPossibleMoves(moves);
                 index = rand() % moves.size();
-                state.performMove(*moves[index]);
+                state.performMove(moves[index]);
             }
 
             for (int x = 0; x < 20; ++x) {
@@ -131,7 +131,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
         int index = rand() % moves.size();
 
-        state.performMove(*moves[index]);
+        state.performMove(moves[index]);
         state.revertLastMove();
 
         meter.measure([&state] {

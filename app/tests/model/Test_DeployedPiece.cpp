@@ -13,7 +13,7 @@ TEST_CASE("DeployedPiece Test", "[model]") {
 
     //      +
     //    + + + +
-    auto complex = DeployedPiece(20, Position(0, 0), Rotation::ONEHALFPI, PieceColor::RED);
+    auto complex = DeployedPiece(18, Position(0, 0), Rotation::THREEHALFPI_FLIPPED, PieceColor::RED);
 
     SECTION("Basic") {
         auto occupied = simple.getOccupiedPositions();
@@ -36,11 +36,11 @@ TEST_CASE("DeployedPiece Test", "[model]") {
 
         std::array<Position, 6> expectedAttachPoints = {
             Position(-1, -1),
-            Position(1, -1),
-            Position(2, 0),
-            Position(2, 2),
-            Position(-1, 4),
-            Position(1, 4)
+            Position(-1, 1),
+            Position(0, -2),
+            Position(2, -2),
+            Position(4, 1),
+            Position(4, -1)
         };
 
         REQUIRE(occupied.size() == 5);
@@ -63,35 +63,63 @@ TEST_CASE("DeployedPiece Test", "[model]") {
     }
 
     SECTION("Can Rotate") {
-        std::array<DeployedPiece, 4> rotations = {
-            DeployedPiece(20, Position(0,0), Rotation::ZERO, PieceColor::RED),
-            DeployedPiece(20, Position(0,0), Rotation::ONEHALFPI, PieceColor::RED),
-            DeployedPiece(20, Position(0,0), Rotation::PI, PieceColor::RED),
-            DeployedPiece(20, Position(0,0), Rotation::THREEHALFPI, PieceColor::RED)
+        std::array<DeployedPiece, 8> rotations = {
+            DeployedPiece(18, Position(0,0), Rotation::ZERO, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::ONEHALFPI, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::PI, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::THREEHALFPI, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::ZERO_FLIPPED, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::ONEHALFPI_FLIPPED, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::PI_FLIPPED, PieceColor::RED),
+            DeployedPiece(18, Position(0,0), Rotation::THREEHALFPI_FLIPPED, PieceColor::RED)
         };
 
         REQUIRE(rotations[0].getOccupiedPositions()[0] == Position(0, 0));
-        REQUIRE(rotations[0].getOccupiedPositions()[1] == Position(1, 0));
-        REQUIRE(rotations[0].getOccupiedPositions()[2] == Position(2, 0));
-        REQUIRE(rotations[0].getOccupiedPositions()[3] == Position(3, 0));
-        REQUIRE(rotations[0].getOccupiedPositions()[4] == Position(1, -1));
+        REQUIRE(rotations[0].getOccupiedPositions()[1] == Position(0, 1));
+        REQUIRE(rotations[0].getOccupiedPositions()[2] == Position(0, 2));
+        REQUIRE(rotations[0].getOccupiedPositions()[3] == Position(0, 3));
+        REQUIRE(rotations[0].getOccupiedPositions()[4] == Position(-1, 1));
 
         REQUIRE(rotations[1].getOccupiedPositions()[0] == Position(0, 0));
-        REQUIRE(rotations[1].getOccupiedPositions()[1] == Position(0, 1));
-        REQUIRE(rotations[1].getOccupiedPositions()[2] == Position(0, 2));
-        REQUIRE(rotations[1].getOccupiedPositions()[3] == Position(0, 3));
-        REQUIRE(rotations[1].getOccupiedPositions()[4] == Position(1, 1));
+        REQUIRE(rotations[1].getOccupiedPositions()[1] == Position(-1, 0));
+        REQUIRE(rotations[1].getOccupiedPositions()[2] == Position(-2, 0));
+        REQUIRE(rotations[1].getOccupiedPositions()[3] == Position(-3, 0));
+        REQUIRE(rotations[1].getOccupiedPositions()[4] == Position(-1, -1));
 
         REQUIRE(rotations[2].getOccupiedPositions()[0] == Position(0, 0));
-        REQUIRE(rotations[2].getOccupiedPositions()[1] == Position(-1, 0));
-        REQUIRE(rotations[2].getOccupiedPositions()[2] == Position(-2, 0));
-        REQUIRE(rotations[2].getOccupiedPositions()[3] == Position(-3, 0));
-        REQUIRE(rotations[2].getOccupiedPositions()[4] == Position(-1, 1));
+        REQUIRE(rotations[2].getOccupiedPositions()[1] == Position(0, -1));
+        REQUIRE(rotations[2].getOccupiedPositions()[2] == Position(0, -2));
+        REQUIRE(rotations[2].getOccupiedPositions()[3] == Position(0, -3));
+        REQUIRE(rotations[2].getOccupiedPositions()[4] == Position(1, -1));
 
         REQUIRE(rotations[3].getOccupiedPositions()[0] == Position(0, 0));
-        REQUIRE(rotations[3].getOccupiedPositions()[1] == Position(0, -1));
-        REQUIRE(rotations[3].getOccupiedPositions()[2] == Position(0, -2));
-        REQUIRE(rotations[3].getOccupiedPositions()[3] == Position(0, -3));
-        REQUIRE(rotations[3].getOccupiedPositions()[4] == Position(-1, -1));
+        REQUIRE(rotations[3].getOccupiedPositions()[1] == Position(1, 0));
+        REQUIRE(rotations[3].getOccupiedPositions()[2] == Position(2, 0));
+        REQUIRE(rotations[3].getOccupiedPositions()[3] == Position(3, 0));
+        REQUIRE(rotations[3].getOccupiedPositions()[4] == Position(1, 1));
+
+        REQUIRE(rotations[4].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[4].getOccupiedPositions()[1] == Position(0, 1));
+        REQUIRE(rotations[4].getOccupiedPositions()[2] == Position(0, 2));
+        REQUIRE(rotations[4].getOccupiedPositions()[3] == Position(0, 3));
+        REQUIRE(rotations[4].getOccupiedPositions()[4] == Position(1, 1));
+
+        REQUIRE(rotations[5].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[5].getOccupiedPositions()[1] == Position(-1, 0));
+        REQUIRE(rotations[5].getOccupiedPositions()[2] == Position(-2, 0));
+        REQUIRE(rotations[5].getOccupiedPositions()[3] == Position(-3, 0));
+        REQUIRE(rotations[5].getOccupiedPositions()[4] == Position(-1, 1));
+
+        REQUIRE(rotations[6].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[6].getOccupiedPositions()[1] == Position(0, -1));
+        REQUIRE(rotations[6].getOccupiedPositions()[2] == Position(0, -2));
+        REQUIRE(rotations[6].getOccupiedPositions()[3] == Position(0, -3));
+        REQUIRE(rotations[6].getOccupiedPositions()[4] == Position(-1, -1));
+
+        REQUIRE(rotations[7].getOccupiedPositions()[0] == Position(0, 0));
+        REQUIRE(rotations[7].getOccupiedPositions()[1] == Position(1, 0));
+        REQUIRE(rotations[7].getOccupiedPositions()[2] == Position(2, 0));
+        REQUIRE(rotations[7].getOccupiedPositions()[3] == Position(3, 0));
+        REQUIRE(rotations[7].getOccupiedPositions()[4] == Position(1, -1));
     }
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <tuple>
+#include <string>
 
 #include "Vector2D.hpp"
 #include "Rotation.hpp"
@@ -22,6 +23,12 @@ namespace Model {
 
         ///A unique identifier for each shape.
         uint8_t id;
+
+        /// The XML name of the piece.
+        const std::string name;
+
+        /// The number of occupied positions.
+        const uint8_t size;
 
         /**
          * A piece can be interpretated in four ratations. If a piece is symmetric two or more rotations will produce equal shapes.
@@ -43,7 +50,7 @@ namespace Model {
          * 
          * @brief An array which contains the information to construct the piece in all possible rotations.
          */ 
-        std::array<ShapeRotation, 4> rotations;
+        std::array<ShapeRotation, 8> rotations;
     };
 
 }
