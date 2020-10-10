@@ -210,10 +210,6 @@ namespace Model {
                             indexCache[2] + 
                             indexCache[3];
 
-                        if (index >= 67200) {
-                            std::cerr << index << std::endl;
-                        }
-
                         // Skip if the piece cannot be deployed or is already included
                         if (undeployablePieces[index] || usedPieces[index]) {
                             continue;
