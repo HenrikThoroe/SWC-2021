@@ -9,9 +9,9 @@ namespace Model {
 
     GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
-        const Util::Position topRight = Util::Position(19, 0);
-        const Util::Position bottomLeft = Util::Position(0, 19);
-        const Util::Position bottomRight = Util::Position(19, 19);
+        const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
+        const Util::Position bottomLeft = Util::Position(0, Constants::BOARD_ROWS - 1);
+        const Util::Position bottomRight = Util::Position(Constants::BOARD_COLUMNS - 1, Constants::BOARD_ROWS - 1);
 
         for (uint8_t c = 1; c <= 4; ++c) {
             const PieceColor color = static_cast<PieceColor>(c);
@@ -23,14 +23,14 @@ namespace Model {
         }
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
-        allPieces.reserve(20 * 20 * 21 * 4 * 8);
+        allPieces.reserve(Constants::PIECE_VARIANTS);
         undeployablePiecesHistory.push({});
 
         for (uint8_t color = 0; color < 4; ++color) {
-            for (uint8_t pieceId = 0; pieceId < 21; ++pieceId) {
+            for (uint8_t pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
                 for (uint8_t rotation = 0; rotation < 8; ++rotation) {
-                    for (int row = 0; row < 20; ++row) {
-                        for (int col = 0; col < 20; ++col) {
+                    for (int row = 0; row < Constants::BOARD_ROWS; ++row) {
+                        for (int col = 0; col < Constants::BOARD_COLUMNS; ++col) {
                             allPieces.emplace_back(pieceId, Util::Position(col, row), static_cast<Rotation>(rotation), static_cast<PieceColor>(color + 1));
                         }
                     }
@@ -42,7 +42,7 @@ namespace Model {
         std::mt19937_64 eng(rd());
         std::uniform_int_distribution<uint64_t> distr;
 
-        for (int i = 0; i < 268800; ++i) {
+        for (int i = 0; i < Constants::PIECE_VARIANTS; ++i) {
             hashpool[i] = distr(eng);
         }
 
@@ -161,7 +161,7 @@ namespace Model {
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
         int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 8 * 21 };
-        std::bitset<67200> usedPieces {};
+        std::bitset<Constants::PIECE_VARIANTS_NO_COLOR> usedPieces {};
 
         // Reserve 550 items to prevent repeated resizing of moves vector
         moves.reserve(550);
@@ -170,7 +170,7 @@ namespace Model {
         for (const Util::Position& dropPosition : dropPositions) {
 
             // Iterate all piece shapes
-            for (int pieceId = 0; pieceId < 21; ++pieceId) {
+            for (int pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
 
                 // Filter all shapes which are unavailable for current color
                 if (availablePieces[colorId][pieceId] == 0 || (getTurn() < 4 && pieceId != initialPiece)) {
