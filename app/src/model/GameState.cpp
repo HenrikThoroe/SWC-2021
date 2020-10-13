@@ -189,11 +189,7 @@ namespace Model {
                         }
 
                         // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY
-                        const int index = 
-                            origin.x +
-                            origin.y * 20 +
-                            indexCache[2] + 
-                            indexCache[3];
+                        const int index = (origin.x + origin.y * 20) + (indexCache[2] + indexCache[3]);
 
                         // Skip if the piece cannot be deployed or is already included
                         if (usedPieces[index]) {
