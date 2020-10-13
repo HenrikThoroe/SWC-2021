@@ -24,7 +24,6 @@ namespace Model {
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
         allPieces.reserve(Constants::PIECE_VARIANTS);
-        undeployablePiecesHistory.push({});
 
         for (uint8_t color = 0; color < 4; ++color) {
             for (uint8_t pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
@@ -72,7 +71,6 @@ namespace Model {
             performedMoves.push(std::nullopt);
         }
 
-        undeployablePiecesHistory.push(undeployablePieces);
         turn += 1;
     }
 
@@ -87,8 +85,6 @@ namespace Model {
         
         performedMoves.pop();
         turn -= 1;
-        undeployablePieces = undeployablePiecesHistory.top();
-        undeployablePiecesHistory.pop();
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
@@ -96,27 +92,18 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
-        int index = createIndex(piece, false);
-
-        if (undeployablePieces[index] == true) {
-            return false;
-        }
-
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
-                undeployablePieces[index] = true;
                 return false;
             }
 
             if (board[position] != PieceColor::NONE) {
-                undeployablePieces[index] = true;
                 return false;
             }
 
             for (const Util::Position& edge : position.getEdges()) {
                 if (board.at(edge) == piece->color) {
-                    undeployablePieces[index] = true;
                     return false;
                 }
             }
@@ -141,10 +128,8 @@ namespace Model {
     }
 
     std::vector<const Move*> GameState::getPossibleMoves() {
-        // std::cout << "Get Moves" << std::endl;
         std::vector<const Move*> moves {};
         assignPossibleMoves(moves);
-        // std::cout << "Got Moves" << std::endl;
         return moves;
     }
 
@@ -183,7 +168,7 @@ namespace Model {
 
                 // Iterate all rotations
                 for (const Rotation& rotation : piece.uniqueRotations) {
-                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[static_cast<uint8_t>(rotation)]);
+                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.getRotation(rotation));
 
                     indexCache[2] = static_cast<uint8_t>(rotation) * 400;
 
@@ -211,7 +196,7 @@ namespace Model {
                             indexCache[3];
 
                         // Skip if the piece cannot be deployed or is already included
-                        if (undeployablePieces[index] || usedPieces[index]) {
+                        if (usedPieces[index]) {
                             continue;
                         }
 

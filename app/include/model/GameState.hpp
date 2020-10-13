@@ -50,10 +50,6 @@ namespace Model {
             /// @note Size: 268,800 * 84 Bytes = 22,579,200 Byte ~= 22 Megabyte
             std::vector<DeployedPiece> allPieces {};
 
-            /// A bitset which indicates which piece cannot be deployed on the state. 
-            /// Each bit is logically connected to the DeployedPiece in `allPieces` at the same index. 
-            std::bitset<Constants::PIECE_VARIANTS_NO_COLOR> undeployablePieces {};
-
             /// A history of `undeployablePieces` to revert moves.
             Util::FastStack<std::bitset<Constants::PIECE_VARIANTS_NO_COLOR>, Constants::TURNS> undeployablePiecesHistory {};
 
