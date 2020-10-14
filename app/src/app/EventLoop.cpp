@@ -1,25 +1,40 @@
 #include <vector>
 #include <stdexcept>
 #include <atomic>
+#include <boost/program_options.hpp>
 
 #include "EventLoop.hpp"
 #include "debug.hpp"
+
+using namespace boost::program_options;
 
 namespace App {
     // Lifecycle
 
     EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()) {
         // Hostname of gameserver to connect to
-        std::string hostname = "localhost";
+        std::string hostname;
 
         // Listening port of gameserver to connect to
-        uint8_t port = 13050;
+        unsigned short port;
 
         // Reservation code to redeem with gameserver ("" -> None)
-        std::string reservation = "";
+        std::string reservation;
 
         //? Parse arguments
-        /* code */
+        options_description optionsDesribtion("C++ client");
+        optionsDesribtion.add_options()
+            ("host,h", value<std::string>()->default_value("localhost"), "Host")
+            ("port,p", value<unsigned short>()->default_value(13050), "Port")
+            ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
+        ;
+
+        variables_map varibaleMap;
+        store(parse_command_line(argc, argv, optionsDesribtion), varibaleMap);
+
+        hostname    = varibaleMap["host"].as<std::string>();
+        port        = varibaleMap["port"].as<unsigned short>();
+        reservation = varibaleMap["reservation"].as<std::string>();
 
         //? Connect to gameserver
         if (reservation != "") {
