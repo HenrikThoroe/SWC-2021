@@ -73,7 +73,7 @@ namespace App {
          * 
          * @returns Is game over
          */
-        bool _actOnMessage(const Communication::Message& msg);
+        bool _actOnMessage(const Message& msg);
 
         // Run a background task
         void _runTask() const;

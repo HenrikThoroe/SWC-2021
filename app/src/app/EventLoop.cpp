@@ -88,38 +88,38 @@ namespace App {
         messageBroker.sendJoinReservedRequest(reservation);
     }
 
-    inline bool EventLoop::_actOnMessage(const Communication::Message& msg) {
+    inline bool EventLoop::_actOnMessage(const Message& msg) {
         switch (msg.type)
         {
-        case Communication::MsgType::Joined:
+        case MsgType::JOINED:
             /* code */
             break;
-        case Communication::MsgType::Welcome:
+        case MsgType::WELCOME:
             /* code */
             break;
-        case Communication::MsgType::GameState:
+        case MsgType::GAMESTATE:
             /* code */
             break;
-        case Communication::MsgType::MoveRequest:
+        case MsgType::MOVEREQUEST:
             /* code */
             break;
-        case Communication::MsgType::Left:
-            /* code */
-            return true;
-            break;
-        case Communication::MsgType::Result:
+        case MsgType::LEFT:
             /* code */
             return true;
             break;
-        case Communication::MsgType::Error:
+        case MsgType::RESULT:
             /* code */
             return true;
             break;
-        case Communication::MsgType::ProtocolEnd:
+        case MsgType::EXCEPT:
             /* code */
             return true;
             break;
-        case Communication::MsgType::Undefined:
+        case MsgType::PROTOCOLEND:
+            /* code */
+            return true;
+            break;
+        case MsgType::UNDEFINED:
             throw std::runtime_error("Can not act on Undefined message");
             break;
         default:
