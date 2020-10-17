@@ -42,7 +42,7 @@ namespace Util {
     }
 
     std::ostream& operator << (std::ostream& os, const Position& pos) {
-        os << "Position { x: " << pos.x << ", y: " << pos.y << " }";
+        os << "Position { x: " << static_cast<int>(pos.x) << ", y: " << static_cast<int>(pos.y) << " }";
         return os;
     }
 

@@ -57,7 +57,7 @@ namespace Util {
     }
 
     std::ostream& operator << (std::ostream& os, const Vector2D& vec) {
-        os << "Vector2D { x: " << vec.x << ", y: " << vec.y << " }";
+        os << "Vector2D { x: " << static_cast<int>(vec.x) << ", y: " << static_cast<int>(vec.y) << " }";
         return os;
     }
 
