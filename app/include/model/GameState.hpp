@@ -10,7 +10,6 @@
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
-#include "FastStack.hpp"
 #include "constants.hpp"
 
 namespace Model {
@@ -50,16 +49,13 @@ namespace Model {
             /// @note Size: 268,800 * 84 Bytes = 22,579,200 Byte ~= 22 Megabyte
             std::vector<DeployedPiece> allPieces {};
 
-            /// A history of `undeployablePieces` to revert moves.
-            Util::FastStack<std::bitset<Constants::PIECE_VARIANTS_NO_COLOR>, Constants::TURNS> undeployablePiecesHistory {};
-
             /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~2MB
             std::array<uint64_t, Constants::PIECE_VARIANTS> hashpool {};
 
             /// The current hash value of the game state.
             uint64_t hashValue = 0;
 
-            /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
+            /// Calculates a unique index for the piece to access it in `allPieces` 
             int createIndex(const DeployedPiece* piece, bool includeColor = true) const;
 
         public:
