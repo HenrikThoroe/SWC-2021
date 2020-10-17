@@ -177,6 +177,7 @@ namespace Model {
                         const Util::Vector2D& offsetVector = info[1];
 
                         // Ensure a piece of the same color is located at the corner of the new piece
+                        //! IMPORTANT: By calling the subscript operator a false positive is possible. Such pieces will be filtered out by canBeDeployed.
                         if (getTurn() > 3 && board[dropPosition + offsetVector] != color) {
                             continue;
                         }
@@ -191,7 +192,7 @@ namespace Model {
                         // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY
                         const int index = (origin.x + origin.y * 20) + (indexCache[2] + indexCache[3]);
 
-                        // Skip if the piece cannot be deployed or is already included
+                        // Skip if the piece is already included
                         if (usedPieces[index]) {
                             continue;
                         }
