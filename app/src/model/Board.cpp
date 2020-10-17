@@ -11,10 +11,6 @@ namespace Model {
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = piece.color;
-            
-            for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.y][pos.x] *= -1;
-            }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
@@ -31,10 +27,6 @@ namespace Model {
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = PieceColor::NONE;
-            
-            for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.y][pos.x] *= -1;
-            }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
@@ -79,7 +71,7 @@ namespace Model {
 
             for (int row = 0; row < 20; ++row) {
                 for (int col = 0; col < 20; ++col) {
-                    if (fields[row][col] > 0) {
+                    if (fields[row][col] > 0 && this->fields[row][col] == PieceColor::NONE) {
                         results.emplace_back(col, row);
                     }
                 }
