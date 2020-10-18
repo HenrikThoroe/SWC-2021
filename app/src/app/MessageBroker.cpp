@@ -43,11 +43,11 @@ namespace App
 
     void MessageBroker::sendJoinRequest() {
         //! Change to current gameType
-        tcpClient.send('<join gameType="swc_2021_blokus" />');
+        tcpClient.send("<join gameType=\"swc_2021_blokus\" />");
     }
 
     void MessageBroker::sendJoinReservedRequest(const std::string& reservation) {
-        tcpClient.send('<joinPrepared reservationCode="' + reservation + '" />');
+        tcpClient.send("<joinPrepared reservationCode=\"" + reservation + "\" />");
     }
     
 }
