@@ -71,8 +71,25 @@ namespace Model {
 
             for (int row = 0; row < 20; ++row) {
                 for (int col = 0; col < 20; ++col) {
-                    if (fields[row][col] > 0 && this->fields[row][col] == PieceColor::NONE) {
-                        results.emplace_back(col, row);
+                    const bool isPossible = fields[row][col] > 0;
+                    const bool isNotOccupied = this->fields[row][col] == PieceColor::NONE;
+
+                    if (isPossible && isNotOccupied) {
+                        const Util::Position position = Util::Position(col, row);
+                        const std::array<Util::Position, 4> edges = position.getEdges();
+                        bool isValid = true;
+
+                        // Do not include position in results if another piece of the same color is located at the edge of the position.
+                        for (const Util::Position& edge : edges) {
+                            if (at(edge) == color) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (isValid) {
+                            results.push_back(position);
+                        }
                     }
                 }
             }
