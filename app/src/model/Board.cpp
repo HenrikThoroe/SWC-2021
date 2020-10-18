@@ -111,7 +111,25 @@ namespace Model {
     std::ostream& operator << (std::ostream& os, const Board& board) {
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
+
+                switch (board.fields[row][col]) {
+                    case PieceColor::RED:
+                        os << "\033[1;31m";
+                        break;
+                    case PieceColor::GREEN:
+                        os << "\033[1;32m";
+                        break;
+                    case PieceColor::BLUE:
+                        os << "\033[1;34m";
+                        break;
+                    case PieceColor::YELLOW:
+                        os << "\033[1;33m";
+                        break;
+                }
+
                 os << static_cast<int>(board.fields[row][col]);
+
+                os << "\033[0m";
 
                 if (col < 19) {
                     os << " | ";
