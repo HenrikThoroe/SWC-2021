@@ -1,6 +1,7 @@
 #include <vector>
 #include <stdexcept>
 #include <atomic>
+#include <vector>
 #include <boost/program_options.hpp>
 
 #include "EventLoop.hpp"
@@ -53,18 +54,26 @@ namespace App {
     // Public interface
     void EventLoop::run() {
         bool gameOver = false;
+        std::vector<Message> messages;
+        messages.reserve(10);
 
         while (!gameOver) {
             // Main event loop in here
             if (messageReceivedFlag) {
                 //? Messages in queue
-                for (const std::string& msg : *messageBroker.getMessages()) {
-                    gameOver = _actOnMessage(msg);
-                    if (gameOver) {
-                        break;
-                    }
-                }
+                for (std::string& msg : *messageBroker.getMessages()) {
+                    messageBroker.parse(msg, messages);
 
+                    for (Message& pMsg : messages) {
+                        gameOver = _actOnMessage(pMsg);
+
+                        if (gameOver) {
+                            break;
+                        }
+                    }
+                    
+                    messages.clear();
+                }
             } else {
                 //? Can do background work
                 // Shouldnt last to long as we only check for new messages in a new itteration
