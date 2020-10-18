@@ -6,13 +6,15 @@
 #include "pugixml.hpp"
 
 #include "Message.hpp"
+#include "Move.hpp"
+#include "color.hpp"
 
 namespace App
 {
     class XMLParser {
         private:
             // Room id of current game used for sending moves
-            std::string roomId;
+            const char * roomId;
         public:
             XMLParser();
 
@@ -28,6 +30,15 @@ namespace App
              * @param result Vector to save parsed messages in
              */
             void splitAndParseMessages(std::string& input, std::vector<Message>& result);
+
+            /**
+             * @brief Convert a move into its xml representation to send to server
+             * 
+             * @param move Move object to convert
+             * 
+             * @returns Xml representation of move as string
+             */
+            std::string makeMoveMessage(const Model::Move* move) const;
         
         private:
             //? Specific message parsers
@@ -80,6 +91,15 @@ namespace App
              * @returns Id of piece
              */
             uint8_t _getPieceId(const std::string& pieceName) const;
+
+            /**
+             * @brief Translate id of PieceColor to its name
+             * 
+             * @param colorId Id of color (enum value)
+             * 
+             * @returns Name of color
+             */
+            const char* _getColor(const Model::PieceColor& colorId) const;
 
 
     };

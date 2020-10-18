@@ -2,9 +2,12 @@
 #include <stdexcept>
 
 #include "XMLParser.hpp"
+#include "XMLStringWriter.hpp"
 #include "PieceCollection.hpp"
 #include "color.hpp"
+#include "Rotation.hpp"
 #include "Vector2D.hpp"
+#include "Position.hpp"
 
 namespace App
 {
@@ -99,20 +102,110 @@ namespace App
         }
     }
 
+    std::string XMLParser::makeMoveMessage(const Model::Move* move) const {
+        pugi::xml_document xmlDoc;
+
+        pugi::xml_node roomNode = xmlDoc.append_child("room");
+        roomNode.append_attribute("roomId").set_value(roomId);
+        if (move != nullptr) {
+            pugi::xml_node dataNode = roomNode.append_child("data");
+            dataNode.append_attribute("class").set_value("sc.plugin2021.SetMove");
+
+            pugi::xml_node pieceNode = dataNode.append_child("piece");
+
+            //? Color
+            pieceNode.append_attribute("color").set_value(_getColor(move->color));
+
+            //? Kind
+            //! name is std::string atm -> has to be const char*
+            pieceNode.append_attribute("kind").set_value(Model::PieceCollection::getPiece(move->pieceId).name);
+
+            //? Rotation
+            //! See _parseMemento rotation question
+            switch (move->rotation)
+            {
+            case Model::Rotation::ZERO:
+                pieceNode.append_attribute("rotation").set_value("NONE");
+                pieceNode.append_attribute("isFlipped").set_value("false");
+                break;
+            
+            case Model::Rotation::PI:
+                pieceNode.append_attribute("rotation").set_value("RIGHT");
+                pieceNode.append_attribute("isFlipped").set_value("false");
+                break;
+            
+            case Model::Rotation::ONEHALFPI:
+                pieceNode.append_attribute("rotation").set_value("MIRROR");
+                pieceNode.append_attribute("isFlipped").set_value("false");
+                break;
+            
+            case Model::Rotation::THREEHALFPI:
+                pieceNode.append_attribute("rotation").set_value("LEFT");
+                pieceNode.append_attribute("isFlipped").set_value("false");
+                break;
+            
+            case Model::Rotation::ZERO_FLIPPED:
+                pieceNode.append_attribute("rotation").set_value("NONE");
+                pieceNode.append_attribute("isFlipped").set_value("true");
+                break;
+            
+            case Model::Rotation::PI_FLIPPED:
+                pieceNode.append_attribute("rotation").set_value("RIGHT");
+                pieceNode.append_attribute("isFlipped").set_value("true");
+                break;
+            
+            case Model::Rotation::ONEHALFPI_FLIPPED:
+                pieceNode.append_attribute("rotation").set_value("MIRROR");
+                pieceNode.append_attribute("isFlipped").set_value("true");
+                break;
+            
+            case Model::Rotation::THREEHALFPI_FLIPPED:
+                pieceNode.append_attribute("rotation").set_value("LEFT");
+                pieceNode.append_attribute("isFlipped").set_value("true");
+                break;
+            
+            default:
+                throw std::runtime_error("Rotation with value '" + std::to_string(static_cast<uint8_t>(move->rotation)) + "' not found");
+                break;
+            }
+
+            //? Coordinates
+            int8_t minX = 127;
+            int8_t minY = 127;
+            for (const Util::Position& piece : move->getOccupiedPositions()) {
+                if (piece.x < minX) minX = piece.x;
+                if (piece.y < minY) minX = piece.x;
+            }
+
+            pugi::xml_node positionNode = dataNode.append_child("position");
+            positionNode.append_attribute("x").set_value(minX);
+            positionNode.append_attribute("y").set_value(minY);
+
+        } else {
+            roomNode.append_child("data").append_attribute("class").set_value("sc.plugin2021.SkipMove");
+        }
+
+        Util::XMLStringWriter xmlStringWriter;
+        xmlDoc.print(xmlStringWriter, " ", pugi::format_default);
+
+        return xmlStringWriter.result;
+    }
+
+    //? Specific message parsers
+
     inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) const {
         pugi::xml_node piece = data.child("lastMove").first_child();
         
         if (piece) {
             //* Not first move -> LastMove
             //? Rotation
-            //! Is RIGHT -> ONEHALFPI? Or is it THREEHALFPI?!
             std::string pieceRotation = piece.attribute("rotation").value();
             uint8_t rotation;
             if (pieceRotation == "NONE") {
                 rotation = 0;
-            } else if (pieceRotation == "RIGHT") {
-                rotation = 1;
             } else if (pieceRotation == "MIRROR") {
+                rotation = 1;
+            } else if (pieceRotation == "RIGHT") {
                 rotation = 2;
             } else if (pieceRotation == "LEFT") {
                 rotation = 3;
@@ -150,8 +243,7 @@ namespace App
                 break;
             
             default:
-
-                throw std::runtime_error("Color '" + piece.attribute("color").value() + "' not found");
+                throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
                 break;
             }
 
@@ -230,7 +322,7 @@ namespace App
         roomId = node.attribute("roomId").value();
     }
 
-    inline uint8_t _getPieceId(const std::string& pieceName) const {
+    inline uint8_t XMLParser::_getPieceId(const std::string& pieceName) const {
         if (pieceName == "MONO") {
             return 0;
         } else if (pieceName == "DOMINO") {
@@ -276,5 +368,30 @@ namespace App
         }
 
         throw std::runtime_error("Piece of type '" + pieceName + "' not found");
+    }
+
+    inline const char* XMLParser::_getColor(const Model::PieceColor& colorId) const {
+        switch (colorId)
+        {
+        case Model::PieceColor::RED:
+            return "RED";
+            break;
+
+        case Model::PieceColor::BLUE:
+            return "BLUE";
+            break;
+
+        case Model::PieceColor::GREEN:
+            return "GREEN";
+            break;
+
+        case Model::PieceColor::YELLOW:
+            return "YELLOW";
+            break;
+        
+        default:
+            throw std::runtime_error("Color with value '" + std::to_string(static_cast<uint8_t>(colorId)) + "' not found");
+            break;
+        }
     }
 } // namespace App
