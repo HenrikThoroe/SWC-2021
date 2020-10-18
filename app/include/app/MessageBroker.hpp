@@ -22,10 +22,10 @@ namespace App
     {
     private:
         // TCPClient for communication with server
-        App::TCPClient   tcpClient = TCPClient();
+        TCPClient   tcpClient = TCPClient();
 
         // XMLParser to parse and serialize xml messages from to to the server
-        App:XMLParser    xmlParser = XMLParser();
+        XMLParser    xmlParser = XMLParser();
         
     public:
         MessageBroker(/* args */);
