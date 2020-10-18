@@ -2,13 +2,13 @@
 
 #include <atomic>
 
-namespace App
-{
+namespace App {
+    
     class Task {
         public:
             bool taskDone = false;
         public:
-            // No copy constructors allowed
+            /// No copy constructors allowed
             Task(Task* task) = delete;
             Task(Task& task) = delete;
 
@@ -29,4 +29,5 @@ namespace App
              */
             virtual bool _run() = 0;
     };
+
 } // namespace App

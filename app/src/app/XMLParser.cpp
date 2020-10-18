@@ -9,10 +9,9 @@
 #include "Vector2D.hpp"
 #include "Position.hpp"
 
-namespace App
-{
+namespace App {
+
     XMLParser::XMLParser() {}
-    XMLParser::~XMLParser() {}
 
     void XMLParser::splitAndParseMessages(std::string& input, std::vector<Message>& result) {
         //? Filter out non xml compliant messages
@@ -40,57 +39,55 @@ namespace App
         for (pugi::xml_node _ : xmlDoc.children()) {
             for (pugi::xml_node msg : _.children()) {
 
-                switch (msg.name()[0])
-                {
-                // room
-                case 'r':
-                    pugi::xml_node data = msg.child("data");
-                    switch (data.attribute("class").value()[0])
-                    {
-                    // memento
-                    case 'm':
-                        _parseMemento(data.first_child(), result);
-                        break;
-                    
-                    // sc.framework.plugins.protocol.MoveRequest
-                    case 's':
-                        result.emplace_back(MsgType::MOVEREQUEST, nullptr);
-                        break;
-                    
-                    // result
+                switch (msg.name()[0]) {
+                    // room
                     case 'r':
-                        _parseResult(data, result);
+                        pugi::xml_node data = msg.child("data");
+                        switch (data.attribute("class").value()[0]) {
+                            // memento
+                            case 'm':
+                                _parseMemento(data.first_child(), result);
+                                break;
+                            
+                            // sc.framework.plugins.protocol.MoveRequest
+                            case 's':
+                                result.emplace_back(MsgType::MOVEREQUEST, nullptr);
+                                break;
+                            
+                            // result
+                            case 'r':
+                                _parseResult(data, result);
+                                break;
+                            
+                            // welcomeMessage
+                            case 'w':
+                                _parseWelcome(data, result);
+                                break;
+                            
+                            // error
+                            case 'e':
+                                _parseError(data, result);
+                                break;
+                            
+                            default:
+                                throw std::runtime_error("Memento of type '" + std::string(data.name()) + "' could not be parsed");
+                                break;
+                        }
                         break;
                     
-                    // welcomeMessage
-                    case 'w':
-                        _parseWelcome(data, result);
+                    // joined
+                    case 'j':
+                        _parseJoined(msg);
                         break;
                     
-                    // error
-                    case 'e':
-                        _parseError(data, result);
+                    // left
+                    case 'l':
+                        result.emplace_back(MsgType::LEFT, nullptr);
                         break;
                     
                     default:
-                        throw std::runtime_error("Memento of type '" + std::string(data.name()) + "' could not be parsed");
+                        throw std::runtime_error("Message of type '" + std::string(msg.name()) + "' could not be parsed");
                         break;
-                    }
-                    break;
-                
-                // joined
-                case 'j':
-                    _parseJoined(msg);
-                    break;
-                
-                // left
-                case 'l':
-                    result.emplace_back(MsgType::LEFT, nullptr);
-                    break;
-                
-                default:
-                    throw std::runtime_error("Message of type '" + std::string(msg.name()) + "' could not be parsed");
-                    break;
                 }
             }
         }
@@ -122,51 +119,50 @@ namespace App
 
             //? Rotation
             //! See _parseMemento rotation question
-            switch (move->rotation)
-            {
-            case Model::Rotation::ZERO:
-                pieceNode.append_attribute("rotation").set_value("NONE");
-                pieceNode.append_attribute("isFlipped").set_value("false");
-                break;
-            
-            case Model::Rotation::PI:
-                pieceNode.append_attribute("rotation").set_value("RIGHT");
-                pieceNode.append_attribute("isFlipped").set_value("false");
-                break;
-            
-            case Model::Rotation::ONEHALFPI:
-                pieceNode.append_attribute("rotation").set_value("MIRROR");
-                pieceNode.append_attribute("isFlipped").set_value("false");
-                break;
-            
-            case Model::Rotation::THREEHALFPI:
-                pieceNode.append_attribute("rotation").set_value("LEFT");
-                pieceNode.append_attribute("isFlipped").set_value("false");
-                break;
-            
-            case Model::Rotation::ZERO_FLIPPED:
-                pieceNode.append_attribute("rotation").set_value("NONE");
-                pieceNode.append_attribute("isFlipped").set_value("true");
-                break;
-            
-            case Model::Rotation::PI_FLIPPED:
-                pieceNode.append_attribute("rotation").set_value("RIGHT");
-                pieceNode.append_attribute("isFlipped").set_value("true");
-                break;
-            
-            case Model::Rotation::ONEHALFPI_FLIPPED:
-                pieceNode.append_attribute("rotation").set_value("MIRROR");
-                pieceNode.append_attribute("isFlipped").set_value("true");
-                break;
-            
-            case Model::Rotation::THREEHALFPI_FLIPPED:
-                pieceNode.append_attribute("rotation").set_value("LEFT");
-                pieceNode.append_attribute("isFlipped").set_value("true");
-                break;
-            
-            default:
-                throw std::runtime_error("Rotation with value '" + std::to_string(static_cast<uint8_t>(move->rotation)) + "' not found");
-                break;
+            switch (move->rotation) {
+                case Model::Rotation::ZERO:
+                    pieceNode.append_attribute("rotation").set_value("NONE");
+                    pieceNode.append_attribute("isFlipped").set_value("false");
+                    break;
+                
+                case Model::Rotation::PI:
+                    pieceNode.append_attribute("rotation").set_value("RIGHT");
+                    pieceNode.append_attribute("isFlipped").set_value("false");
+                    break;
+                
+                case Model::Rotation::ONEHALFPI:
+                    pieceNode.append_attribute("rotation").set_value("MIRROR");
+                    pieceNode.append_attribute("isFlipped").set_value("false");
+                    break;
+                
+                case Model::Rotation::THREEHALFPI:
+                    pieceNode.append_attribute("rotation").set_value("LEFT");
+                    pieceNode.append_attribute("isFlipped").set_value("false");
+                    break;
+                
+                case Model::Rotation::ZERO_FLIPPED:
+                    pieceNode.append_attribute("rotation").set_value("NONE");
+                    pieceNode.append_attribute("isFlipped").set_value("true");
+                    break;
+                
+                case Model::Rotation::PI_FLIPPED:
+                    pieceNode.append_attribute("rotation").set_value("RIGHT");
+                    pieceNode.append_attribute("isFlipped").set_value("true");
+                    break;
+                
+                case Model::Rotation::ONEHALFPI_FLIPPED:
+                    pieceNode.append_attribute("rotation").set_value("MIRROR");
+                    pieceNode.append_attribute("isFlipped").set_value("true");
+                    break;
+                
+                case Model::Rotation::THREEHALFPI_FLIPPED:
+                    pieceNode.append_attribute("rotation").set_value("LEFT");
+                    pieceNode.append_attribute("isFlipped").set_value("true");
+                    break;
+                
+                default:
+                    throw std::runtime_error("Rotation with value '" + std::to_string(static_cast<uint8_t>(move->rotation)) + "' not found");
+                    break;
             }
 
             //? Coordinates
@@ -220,31 +216,30 @@ namespace App
 
             //? Color
             uint8_t color;
-            switch (piece.attribute("color").value()[0])
-            {
-            // Red
-            case 'R':
-                color = 0;
-                break;
-            
-            // Blue
-            case 'B':
-                color = 1;
-                break;
+            switch (piece.attribute("color").value()[0]) {
+                // Red
+                case 'R':
+                    color = 0;
+                    break;
+                
+                // Blue
+                case 'B':
+                    color = 1;
+                    break;
 
-            // Green
-            case 'G':
-                color = 2;
-                break;
+                // Green
+                case 'G':
+                    color = 2;
+                    break;
 
-            // Yellow
-            case 'Y':
-                color = 3;
-                break;
-            
-            default:
-                throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
-                break;
+                // Yellow
+                case 'Y':
+                    color = 3;
+                    break;
+                
+                default:
+                    throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
+                    break;
             }
 
             //? X, Y
@@ -371,27 +366,27 @@ namespace App
     }
 
     inline const char* XMLParser::_getColor(const Model::PieceColor& colorId) const {
-        switch (colorId)
-        {
-        case Model::PieceColor::RED:
-            return "RED";
-            break;
+        switch (colorId) {
+            case Model::PieceColor::RED:
+                return "RED";
+                break;
 
-        case Model::PieceColor::BLUE:
-            return "BLUE";
-            break;
+            case Model::PieceColor::BLUE:
+                return "BLUE";
+                break;
 
-        case Model::PieceColor::GREEN:
-            return "GREEN";
-            break;
+            case Model::PieceColor::GREEN:
+                return "GREEN";
+                break;
 
-        case Model::PieceColor::YELLOW:
-            return "YELLOW";
-            break;
-        
-        default:
-            throw std::runtime_error("Color with value '" + std::to_string(static_cast<uint8_t>(colorId)) + "' not found");
-            break;
+            case Model::PieceColor::YELLOW:
+                return "YELLOW";
+                break;
+            
+            default:
+                throw std::runtime_error("Color with value '" + std::to_string(static_cast<uint8_t>(colorId)) + "' not found");
+                break;
         }
     }
+    
 } // namespace App

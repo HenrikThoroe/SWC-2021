@@ -17,5 +17,5 @@ namespace App {
         PROTOCOLEND = 7,
         UNDEFINED   = 8
     };
-
+    
 }

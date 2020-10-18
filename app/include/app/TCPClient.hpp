@@ -14,79 +14,75 @@ typedef std::vector<std::string> MessageQueue;
 
 namespace App
 {
-    /**
-     * @brief An asynchronous TCPClient for cummunicating with the SWC server
-     * 
-     */
-    class TCPClient
-    {
-    private:
-        // Mutex to lock multithreaded access
-        std::mutex mutex;
-        
-        // Queue that holds all received messages in order
-        std::shared_ptr<MessageQueue> messages = std::make_shared<MessageQueue>();
 
-        // Flag if there is a thread currently listenting
-        bool listening = false;
+    /// An asynchronous TCPClient for cummunicating with the SWC server
+    class TCPClient {
+        private:
+            /// Mutex to lock multithreaded access
+            std::mutex mutex;
+            
+            /// Queue that holds all received messages in order
+            std::shared_ptr<MessageQueue> messages = std::make_shared<MessageQueue>();
 
-        // Flag to indicate if client is connected to server
-        bool connected = false;
+            /// Flag if there is a thread currently listenting
+            bool listening = false;
 
-        // Buffer that holds received data
-        boost::asio::streambuf receiveBuffer;
+            /// Flag to indicate if client is connected to server
+            bool connected = false;
 
-        // The IoService Object used by boost asio
-        boost::asio::io_service ioService;
+            /// Buffer that holds received data
+            boost::asio::streambuf receiveBuffer;
 
-        // The socket used by boost asio
-        boost::asio::ip::tcp::socket socket{ioService};
-    public:
-        // Bool that indicates messages received state
-        std::atomic<bool> hasMessages = false;
-    public:
-        TCPClient(/* args */);
-        ~TCPClient();
-        
-        /**
-         * @brief Connect to the server
-         * 
-         * @param address Resolved server addres (IP)
-         * @param port Port to connect to
-         */
-        void connect(const std::string& address, const int port);
+            /// The IoService Object used by boost asio
+            boost::asio::io_service ioService;
 
-        // Resolve a hostname to an address (IP)
-        std::string resolveHostname(const std::string& hostname);
+            /// The socket used by boost asio
+            boost::asio::ip::tcp::socket socket{ioService};
+        public:
+            /// Bool that indicates messages received state
+            std::atomic<bool> hasMessages = false;
+        public:
+            TCPClient();
+            ~TCPClient();
+            
+            /**
+             * @brief Connect to the server
+             * 
+             * @param address Resolved server addres (IP)
+             * @param port Port to connect to
+             */
+            void connect(const std::string& address, const int port);
 
-        // Disconnect from server (gracefully)
-        void disconnect();
+            /// Resolve a hostname to an address (IP)
+            std::string resolveHostname(const std::string& hostname);
 
-        /**
-         * @brief Get all received messages and empty the MessageQueue (only if not empty)
-         * 
-         * @returns SharedPointer to the consumed MessageQueue
-         */
-        std::shared_ptr<MessageQueue> consumeMessages();
+            /// Disconnect from server (gracefully)
+            void disconnect();
 
-        // Listen for incoming messages (Async)
-        void listen();
+            /**
+             * @brief Get all received messages and empty the MessageQueue (only if not empty)
+             * 
+             * @returns SharedPointer to the consumed MessageQueue
+             */
+            std::shared_ptr<MessageQueue> consumeMessages();
 
-        /**
-         * @brief Send messages to server (Sync)
-         * 
-         * @param message Message to send to server
-         */
-        void send(const std::string& message);
-    private:
-        /**
-         * @brief Handler called when a Message is read
-         * 
-         * @param ec Refference to an errorCode that accured during read
-         * @param bytes_transferred Number of bytes transferred
-         */
-        void on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred);
+            /// Listen for incoming messages (Async)
+            void listen();
 
+            /**
+             * @brief Send messages to server (Sync)
+             * 
+             * @param message Message to send to server
+             */
+            void send(const std::string& message);
+        private:
+            /**
+             * @brief Handler called when a Message is read
+             * 
+             * @param ec Refference to an errorCode that accured during read
+             * @param bytes_transferred Number of bytes transferred
+             */
+            void on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred);
     }; 
     
 } // namespace App

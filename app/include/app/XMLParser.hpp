@@ -9,16 +9,16 @@
 #include "Move.hpp"
 #include "color.hpp"
 
-namespace App
-{
+namespace App {
+
     class XMLParser {
         private:
-            // Room id of current game used for sending moves
+            /// Room id of current game used for sending moves
             const char * roomId;
         public:
             XMLParser();
 
-            // No copy constructors allowed
+            /// No copy constructors allowed
             XMLParser(XMLParser* other) = delete;
             XMLParser(XMLParser& other) = delete;
             ~XMLParser();
@@ -100,7 +100,6 @@ namespace App
              * @returns Name of color
              */
             const char* _getColor(const Model::PieceColor& colorId) const;
-
-
     };
+    
 } // namespace App

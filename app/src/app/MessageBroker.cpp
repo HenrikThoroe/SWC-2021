@@ -2,8 +2,8 @@
 
 #include "MessageBroker.hpp"
 
-namespace App
-{
+namespace App {
+    
     MessageBroker::MessageBroker() {}
     
     MessageBroker::~MessageBroker() {

@@ -10,7 +10,6 @@
 using namespace boost::program_options;
 
 namespace App {
-    // Lifecycle
 
     EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()) {
         // Hostname of gameserver to connect to
@@ -50,8 +49,8 @@ namespace App {
     
     EventLoop::~EventLoop() {}
 
+    //* Public interface
 
-    // Public interface
     void EventLoop::run() {
         bool gameOver = false;
         std::vector<Message> messages;
@@ -82,9 +81,8 @@ namespace App {
         }
     }
 
+    //? Private methods
 
-    // Private methods
-    
     void EventLoop::_startConnection(const std::string& address, const uint8_t& port) {
         messageBroker.connect(address, port);
 
@@ -98,41 +96,40 @@ namespace App {
     }
 
     inline bool EventLoop::_actOnMessage(const Message& msg) {
-        switch (msg.type)
-        {
-        case MsgType::JOINED:
-            /* code */
-            break;
-        case MsgType::WELCOME:
-            /* code */
-            break;
-        case MsgType::GAMESTATE:
-            /* code */
-            break;
-        case MsgType::MOVEREQUEST:
-            /* code */
-            break;
-        case MsgType::LEFT:
-            /* code */
-            return true;
-            break;
-        case MsgType::RESULT:
-            /* code */
-            return true;
-            break;
-        case MsgType::EXCEPT:
-            /* code */
-            return true;
-            break;
-        case MsgType::PROTOCOLEND:
-            /* code */
-            return true;
-            break;
-        case MsgType::UNDEFINED:
-            throw std::runtime_error("Can not act on Undefined message");
-            break;
-        default:
-            throw std::runtime_error("_actOnMessage switch fell through"); 
+        switch (msg.type) {
+            case MsgType::JOINED:
+                /* code */
+                break;
+            case MsgType::WELCOME:
+                /* code */
+                break;
+            case MsgType::GAMESTATE:
+                /* code */
+                break;
+            case MsgType::MOVEREQUEST:
+                /* code */
+                break;
+            case MsgType::LEFT:
+                /* code */
+                return true;
+                break;
+            case MsgType::RESULT:
+                /* code */
+                return true;
+                break;
+            case MsgType::EXCEPT:
+                /* code */
+                return true;
+                break;
+            case MsgType::PROTOCOLEND:
+                /* code */
+                return true;
+                break;
+            case MsgType::UNDEFINED:
+                throw std::runtime_error("Can not act on Undefined message");
+                break;
+            default:
+                throw std::runtime_error("_actOnMessage switch fell through"); 
         }
 
         return false;
@@ -140,20 +137,20 @@ namespace App {
 
     inline void EventLoop::_runTask() const {
         // (0: done, 1: paused, 2: failed)
-        switch (backgroundQueue.front().run(messageReceivedFlag))
-        {
-        case 0:
-            backgroundQueue.pop();
-            break;
-        case 1:
-            Util::debugPrint("Background task has been paused");
-            break;
-        case 3:
-            Util::debugPrint("Background task failed; Exception caught and task discarded");
-            break;
-        default:
-            throw std::runtime_error("Got unexpected backgroundTask return code.");
-            break;
+        switch (backgroundQueue.front().run(messageReceivedFlag)) {
+            case 0:
+                backgroundQueue.pop();
+                break;
+            case 1:
+                Util::debugPrint("Background task has been paused");
+                break;
+            case 3:
+                Util::debugPrint("Background task failed; Exception caught and task discarded");
+                break;
+            default:
+                throw std::runtime_error("Got unexpected backgroundTask return code.");
+                break;
         }
     }
+
 }

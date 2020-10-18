@@ -6,8 +6,8 @@
 #include "MsgType.hpp"
 #include "Move.hpp"
 
-namespace App
-{
+namespace App {
+    
     struct Message {
         public:
             /**
@@ -18,18 +18,15 @@ namespace App
              */
             Message(MsgType type, std::any payload);
 
-            // No copy constructors allowed
+            /// No copy constructors allowed
             Message(Message* other) = delete;
             Message(Message& other) = delete;
 
-            // Destructor
-            ~Message();
 
-
-            // Type of message
+            /// Type of message
             MsgType type;
 
-            // Payload of message of any type (requires casting on access with std::any_cast<T>(i.payload))
+            /// Payload of message of any type (requires casting on access with std::any_cast<T>(i.payload))
             std::any payload;
     };
 
@@ -38,18 +35,15 @@ namespace App
 
             MementoMsg(uint8_t startPiece, uint32_t lastMove);
 
-            // No copy constructors allowed
+            /// No copy constructors allowed
             MementoMsg(MementoMsg* other) = delete;
             MementoMsg(MementoMsg& other) = delete;
 
-            // Destructor
-            ~MementoMsg();
 
-
-            // Index for PieceCollection pointing at the piece that has to be played in the first round
+            /// Index for PieceCollection pointing at the piece that has to be played in the first round
             uint8_t startPiece;
 
-            // Index for 'allPieces' cache in GameState of last move on the field
+            /// Index for 'allPieces' cache in GameState of last move on the field
             uint32_t lastMove;
     };
 
@@ -83,21 +77,19 @@ namespace App
              */
             ResultMsg(std::array<uint8_t, 2> score, std::array<ResultEnd, 2> end, std::array<ResultCause, 2> cause);
 
-            // No copy constructors allowed
+            /// No copy constructors allowed
             ResultMsg(ResultMsg* other) = delete;
             ResultMsg(ResultMsg& other) = delete;
 
-            // Destructor
-            ~ResultMsg();
 
-
-            // Array that holds both players inGame score reached
+            /// Array that holds both players inGame score reached
             std::array<uint8_t, 2>     score;
 
-            // Array that holds both players tournamentPoints earned in this round
+            /// Array that holds both players tournamentPoints earned in this round
             std::array<ResultEnd, 2>   end;
 
-            // Array that holds both players game-ending causes
+            /// Array that holds both players game-ending causes
             std::array<ResultCause, 2> cause;
     };
+    
 } // namespace App

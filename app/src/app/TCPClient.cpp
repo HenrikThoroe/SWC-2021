@@ -5,11 +5,9 @@
 
 #include "TCPClient.hpp"
 
-namespace App
-{
+namespace App {
+
     TCPClient::TCPClient() {}
-    
-    TCPClient::~TCPClient() {}
 
     void TCPClient::connect(const std::string& address, const int port) {
         // Lock the mutex to avoid date races
@@ -107,4 +105,5 @@ namespace App
             this->on_read(ec, bytes_transferred);
         });
     }
+    
 } // namespace App

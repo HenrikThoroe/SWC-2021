@@ -2,8 +2,8 @@
 
 #include "Task.hpp"
 
-namespace App
-{
+namespace App {
+    
     int Task::run(std::atomic<bool>& flag) {
         while (true) {
             // Check if message was recieved and task has to pause
@@ -18,4 +18,5 @@ namespace App
             }
         }
     }
+
 } // namespace App
