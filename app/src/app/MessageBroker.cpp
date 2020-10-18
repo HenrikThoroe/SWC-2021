@@ -20,6 +20,10 @@ namespace App
         return tcpClient.consumeMessages();
     }
 
+    void MessageBroker::parse(std::string& msg, std::vector<Message>& result) {
+        xmlParser.splitAndParseMessages(msg, result);
+    }
+
     void MessageBroker::dispatch(const std::string& msg) { 
         tcpClient.send(msg);
     }

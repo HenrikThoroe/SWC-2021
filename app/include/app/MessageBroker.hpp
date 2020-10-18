@@ -6,6 +6,7 @@
 #include <queue>
 
 #include "TCPClient.hpp"
+#include "XMLParser.hpp"
 #include "Move.hpp"
 #include "Task.hpp"
 #include "Message.hpp"
@@ -44,6 +45,16 @@ namespace App
          * @returns Shared Pointer to MessageQueue
          */
         std::shared_ptr<MessageQueue> getMessages();
+
+        /**
+         * @brief Parse a msg string to a Message struct
+         * 
+         * @param msg MultiMsg string to parse
+         * @param result Vector to store parsed messages in
+         * 
+         * @returns Void -> Stores parsed messages in 'result' param
+         */
+        void parse(std::string& msg, std::vector<Message>& result);
 
         /**
          * @brief Dispatch a Message to the gameserver
