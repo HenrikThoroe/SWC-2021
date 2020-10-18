@@ -36,9 +36,8 @@ namespace App
         tcpClient.send("<protocol>");
     }
 
-    void MessageBroker::sendMove(const Model::Move& move) {
-        std::string msg = xmlParser.parse(move);
-        tcpClient.send(msg);
+    void MessageBroker::sendMove(const Model::Move* move) {
+        tcpClient.send(xmlParser.makeMoveMessage(move));
     }
 
     void MessageBroker::sendJoinRequest() {

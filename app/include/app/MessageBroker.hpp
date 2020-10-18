@@ -81,7 +81,7 @@ namespace App
          * 
          * @param move MoveObject to serialize and send
          */
-        void sendMove(const Model::Move& move);
+        void sendMove(const Model::Move* move);
         
         /**
          * @brief Get the TCPClient´s hasMessages
