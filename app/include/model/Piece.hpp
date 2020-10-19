@@ -40,7 +40,7 @@ namespace Model {
              */
             std::vector<Rotation> uniqueRotations;
 
-            Piece(uint8_t id, char* name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations);
+            Piece(uint8_t id, const char* name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations);
             Piece(Piece* other) = delete;
             Piece(Piece& other) = delete;
 
