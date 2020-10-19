@@ -26,7 +26,7 @@ namespace Model {
             const uint8_t id;
 
             /// The XML name of the piece.
-            const std::string name;
+            const char* name;
 
             /// The number of occupied positions.
             const uint8_t size;
@@ -40,7 +40,7 @@ namespace Model {
              */
             std::vector<Rotation> uniqueRotations;
 
-            Piece(uint8_t id, std::string name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations);
+            Piece(uint8_t id, char* name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations);
             Piece(Piece* other) = delete;
             Piece(Piece& other) = delete;
 

@@ -2,7 +2,7 @@
 
 namespace Model {
 
-    Piece::Piece(uint8_t id, std::string name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations)
+    Piece::Piece(uint8_t id, char* name, uint8_t size, std::vector<Rotation> uniqueRotations, std::vector<ShapeRotation> rotationValues, std::array<int, 8> rotations)
         : id(id), name(name), size(size), uniqueRotations(uniqueRotations), rotationValues(rotationValues), rotations(rotations) {
     }
 
