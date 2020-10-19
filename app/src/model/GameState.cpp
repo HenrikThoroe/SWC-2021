@@ -151,11 +151,78 @@ namespace Model {
         // Reserve 550 items to prevent repeated resizing of moves vector
         moves.reserve(550);
 
+        auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
+
+            // The corners of the position, starting at top left and rotating clockwise
+            const std::array<Util::Position, 4> corners = {
+                Util::Position(position.x + 1, position.y - 1),
+                Util::Position(position.x + 1, position.y + 1),
+                Util::Position(position.x - 1, position.y + 1),
+                Util::Position(position.x - 1, position.y - 1)
+            };
+            
+            // Indicates which corner is not blocked by a piece of the same color
+            std::bitset<4> notBlocked {};
+
+            for (int i = 0; i < 4; ++i) {
+                notBlocked[i] = board.at(corners[i]) != color;
+            }
+
+            // Top left and bottom right are not blocked => check if edge at the right is possible drop position
+            if (notBlocked[0] && notBlocked[1]) {
+                const Util::Position middle = Util::Position(position.x + 1, position.y);
+                const Util::Position edge = Util::Position(position.x + 2, position.y);
+                
+                // If a piece at 'position' and at position + (1; 0) can be droped at least a piece of size two is possible
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // bottom right and bottom left
+            if (notBlocked[1] && notBlocked[2]) {
+                const Util::Position middle = Util::Position(position.x, position.y + 1);
+                const Util::Position edge = Util::Position(position.x, position.y + 2);
+                
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // bottom left and top left
+            if (notBlocked[2] && notBlocked[3]) {
+                const Util::Position middle = Util::Position(position.x - 1, position.y);
+                const Util::Position edge = Util::Position(position.x - 2, position.y);
+
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // top left and top right
+            if (notBlocked[3] && notBlocked[0]) {
+                const Util::Position middle = Util::Position(position.x, position.y - 1);
+                const Util::Position edge = Util::Position(position.x, position.y - 2);
+                
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
         // Iterate all available drop positions for current color
         for (const Util::Position& dropPosition : dropPositions) {
 
+            bool monoOnly = !allowsMoreThanOneField(dropPosition);
+
             // Iterate all piece shapes
             for (int pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
+
+                if (pieceId > 0 && monoOnly) {
+                    break;
+                }
 
                 // Filter all shapes which are unavailable for current color
                 if (availablePieces[colorId][pieceId] == 0 || (getTurn() < 4 && pieceId != initialPiece)) {
