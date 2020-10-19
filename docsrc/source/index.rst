@@ -10,6 +10,7 @@ Welcome to BlockusC++-AI's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. doxygenindex::
 
 
 Indices and tables
