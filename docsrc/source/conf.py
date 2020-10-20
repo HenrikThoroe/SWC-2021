@@ -32,8 +32,13 @@ release = '0.0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_rtd_theme'
+    'sphinx_rtd_theme',
+    'breathe'
 ]
+
+# Breathe Configuration
+breathe_projects = { "Blokus AI": "../doxyBuild/xml/" }
+breathe_default_project = "Blokus AI"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

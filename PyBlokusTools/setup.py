@@ -16,12 +16,18 @@ setuptools.setup(
         "Operating System :: POSIX",
     ],
     python_requires='>=3.8',
+    install_requires=[
+        'Sphinx>=3.2.1',
+        'sphinx-rtd-theme>=0.5.0',
+        'breathe>=4.22.1',
+    ],
     entry_points = {
         "console_scripts": [
             'blokustest = pyblokustools.scripts.runTests:runTests',
             'blokusbench = pyblokustools.scripts.runBenchmarks:runBenchmarks',
             'blokusprod = pyblokustools.scripts.compileProduction:compileProduction',
             'blokusdebug = pyblokustools.scripts.compileDebug:compileDebug',
-            ]
-        },
+            'blokusdoc = pyblokustools.scripts.makeDocumentation:makeDocumentation',
+        ]
+    },
 )
