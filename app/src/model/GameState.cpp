@@ -153,7 +153,7 @@ namespace Model {
 
         auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
 
-            // The corners of the position, starting at top left and rotating clockwise
+            // The corners of the position, starting at top right and rotating clockwise
             const std::array<Util::Position, 4> corners = {
                 Util::Position(position.x + 1, position.y - 1),
                 Util::Position(position.x + 1, position.y + 1),
@@ -168,7 +168,7 @@ namespace Model {
                 notBlocked[i] = board.at(corners[i]) != color;
             }
 
-            // Top left and bottom right are not blocked => check if edge at the right is possible drop position
+            // Top right and bottom right are not blocked => check if edge at the right is possible drop position
             if (notBlocked[0] && notBlocked[1]) {
                 const Util::Position middle = Util::Position(position.x + 1, position.y);
                 const Util::Position edge = Util::Position(position.x + 2, position.y);
