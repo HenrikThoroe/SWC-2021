@@ -10,6 +10,7 @@
 #include "Player.hpp"
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
+#include "constants.hpp"
 
 namespace Model {
 
@@ -42,27 +43,20 @@ namespace Model {
             uint8_t turn;
 
             /// A collection of all remaining piece shapes stored as an array of their IDs for each color.
-            std::array<std::array<uint8_t, 21>, 4> availablePieces {};
+            std::array<std::array<uint8_t, Constants::PIECE_SHAPES>, 4> availablePieces {};
 
             /// A cache which stores stores all deployed pieces possible on the board.
             /// @note Size: 268,800 * 84 Bytes = 22,579,200 Byte ~= 22 Megabyte
             std::vector<DeployedPiece> allPieces {};
 
-            /// A bitset which indicates which piece cannot be deployed on the state. 
-            /// Each bit is logically connected to the DeployedPiece in `allPieces` at the same index. 
-            std::bitset<268800> undeployablePieces {};
-
-            /// A history of `undeployablePieces` to revert moves.
-            std::stack<std::bitset<268800>> undeployablePiecesHistory {};
-
             /// A set of random 64 bit numbers to implement zobrist hashing. Size: ~2MB
-            std::array<uint64_t, 268800> hashpool {};
+            std::array<uint64_t, Constants::PIECE_VARIANTS> hashpool {};
 
             /// The current hash value of the game state.
             uint64_t hashValue = 0;
 
-            /// Calculates a unique index for the piece to access it in `allPieces` / `undeployablePieces`. 
-            int createIndex(const DeployedPiece* piece) const;
+            /// Calculates a unique index for the piece to access it in `allPieces` 
+            int createIndex(const DeployedPiece* piece, bool includeColor = true) const;
 
         public:
             GameState(int initialPiece);

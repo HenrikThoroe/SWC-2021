@@ -9,7 +9,7 @@ namespace Util {
 
     class Position: public Vector2D {
         public:
-            Position(int x, int y);
+            Position(int8_t x, int8_t y);
 
             bool isNextTo(const Position& other) const;
 

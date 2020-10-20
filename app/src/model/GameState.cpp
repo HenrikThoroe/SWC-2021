@@ -9,9 +9,9 @@ namespace Model {
 
     GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
-        const Util::Position topRight = Util::Position(19, 0);
-        const Util::Position bottomLeft = Util::Position(0, 19);
-        const Util::Position bottomRight = Util::Position(19, 19);
+        const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
+        const Util::Position bottomLeft = Util::Position(0, Constants::BOARD_ROWS - 1);
+        const Util::Position bottomRight = Util::Position(Constants::BOARD_COLUMNS - 1, Constants::BOARD_ROWS - 1);
 
         for (uint8_t c = 1; c <= 4; ++c) {
             const PieceColor color = static_cast<PieceColor>(c);
@@ -23,14 +23,13 @@ namespace Model {
         }
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
-        allPieces.reserve(20 * 20 * 21 * 4 * 8);
-        undeployablePiecesHistory.push(std::bitset<268800> {});
+        allPieces.reserve(Constants::PIECE_VARIANTS);
 
         for (uint8_t color = 0; color < 4; ++color) {
-            for (uint8_t pieceId = 0; pieceId < 21; ++pieceId) {
+            for (uint8_t pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
                 for (uint8_t rotation = 0; rotation < 8; ++rotation) {
-                    for (int row = 0; row < 20; ++row) {
-                        for (int col = 0; col < 20; ++col) {
+                    for (int row = 0; row < Constants::BOARD_ROWS; ++row) {
+                        for (int col = 0; col < Constants::BOARD_COLUMNS; ++col) {
                             allPieces.emplace_back(pieceId, Util::Position(col, row), static_cast<Rotation>(rotation), static_cast<PieceColor>(color + 1));
                         }
                     }
@@ -42,7 +41,7 @@ namespace Model {
         std::mt19937_64 eng(rd());
         std::uniform_int_distribution<uint64_t> distr;
 
-        for (int i = 0; i < 268800; ++i) {
+        for (int i = 0; i < Constants::PIECE_VARIANTS; ++i) {
             hashpool[i] = distr(eng);
         }
 
@@ -72,7 +71,6 @@ namespace Model {
             performedMoves.push(std::nullopt);
         }
 
-        undeployablePiecesHistory.push(undeployablePieces);
         turn += 1;
     }
 
@@ -87,8 +85,6 @@ namespace Model {
         
         performedMoves.pop();
         turn -= 1;
-        undeployablePieces = undeployablePiecesHistory.top();
-        undeployablePiecesHistory.pop();
     }
 
     bool GameState::canBeDeployed(const DeployedPiece& piece) {
@@ -96,27 +92,18 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
-        int index = createIndex(piece);
-
-        if (undeployablePieces[index] == true) {
-            return false;
-        }
-
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
-                undeployablePieces[index] = true;
                 return false;
             }
 
             if (board[position] != PieceColor::NONE) {
-                undeployablePieces[index] = true;
                 return false;
             }
 
             for (const Util::Position& edge : position.getEdges()) {
                 if (board.at(edge) == piece->color) {
-                    undeployablePieces[index] = true;
                     return false;
                 }
             }
@@ -126,13 +113,18 @@ namespace Model {
         return true;
     }
 
-    inline int GameState::createIndex(const DeployedPiece* piece) const {
-        return 
+    inline int GameState::createIndex(const DeployedPiece* piece, bool includeColor) const {
+        int idx = 
             piece->origin.x +
             piece->origin.y * 20 +
             static_cast<uint8_t>(piece->rotation) * 400 + 
-            piece->pieceId * 3200 + 
-            (static_cast<uint8_t>(piece->color) - 1) * 67200;
+            piece->pieceId * 3200;
+
+        if (includeColor) {
+            idx += (static_cast<uint8_t>(piece->color) - 1) * 67200;
+        }
+
+        return idx;
     }
 
     std::vector<const Move*> GameState::getPossibleMoves() {
@@ -154,16 +146,83 @@ namespace Model {
         const uint8_t colorId = static_cast<uint8_t>(color) - 1;
         const std::vector<Util::Position> dropPositions = board.getDropPositions(color);
         int indexCache[5] = { 0, 0, 0, 0, (static_cast<uint8_t>(color) - 1) * 20 * 20 * 8 * 21 };
-        std::bitset<268800> usedPieces {};
+        std::bitset<Constants::PIECE_VARIANTS_NO_COLOR> usedPieces {};
 
-        // Reserve 400 items to prevent repeated resizing of moves vector
-        moves.reserve(400);
+        // Reserve 550 items to prevent repeated resizing of moves vector
+        moves.reserve(550);
+
+        auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
+
+            // The corners of the position, starting at top right and rotating clockwise
+            const std::array<Util::Position, 4> corners = {
+                Util::Position(position.x + 1, position.y - 1),
+                Util::Position(position.x + 1, position.y + 1),
+                Util::Position(position.x - 1, position.y + 1),
+                Util::Position(position.x - 1, position.y - 1)
+            };
+            
+            // Indicates which corner is not blocked by a piece of the same color
+            std::bitset<4> notBlocked {};
+
+            for (int i = 0; i < 4; ++i) {
+                notBlocked[i] = board.at(corners[i]) != color;
+            }
+
+            // Top right and bottom right are not blocked => check if edge at the right is possible drop position
+            if (notBlocked[0] && notBlocked[1]) {
+                const Util::Position middle = Util::Position(position.x + 1, position.y);
+                const Util::Position edge = Util::Position(position.x + 2, position.y);
+                
+                // If a piece at 'position' and at position + (1; 0) can be droped at least a piece of size two is possible
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // bottom right and bottom left
+            if (notBlocked[1] && notBlocked[2]) {
+                const Util::Position middle = Util::Position(position.x, position.y + 1);
+                const Util::Position edge = Util::Position(position.x, position.y + 2);
+                
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // bottom left and top left
+            if (notBlocked[2] && notBlocked[3]) {
+                const Util::Position middle = Util::Position(position.x - 1, position.y);
+                const Util::Position edge = Util::Position(position.x - 2, position.y);
+
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            // top left and top right
+            if (notBlocked[3] && notBlocked[0]) {
+                const Util::Position middle = Util::Position(position.x, position.y - 1);
+                const Util::Position edge = Util::Position(position.x, position.y - 2);
+                
+                if (board.at(middle) == PieceColor::NONE && board.at(edge) != color) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
 
         // Iterate all available drop positions for current color
         for (const Util::Position& dropPosition : dropPositions) {
 
+            bool monoOnly = !allowsMoreThanOneField(dropPosition);
+
             // Iterate all piece shapes
-            for (int pieceId = 0; pieceId < 21; ++pieceId) {
+            for (int pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
+
+                if (pieceId > 0 && monoOnly) {
+                    break;
+                }
 
                 // Filter all shapes which are unavailable for current color
                 if (availablePieces[colorId][pieceId] == 0 || (getTurn() < 4 && pieceId != initialPiece)) {
@@ -176,7 +235,7 @@ namespace Model {
 
                 // Iterate all rotations
                 for (const Rotation& rotation : piece.uniqueRotations) {
-                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations[static_cast<uint8_t>(rotation)]);
+                    const Piece::AttachPoints& attachPoints = std::get<1>(piece.getRotation(rotation));
 
                     indexCache[2] = static_cast<uint8_t>(rotation) * 400;
 
@@ -185,6 +244,7 @@ namespace Model {
                         const Util::Vector2D& offsetVector = info[1];
 
                         // Ensure a piece of the same color is located at the corner of the new piece
+                        //! IMPORTANT: By calling the subscript operator a false positive is possible. Such pieces will be filtered out by canBeDeployed.
                         if (getTurn() > 3 && board[dropPosition + offsetVector] != color) {
                             continue;
                         }
@@ -196,20 +256,15 @@ namespace Model {
                             continue;
                         }
 
-                        // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
-                        const int index = 
-                            origin.x +
-                            origin.y * 20 +
-                            indexCache[2] + 
-                            indexCache[3] + 
-                            indexCache[4];
+                        // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY
+                        const int index = (origin.x + origin.y * 20) + (indexCache[2] + indexCache[3]);
 
-                        // Skip if the piece cannot be deployed or is already included
-                        if (undeployablePieces[index] || usedPieces[index]) {
+                        // Skip if the piece is already included
+                        if (usedPieces[index]) {
                             continue;
                         }
 
-                        const DeployedPiece* deployed = &allPieces[index];
+                        const DeployedPiece* deployed = &allPieces[index + indexCache[4]];
 
                         // Add piece to result vector if it can be deployed on the board
                         if (canBeDeployed(deployed)) {

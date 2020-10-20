@@ -4,13 +4,13 @@
 
 namespace Util {
 
-    Vector2D::Vector2D(int x, int y) : x(x), y(y) {};
+    Vector2D::Vector2D(int8_t x, int8_t y) : x(x), y(y) {};
 
     Vector2D::Vector2D(const Vector2D& other) : x(other.x), y(other.y) {};
 
     Vector2D::Vector2D(const Vector2D* other) : x(other->x), y(other->y) {};
 
-    void Vector2D::scale(const int& factor) {
+    void Vector2D::scale(const int8_t& factor) {
         x *= factor;
         y *= factor;
     }
@@ -20,7 +20,7 @@ namespace Util {
         y += other.y;
     }
 
-    Vector2D Vector2D::scaled(const int& factor) const {
+    Vector2D Vector2D::scaled(const int8_t& factor) const {
         Vector2D scaled = Vector2D(this);
         scaled.scale(factor);
         return scaled;
@@ -40,7 +40,7 @@ namespace Util {
         return shifted(offset);
     }
 
-    Vector2D Vector2D::operator * (const int& factor) const {
+    Vector2D Vector2D::operator * (const int8_t& factor) const {
         return scaled(factor);
     }
 
@@ -57,7 +57,7 @@ namespace Util {
     }
 
     std::ostream& operator << (std::ostream& os, const Vector2D& vec) {
-        os << "Vector2D { x: " << vec.x << ", y: " << vec.y << " }";
+        os << "Vector2D { x: " << static_cast<int>(vec.x) << ", y: " << static_cast<int>(vec.y) << " }";
         return os;
     }
 

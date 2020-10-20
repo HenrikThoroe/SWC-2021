@@ -3,7 +3,7 @@
 namespace Model {
 
     const std::array<Piece, 21> PieceCollection::allPieces = {
-        Piece {
+        Piece(
             0, 
             "MONO", 
             1, 
@@ -41,213 +41,21 @@ namespace Model {
                             Util::Vector2D(1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0
             }
-        },
-        Piece {
+        ),
+        Piece(
             1, 
             "DOMINO", 
             2, 
@@ -317,190 +125,21 @@ namespace Model {
                             Util::Vector2D(-1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -1), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -2), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1
             }
-        },
-        Piece {
+        ),
+        Piece(
             2, 
             "TRIO-L", 
             3, 
@@ -656,154 +295,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(-1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                3, 
+                0, 
+                1, 
+                2
             }
-        },
-        Piece {
+        ),
+        Piece(
             3, 
             "TRIO-I", 
             3, 
@@ -875,196 +381,21 @@ namespace Model {
                             Util::Vector2D(-1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1
             }
-        },
-        Piece {
+        ),
+        Piece(
             4, 
             "TETRO-I", 
             4, 
@@ -1138,202 +469,21 @@ namespace Model {
                             Util::Vector2D(-1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(0, -3)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -4), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -4), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(3, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(4, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(4, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(0, 3)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 4), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 4), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-3, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-4, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-4, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(0, -3)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -4), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -4), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(3, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(4, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(4, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1
             }
-        },
-        Piece {
+        ),
+        Piece(
             5, 
             "TETRO-L", 
             4, 
@@ -1646,9 +796,20 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        },
-        Piece {
+        ),
+        Piece(
             6, 
             "TETRO-O", 
             4, 
@@ -1689,234 +850,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(0, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(0, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(-1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -1), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(0, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -2), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(1, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 1), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(0, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 2), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0
             }
-        },
-        Piece {
+        ),
+        Piece(
             7, 
             "TETRO-T", 
             4, 
@@ -2096,178 +1044,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(-1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                0, 
+                1, 
+                2, 
+                3
             }
-        },
-        Piece {
+        ),
+        Piece(
             8, 
             "TETRO-Z", 
             4, 
@@ -2369,90 +1160,6 @@ namespace Model {
                     {
                         Util::Vector2D(0, 0), 
                         Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-2, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 0), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(1, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -3), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
                         Util::Vector2D(-1, 1), 
                         Util::Vector2D(-2, 1)
                     }, 
@@ -2531,94 +1238,21 @@ namespace Model {
                             Util::Vector2D(-1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(2, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -2), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(1, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                2, 
+                3, 
+                2, 
+                3
             }
-        },
-        Piece {
+        ),
+        Piece(
             9, 
             "PENTO-I", 
             5, 
@@ -2694,208 +1328,21 @@ namespace Model {
                             Util::Vector2D(-1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(0, -3), 
-                        Util::Vector2D(0, -4)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -5), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -5), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(3, 0), 
-                        Util::Vector2D(4, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(5, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(5, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(0, 3), 
-                        Util::Vector2D(0, 4)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 5), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 5), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-3, 0), 
-                        Util::Vector2D(-4, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-5, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-5, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(0, -3), 
-                        Util::Vector2D(0, -4)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -5), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -5), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(3, 0), 
-                        Util::Vector2D(4, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(5, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(5, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1, 
+                0, 
+                1
             }
-        },
-        Piece {
+        ),
+        Piece(
             10, 
             "PENTO-U", 
             5, 
@@ -3079,182 +1526,21 @@ namespace Model {
                             Util::Vector2D(-1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(-2, 1), 
-                        Util::Vector2D(-2, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-1, -2), 
-                        Util::Vector2D(0, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(2, -1), 
-                        Util::Vector2D(2, 0)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(1, 2), 
-                        Util::Vector2D(0, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                0, 
+                1, 
+                2, 
+                3
             }
-        },
-        Piece {
+        ),
+        Piece(
             11, 
             "PENTO-L", 
             5, 
@@ -3575,9 +1861,20 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        },
-        Piece {
+        ),
+        Piece(
             12, 
             "PENTO-V", 
             5, 
@@ -3741,162 +2038,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(-1, 2), 
-                        Util::Vector2D(-2, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 3), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-2, -1), 
-                        Util::Vector2D(-2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(1, -2), 
-                        Util::Vector2D(2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -3), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(2, 1), 
-                        Util::Vector2D(2, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                3, 
+                0, 
+                1, 
+                2
             }
-        },
-        Piece {
+        ),
+        Piece(
             13, 
             "PENTO-P", 
             5, 
@@ -4217,9 +2373,20 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        },
-        Piece {
+        ),
+        Piece(
             14, 
             "PENTO-W", 
             5, 
@@ -4423,202 +2590,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(-1, 2), 
-                        Util::Vector2D(-2, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 3), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-2, -1), 
-                        Util::Vector2D(-2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 0), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(1, -2), 
-                        Util::Vector2D(2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -3), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(2, 1), 
-                        Util::Vector2D(2, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 0), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                3, 
+                0, 
+                1, 
+                2
             }
-        },
-        Piece {
+        ),
+        Piece(
             15, 
             "PENTO-R", 
             5, 
@@ -5019,9 +3005,20 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        },
-        Piece {
+        ),
+        Piece(
             16, 
             "PENTO-X", 
             5, 
@@ -5083,381 +3080,21 @@ namespace Model {
                             Util::Vector2D(1, 1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(-1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(-1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(-1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(1, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -2), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -2), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(1, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 0), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 0), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0, 
+                0
             }
-        },
-        Piece {
+        ),
+        Piece(
             17, 
             "PENTO-Z", 
             5, 
@@ -5561,92 +3198,6 @@ namespace Model {
                     {
                         Util::Vector2D(0, 0), 
                         Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-1, -2), 
-                        Util::Vector2D(-2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(2, -1), 
-                        Util::Vector2D(2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 0), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -3), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
                         Util::Vector2D(-1, 1), 
                         Util::Vector2D(-1, 2), 
                         Util::Vector2D(-2, 2)
@@ -5727,96 +3278,21 @@ namespace Model {
                             Util::Vector2D(-1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(1, -2), 
-                        Util::Vector2D(2, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -3), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(2, 1), 
-                        Util::Vector2D(2, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 2), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 0), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                0, 
+                1, 
+                2, 
+                3, 
+                2, 
+                3
             }
-        },
-        Piece {
+        ),
+        Piece(
             18, 
             "PENTO-Y", 
             5, 
@@ -6177,9 +3653,20 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        },
-        Piece {
+        ),
+        Piece(
             19, 
             "PENTO-T", 
             5, 
@@ -6363,182 +3850,21 @@ namespace Model {
                             Util::Vector2D(1, -1)
                         }
                     }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(-1, 0), 
-                        Util::Vector2D(-2, 0), 
-                        Util::Vector2D(-1, 1), 
-                        Util::Vector2D(-1, 2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-2, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, 3), 
-                            Util::Vector2D(1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, -1), 
-                        Util::Vector2D(0, -2), 
-                        Util::Vector2D(-1, -1), 
-                        Util::Vector2D(-2, -1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(1, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -3), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, -2), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-3, 0), 
-                            Util::Vector2D(-1, 1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(1, 0), 
-                        Util::Vector2D(2, 0), 
-                        Util::Vector2D(1, -1), 
-                        Util::Vector2D(1, -2)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, 1), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 1), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(2, -3), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(0, -3), 
-                            Util::Vector2D(-1, -1)
-                        }
-                    }
-                ), 
-                std::tuple<Piece::Shape, Piece::AttachPoints>(
-                    
-                    {
-                        Util::Vector2D(0, 0), 
-                        Util::Vector2D(0, 1), 
-                        Util::Vector2D(0, 2), 
-                        Util::Vector2D(1, 1), 
-                        Util::Vector2D(2, 1)
-                    }, 
-                    
-                    {
-                        
-                        {
-                            Util::Vector2D(-1, -1), 
-                            Util::Vector2D(-1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, -1), 
-                            Util::Vector2D(1, -1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(-1, 3), 
-                            Util::Vector2D(-1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(1, 3), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 2), 
-                            Util::Vector2D(1, 1)
-                        }, 
-                        
-                        {
-                            Util::Vector2D(3, 0), 
-                            Util::Vector2D(1, -1)
-                        }
-                    }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                0, 
+                1, 
+                2, 
+                3
             }
-        },
-        Piece {
+        ),
+        Piece(
             20, 
             "PENTO-S", 
             5, 
@@ -6899,8 +4225,19 @@ namespace Model {
                         }
                     }
                 )
+            }, 
+            
+            {
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5, 
+                6, 
+                7
             }
-        }
+        )
     };
 
     const Piece& PieceCollection::getPiece(const int& index) {

@@ -99,6 +99,7 @@
         "filesystem": "cpp",
         "*.ipp": "cpp",
         "clocale": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "compare": "cpp"
     }
 }

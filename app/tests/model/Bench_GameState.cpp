@@ -70,12 +70,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state, &moves] {
-                bool res = true;
-                for (const Move* move : moves) {
-                    res = res && state.canBeDeployed(move);
-                } 
-
-                return res;
+                return state.canBeDeployed(moves[0]);
             });
 
             int index = rand() % moves.size();
@@ -112,8 +107,12 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             for (int x = 0; x < 20; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                index = rand() % moves.size();
-                state.performMove(moves[index]);
+                if (moves.size() == 0) {
+                    state.performMove(nullptr);
+                } else {
+                    index = rand() % moves.size();
+                    state.performMove(moves[index]);
+                }
             }
 
             for (int x = 0; x < 20; ++x) {
