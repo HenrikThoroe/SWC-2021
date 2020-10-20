@@ -2,11 +2,12 @@
 
 ## Install:
 
+    ```sh
     sudo apt-get install -y doxygen # <- Requirement for blokusdoc
     python3.8 -m pip install --upgrade . # <- In PyBlokusTools folder
+    ```
   
 ## Available Scripts:
-  
 
  - blokustest
  - blokusbench
