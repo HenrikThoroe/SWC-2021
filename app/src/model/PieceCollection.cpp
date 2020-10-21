@@ -141,7 +141,7 @@ namespace Model {
         ),
         Piece(
             2, 
-            "TRIO-L", 
+            "TRIO_L", 
             3, 
             
             {
@@ -311,7 +311,7 @@ namespace Model {
         ),
         Piece(
             3, 
-            "TRIO-I", 
+            "TRIO_I", 
             3, 
             
             {
@@ -397,7 +397,7 @@ namespace Model {
         ),
         Piece(
             4, 
-            "TETRO-I", 
+            "TETRO_I", 
             4, 
             
             {
@@ -485,7 +485,7 @@ namespace Model {
         ),
         Piece(
             5, 
-            "TETRO-L", 
+            "TETRO_L", 
             4, 
             
             {
@@ -811,7 +811,7 @@ namespace Model {
         ),
         Piece(
             6, 
-            "TETRO-O", 
+            "TETRO_O", 
             4, 
             
             {
@@ -866,7 +866,7 @@ namespace Model {
         ),
         Piece(
             7, 
-            "TETRO-T", 
+            "TETRO_T", 
             4, 
             
             {
@@ -1060,7 +1060,7 @@ namespace Model {
         ),
         Piece(
             8, 
-            "TETRO-Z", 
+            "TETRO_Z", 
             4, 
             
             {
@@ -1254,7 +1254,7 @@ namespace Model {
         ),
         Piece(
             9, 
-            "PENTO-I", 
+            "PENTO_I", 
             5, 
             
             {
@@ -1344,7 +1344,7 @@ namespace Model {
         ),
         Piece(
             10, 
-            "PENTO-U", 
+            "PENTO_U", 
             5, 
             
             {
@@ -1542,7 +1542,7 @@ namespace Model {
         ),
         Piece(
             11, 
-            "PENTO-L", 
+            "PENTO_L", 
             5, 
             
             {
@@ -1876,7 +1876,7 @@ namespace Model {
         ),
         Piece(
             12, 
-            "PENTO-V", 
+            "PENTO_V", 
             5, 
             
             {
@@ -2054,7 +2054,7 @@ namespace Model {
         ),
         Piece(
             13, 
-            "PENTO-P", 
+            "PENTO_P", 
             5, 
             
             {
@@ -2388,7 +2388,7 @@ namespace Model {
         ),
         Piece(
             14, 
-            "PENTO-W", 
+            "PENTO_W", 
             5, 
             
             {
@@ -2606,7 +2606,7 @@ namespace Model {
         ),
         Piece(
             15, 
-            "PENTO-R", 
+            "PENTO_R", 
             5, 
             
             {
@@ -3020,7 +3020,7 @@ namespace Model {
         ),
         Piece(
             16, 
-            "PENTO-X", 
+            "PENTO_X", 
             5, 
             
             {
@@ -3096,7 +3096,7 @@ namespace Model {
         ),
         Piece(
             17, 
-            "PENTO-Z", 
+            "PENTO_Z", 
             5, 
             
             {
@@ -3294,7 +3294,7 @@ namespace Model {
         ),
         Piece(
             18, 
-            "PENTO-Y", 
+            "PENTO_Y", 
             5, 
             
             {
@@ -3668,7 +3668,7 @@ namespace Model {
         ),
         Piece(
             19, 
-            "PENTO-T", 
+            "PENTO_T", 
             5, 
             
             {
@@ -3866,7 +3866,7 @@ namespace Model {
         ),
         Piece(
             20, 
-            "PENTO-S", 
+            "PENTO_S", 
             5, 
             
             {
