@@ -20,7 +20,7 @@ namespace Model {
 
     void DeployedPiece::prepareOccupiedFields() {
         const Piece& piece = PieceCollection::getPiece(pieceId);
-        const Piece::Shape& shape = std::get<0>(piece.rotations.at(static_cast<uint8_t>(rotation)));
+        const Piece::Shape& shape = std::get<0>(piece.getRotation(rotation));
 
         for (const Util::Vector2D& path : shape) {
             occupiedPositions.push_back(origin + path);
@@ -29,7 +29,7 @@ namespace Model {
 
     void DeployedPiece::prepareAttachPoints() {
         const Piece& piece = PieceCollection::getPiece(pieceId);
-        const Piece::AttachPoints& attachPoints = std::get<1>(piece.rotations.at(static_cast<uint8_t>(rotation)));
+        const Piece::AttachPoints& attachPoints = std::get<1>(piece.getRotation(rotation));
 
         for (const Piece::AttachPoint& attachPoint : attachPoints) {
             const Util::Position absolutePoint = origin + attachPoint.at(0);

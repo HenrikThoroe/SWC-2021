@@ -11,10 +11,6 @@ namespace Model {
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = piece.color;
-            
-            for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.y][pos.x] *= -1;
-            }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
@@ -31,10 +27,6 @@ namespace Model {
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = PieceColor::NONE;
-            
-            for (int i = 0; i < 4; ++i) {
-                dropPositions[i][pos.y][pos.x] *= -1;
-            }
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
@@ -79,8 +71,25 @@ namespace Model {
 
             for (int row = 0; row < 20; ++row) {
                 for (int col = 0; col < 20; ++col) {
-                    if (fields[row][col] > 0) {
-                        results.emplace_back(col, row);
+                    const bool isPossible = fields[row][col] > 0;
+                    const bool isNotOccupied = this->fields[row][col] == PieceColor::NONE;
+
+                    if (isPossible && isNotOccupied) {
+                        const Util::Position position = Util::Position(col, row);
+                        const std::array<Util::Position, 4> edges = position.getEdges();
+                        bool isValid = true;
+
+                        // Do not include position in results if another piece of the same color is located at the edge of the position.
+                        for (const Util::Position& edge : edges) {
+                            if (at(edge) == color) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (isValid) {
+                            results.push_back(position);
+                        }
                     }
                 }
             }
@@ -102,7 +111,25 @@ namespace Model {
     std::ostream& operator << (std::ostream& os, const Board& board) {
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
+
+                switch (board.fields[row][col]) {
+                    case PieceColor::RED:
+                        os << "\033[1;31m";
+                        break;
+                    case PieceColor::GREEN:
+                        os << "\033[1;32m";
+                        break;
+                    case PieceColor::BLUE:
+                        os << "\033[1;34m";
+                        break;
+                    case PieceColor::YELLOW:
+                        os << "\033[1;33m";
+                        break;
+                }
+
                 os << static_cast<int>(board.fields[row][col]);
+
+                os << "\033[0m";
 
                 if (col < 19) {
                     os << " | ";

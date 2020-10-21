@@ -241,5 +241,8 @@ $RECYCLE.BIN/
 .pybt-cache
 compilerOutput.txt
 
+# Documentation
+docs/
+
 # Own working/testing directory
 .dev

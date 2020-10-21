@@ -88,10 +88,4 @@ def runTests() -> None:
         raise SystemExit()
 
     print(colorT("\nRunning tests:\n", Colors.PURPLE))
-    subprocess.run(
-            [
-                f'./{out_file}',
-                *args.testflags
-            ],
-            stderr=subprocess.STDOUT
-        )
+    os.execv(f'./{out_file}', ['testsRun.out' ,*args.testflags])
