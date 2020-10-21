@@ -359,43 +359,43 @@ namespace App {
             return 0;
         } else if (pieceName == "DOMINO") {
             return 1;
-        } else if (pieceName == "TRIO-L") {
+        } else if (pieceName == "TRIO_L") {
             return 2;
-        } else if (pieceName == "TRIO-I") {
+        } else if (pieceName == "TRIO_I") {
             return 3;
-        } else if (pieceName == "TETRO-I") {
+        } else if (pieceName == "TETRO_I") {
             return 4;
-        } else if (pieceName == "TETRO-L") {
+        } else if (pieceName == "TETRO_L") {
             return 5;
-        } else if (pieceName == "TETRO-O") {
+        } else if (pieceName == "TETRO_O") {
             return 6;
-        } else if (pieceName == "TETRO-T") {
+        } else if (pieceName == "TETRO_T") {
             return 7;
-        } else if (pieceName == "TETRO-Z") {
+        } else if (pieceName == "TETRO_Z") {
             return 8;
-        } else if (pieceName == "PENTO-I") {
+        } else if (pieceName == "PENTO_I") {
             return 9;
-        } else if (pieceName == "PENTO-U") {
+        } else if (pieceName == "PENTO_U") {
             return 10;
-        } else if (pieceName == "PENTO-L") {
+        } else if (pieceName == "PENTO_L") {
             return 11;
-        } else if (pieceName == "PENTO-V") {
+        } else if (pieceName == "PENTO_V") {
             return 12;
-        } else if (pieceName == "PENTO-P") {
+        } else if (pieceName == "PENTO_P") {
             return 13;
-        } else if (pieceName == "PENTO-W") {
+        } else if (pieceName == "PENTO_W") {
             return 14;
-        } else if (pieceName == "PENTO-R") {
+        } else if (pieceName == "PENTO_R") {
             return 15;
-        } else if (pieceName == "PENTO-X") {
+        } else if (pieceName == "PENTO_X") {
             return 16;
-        } else if (pieceName == "PENTO-Z") {
+        } else if (pieceName == "PENTO_Z") {
             return 17;
-        } else if (pieceName == "PENTO-Y") {
+        } else if (pieceName == "PENTO_Y") {
             return 18;
-        } else if (pieceName == "PENTO-T") {
+        } else if (pieceName == "PENTO_T") {
             return 19;
-        } else if (pieceName == "PENTO-S") {
+        } else if (pieceName == "PENTO_S") {
             return 20;
         }
 
