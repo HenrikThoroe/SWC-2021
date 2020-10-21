@@ -2,6 +2,7 @@
 
 #include <any>
 #include <array>
+#include <optional>
 
 #include "MsgType.hpp"
 #include "Move.hpp"
@@ -33,7 +34,7 @@ namespace App {
     struct MementoMsg {
         public:
 
-            MementoMsg(uint8_t startPiece, uint32_t lastMove);
+            MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, std::vector<Model::PieceColor> colorsInGame);
 
             /// No copy constructors allowed
             MementoMsg(MementoMsg* other) = delete;
@@ -44,7 +45,10 @@ namespace App {
             uint8_t startPiece;
 
             /// Index for 'allPieces' cache in GameState of last move on the field
-            uint32_t lastMove;
+            std::optional<uint32_t> lastMove;
+
+            /// Colors that are still in the game
+            std::vector<Model::PieceColor> colorsInGame;
     };
 
     struct ResultMsg {

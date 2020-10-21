@@ -190,78 +190,115 @@ namespace App {
     //? Specific message parsers
 
     inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) const {
-        pugi::xml_node piece = data.child("lastMove").first_child();
-        
-        if (piece) {
-            //* Not first move -> LastMove
-            //? Rotation
-            std::string pieceRotation = piece.attribute("rotation").value();
-            uint8_t rotation;
-            if (pieceRotation == "NONE") {
-                rotation = 0;
-            } else if (pieceRotation == "MIRROR") {
-                rotation = 1;
-            } else if (pieceRotation == "RIGHT") {
-                rotation = 2;
-            } else if (pieceRotation == "LEFT") {
-                rotation = 3;
-            }
+        std::vector<Model::PieceColor> colorsInGame;
+        colorsInGame.reserve(4);
 
-            if (piece.attribute("rotation").as_bool()) {
-                rotation += 4;
-            }
-
-            //? PieceID
-            uint8_t pieceId = _getPieceId(piece.attribute("kind").value());
-
-            //? Color
-            uint8_t color;
-            switch (piece.attribute("color").value()[0]) {
-                // Red
-                case 'R':
-                    color = 0;
-                    break;
-                
+        for (const pugi::xml_node color : data.child("orderedColors").children()) {
+            switch (color.value()[0]) {
                 // Blue
                 case 'B':
-                    color = 1;
+                    colorsInGame.push_back(Model::PieceColor::BLUE);
                     break;
-
-                // Green
-                case 'G':
-                    color = 2;
-                    break;
-
+                
                 // Yellow
                 case 'Y':
-                    color = 3;
+                    colorsInGame.push_back(Model::PieceColor::YELLOW);
+                    break;
+                
+                // Red
+                case 'R':
+                    colorsInGame.push_back(Model::PieceColor::RED);
+                    break;
+                
+                // Green
+                case 'G':
+                    colorsInGame.push_back(Model::PieceColor::GREEN);
                     break;
                 
                 default:
-                    throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
                     break;
             }
+        }
 
-            //? X, Y
-            pugi::xml_node position = piece.first_child();
-            uint8_t x = position.attribute("x").as_int();
-            uint8_t y = position.attribute("y").as_int();
 
-            //? Origin
-            int8_t minX = 127;
-            int8_t minY = 127;
-            for (const Util::Vector2D piece: std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
-                if (piece.x < minX) minX = piece.x;
-                if (piece.y < minY) minX = piece.x;
+        pugi::xml_node piece = data.child("lastMove").first_child();
+        if (piece) {
+            //* Not first move -> LastMove
+            if (piece.name()[1] == 'p') {
+                // SetMove
+
+                //? Rotation
+                std::string pieceRotation = piece.attribute("rotation").value();
+                uint8_t rotation;
+                if (pieceRotation == "NONE") {
+                    rotation = 0;
+                } else if (pieceRotation == "MIRROR") {
+                    rotation = 1;
+                } else if (pieceRotation == "RIGHT") {
+                    rotation = 2;
+                } else if (pieceRotation == "LEFT") {
+                    rotation = 3;
+                }
+
+                if (piece.attribute("rotation").as_bool()) {
+                    rotation += 4;
+                }
+
+                //? PieceID
+                uint8_t pieceId = _getPieceId(piece.attribute("kind").value());
+
+                //? Color
+                uint8_t color;
+                switch (piece.attribute("color").value()[0]) {
+                    // Red
+                    case 'R':
+                        color = 0;
+                        break;
+                    
+                    // Blue
+                    case 'B':
+                        color = 1;
+                        break;
+
+                    // Green
+                    case 'G':
+                        color = 2;
+                        break;
+
+                    // Yellow
+                    case 'Y':
+                        color = 3;
+                        break;
+                    
+                    default:
+                        throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
+                        break;
+                }
+
+                //? X, Y
+                pugi::xml_node position = piece.first_child();
+                uint8_t x = position.attribute("x").as_int();
+                uint8_t y = position.attribute("y").as_int();
+
+                //? Origin
+                int8_t minX = 127;
+                int8_t minY = 127;
+                for (const Util::Vector2D piece: std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
+                    if (piece.x < minX) minX = piece.x;
+                    if (piece.y < minY) minX = piece.x;
+                }
+
+                //? Calculate index
+                // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
+                const int index = ((x-minX + y-minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
+
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, colorsInGame));
+            } else {
+                // SkipMove
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, colorsInGame));
             }
-
-            //? Calculate index
-            // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
-            const int index = ((x-minX + y-minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
-
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index));
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(_getPieceId(data.attribute("startPiece").value()), 0));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(_getPieceId(data.attribute("startPiece").value()), std::nullopt, colorsInGame));
         }
     }
 
