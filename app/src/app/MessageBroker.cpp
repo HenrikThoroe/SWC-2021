@@ -41,7 +41,6 @@ namespace App {
     }
 
     void MessageBroker::sendJoinRequest() {
-        //! Change to current gameType
         tcpClient.send("<join gameType=\"swc_2021_blokus\" />");
     }
 
