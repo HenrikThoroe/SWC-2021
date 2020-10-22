@@ -14,14 +14,16 @@ namespace App {
     class XMLParser {
         private:
             /// Room id of current game used for sending moves
-            const char * roomId;
+            char roomId[37];
+
+            /// Current turn on the board
+            uint8_t turn = 0;
         public:
             XMLParser();
 
             /// No copy constructors allowed
             XMLParser(XMLParser* other) = delete;
             XMLParser(XMLParser& other) = delete;
-            ~XMLParser();
 
             /**
              * @brief Split a msg string into separate parsed messages
@@ -48,7 +50,7 @@ namespace App {
              * @param data Memento xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseMemento(const pugi::xml_node& data, std::vector<Message>& result) const;
+            void _parseMemento(const pugi::xml_node& data, std::vector<Message>& result);
 
             /**
              * @brief Parse a Result message
@@ -72,7 +74,7 @@ namespace App {
              * @param node Joined xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseJoined(const pugi::xml_node& node);
+            void _parseJoined(const pugi::xml_node& node, std::vector<Message>& result);
 
             /**
              * @brief Parse an Error message
@@ -100,6 +102,13 @@ namespace App {
              * @returns Name of color
              */
             const char* _getColor(const Model::PieceColor& colorId) const;
+
+            /**
+             * @brief Calculate current color based on turn
+             * 
+             * @returns Name of current color
+             */
+            const char* _getCurrentColor() const;
     };
     
 } // namespace App

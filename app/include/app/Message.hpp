@@ -19,10 +19,6 @@ namespace App {
              */
             Message(MsgType type, std::any payload);
 
-            /// No copy constructors allowed
-            Message(Message* other) = delete;
-            Message(Message& other) = delete;
-
 
             /// Type of message
             MsgType type;
@@ -34,11 +30,7 @@ namespace App {
     struct MementoMsg {
         public:
 
-            MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, std::vector<Model::PieceColor> colorsInGame);
-
-            /// No copy constructors allowed
-            MementoMsg(MementoMsg* other) = delete;
-            MementoMsg(MementoMsg& other) = delete;
+            MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, uint8_t currentTurn);
 
 
             /// Index for PieceCollection pointing at the piece that has to be played in the first round
@@ -47,8 +39,8 @@ namespace App {
             /// Index for 'allPieces' cache in GameState of last move on the field
             std::optional<uint32_t> lastMove;
 
-            /// Colors that are still in the game
-            std::vector<Model::PieceColor> colorsInGame;
+            /// Current turn on the board
+            uint8_t currentTurn;
     };
 
     struct ResultMsg {
@@ -80,10 +72,6 @@ namespace App {
              * @param cause Game-ending causes for both players
              */
             ResultMsg(std::array<uint8_t, 2> score, std::array<ResultEnd, 2> end, std::array<ResultCause, 2> cause);
-
-            /// No copy constructors allowed
-            ResultMsg(ResultMsg* other) = delete;
-            ResultMsg(ResultMsg& other) = delete;
 
 
             /// Array that holds both players inGame score reached

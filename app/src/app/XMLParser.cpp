@@ -1,5 +1,6 @@
 #include <array>
 #include <stdexcept>
+#include <cstring>
 
 #include "XMLParser.hpp"
 #include "XMLStringWriter.hpp"
@@ -29,66 +30,63 @@ namespace App {
 
         //? Parse compliant messages
         // Wrap xml compliant messages for easier parsing
-        input.insert(0, "<>");
-        input.append("</>");
+        input.insert(0, "<A>");
+        input.append("</A>");
 
         pugi::xml_document xmlDoc;
         xmlDoc.load_string(input.data());
-
-        //TODO: Check if this is only the outer <>...</> node
-        for (pugi::xml_node _ : xmlDoc.children()) {
-            for (pugi::xml_node msg : _.children()) {
-
-                switch (msg.name()[0]) {
-                    // room
-                    case 'r':
-                        pugi::xml_node data = msg.child("data");
-                        switch (data.attribute("class").value()[0]) {
-                            // memento
-                            case 'm':
-                                _parseMemento(data.first_child(), result);
-                                break;
-                            
-                            // sc.framework.plugins.protocol.MoveRequest
-                            case 's':
-                                result.emplace_back(MsgType::MOVEREQUEST, nullptr);
-                                break;
-                            
-                            // result
-                            case 'r':
-                                _parseResult(data, result);
-                                break;
-                            
-                            // welcomeMessage
-                            case 'w':
-                                _parseWelcome(data, result);
-                                break;
-                            
-                            // error
-                            case 'e':
-                                _parseError(data, result);
-                                break;
-                            
-                            default:
-                                throw std::runtime_error("Memento of type '" + std::string(data.name()) + "' could not be parsed");
-                                break;
-                        }
-                        break;
-                    
-                    // joined
-                    case 'j':
-                        _parseJoined(msg);
-                        break;
-                    
-                    // left
-                    case 'l':
-                        result.emplace_back(MsgType::LEFT, nullptr);
-                        break;
-                    
-                    default:
-                        throw std::runtime_error("Message of type '" + std::string(msg.name()) + "' could not be parsed");
-                        break;
+        
+        for (pugi::xml_node msg : xmlDoc.first_child().children()) {
+            switch (msg.name()[0]) {
+                // room
+                case 'r': {
+                    pugi::xml_node data = msg.child("data");
+                    switch (data.attribute("class").value()[0]) {
+                        // memento
+                        case 'm':
+                            _parseMemento(data.first_child(), result);
+                            break;
+                        
+                        // sc.framework.plugins.protocol.MoveRequest
+                        case 's':
+                            result.emplace_back(MsgType::MOVEREQUEST, nullptr);
+                            break;
+                        
+                        // result
+                        case 'r':
+                            _parseResult(data, result);
+                            break;
+                        
+                        // welcomeMessage
+                        case 'w':
+                            _parseWelcome(data, result);
+                            break;
+                        
+                        // error
+                        case 'e':
+                            _parseError(data, result);
+                            break;
+                        
+                        default:
+                            throw std::runtime_error("Memento of type '" + std::string(data.name()) + "' could not be parsed");
+                            break;
+                    }
+                    break;
                 }
+
+                // joined
+                case 'j':
+                    _parseJoined(msg, result);
+                    break;
+                
+                // left
+                case 'l':
+                    result.emplace_back(MsgType::LEFT, nullptr);
+                    break;
+                
+                default:
+                    throw std::runtime_error("Message of type '" + std::string(msg.name()) + "' could not be parsed");
+                    break;
             }
         }
 
@@ -114,23 +112,21 @@ namespace App {
             pieceNode.append_attribute("color").set_value(_getColor(move->color));
 
             //? Kind
-            //! name is std::string atm -> has to be const char*
             pieceNode.append_attribute("kind").set_value(Model::PieceCollection::getPiece(move->pieceId).name);
 
             //? Rotation
-            //! See _parseMemento rotation question
             switch (move->rotation) {
                 case Model::Rotation::ZERO:
                     pieceNode.append_attribute("rotation").set_value("NONE");
                     pieceNode.append_attribute("isFlipped").set_value("false");
                     break;
                 
-                case Model::Rotation::PI:
+                case Model::Rotation::ONEHALFPI:
                     pieceNode.append_attribute("rotation").set_value("RIGHT");
                     pieceNode.append_attribute("isFlipped").set_value("false");
                     break;
-                
-                case Model::Rotation::ONEHALFPI:
+
+                case Model::Rotation::PI:
                     pieceNode.append_attribute("rotation").set_value("MIRROR");
                     pieceNode.append_attribute("isFlipped").set_value("false");
                     break;
@@ -145,12 +141,12 @@ namespace App {
                     pieceNode.append_attribute("isFlipped").set_value("true");
                     break;
                 
-                case Model::Rotation::PI_FLIPPED:
+                case Model::Rotation::ONEHALFPI_FLIPPED:
                     pieceNode.append_attribute("rotation").set_value("RIGHT");
                     pieceNode.append_attribute("isFlipped").set_value("true");
                     break;
                 
-                case Model::Rotation::ONEHALFPI_FLIPPED:
+                case Model::Rotation::PI_FLIPPED:
                     pieceNode.append_attribute("rotation").set_value("MIRROR");
                     pieceNode.append_attribute("isFlipped").set_value("true");
                     break;
@@ -170,15 +166,18 @@ namespace App {
             int8_t minY = 127;
             for (const Util::Position& piece : move->getOccupiedPositions()) {
                 if (piece.x < minX) minX = piece.x;
-                if (piece.y < minY) minX = piece.x;
+                if (piece.y < minY) minY = piece.y;
             }
 
-            pugi::xml_node positionNode = dataNode.append_child("position");
+            pugi::xml_node positionNode = pieceNode.append_child("position");
             positionNode.append_attribute("x").set_value(minX);
             positionNode.append_attribute("y").set_value(minY);
 
         } else {
-            roomNode.append_child("data").append_attribute("class").set_value("sc.plugin2021.SkipMove");
+            pugi::xml_node data = roomNode.append_child("data");
+            data.append_attribute("class").set_value("sc.plugin2021.SkipMove");
+
+            data.append_child("color").append_child(pugi::node_pcdata).set_value(_getCurrentColor());
         }
 
         Util::XMLStringWriter xmlStringWriter;
@@ -189,42 +188,13 @@ namespace App {
 
     //? Specific message parsers
 
-    inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) const {
-        std::vector<Model::PieceColor> colorsInGame;
-        colorsInGame.reserve(4);
-
-        for (const pugi::xml_node color : data.child("orderedColors").children()) {
-            switch (color.value()[0]) {
-                // Blue
-                case 'B':
-                    colorsInGame.push_back(Model::PieceColor::BLUE);
-                    break;
-                
-                // Yellow
-                case 'Y':
-                    colorsInGame.push_back(Model::PieceColor::YELLOW);
-                    break;
-                
-                // Red
-                case 'R':
-                    colorsInGame.push_back(Model::PieceColor::RED);
-                    break;
-                
-                // Green
-                case 'G':
-                    colorsInGame.push_back(Model::PieceColor::GREEN);
-                    break;
-                
-                default:
-                    break;
-            }
-        }
-
+    inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
+        turn = data.attribute("turn").as_int();
 
         pugi::xml_node piece = data.child("lastMove").first_child();
         if (piece) {
             //* Not first move -> LastMove
-            if (piece.name()[1] == 'p') {
+            if (piece.name()[0] == 'p') {
                 // SetMove
 
                 //? Rotation
@@ -232,15 +202,15 @@ namespace App {
                 uint8_t rotation;
                 if (pieceRotation == "NONE") {
                     rotation = 0;
-                } else if (pieceRotation == "MIRROR") {
-                    rotation = 1;
                 } else if (pieceRotation == "RIGHT") {
+                    rotation = 1;
+                } else if (pieceRotation == "MIRROR") {
                     rotation = 2;
                 } else if (pieceRotation == "LEFT") {
                     rotation = 3;
                 }
 
-                if (piece.attribute("rotation").as_bool()) {
+                if (piece.attribute("isFlipped").as_bool()) {
                     rotation += 4;
                 }
 
@@ -285,20 +255,20 @@ namespace App {
                 int8_t minY = 127;
                 for (const Util::Vector2D piece: std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
                     if (piece.x < minX) minX = piece.x;
-                    if (piece.y < minY) minX = piece.x;
+                    if (piece.y < minY) minY = piece.y;
                 }
 
                 //? Calculate index
                 // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
                 const int index = ((x-minX + y-minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
 
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, colorsInGame));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn));
             } else {
                 // SkipMove
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, colorsInGame));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn));
             }
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(_getPieceId(data.attribute("startPiece").value()), std::nullopt, colorsInGame));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(_getPieceId(data.attribute("startPiece").value()), std::nullopt, turn));
         }
     }
 
@@ -347,11 +317,16 @@ namespace App {
     }
 
     inline void XMLParser::_parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
-        result.emplace_back(MsgType::WELCOME, data.attribute("color").value() == "one" ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
+        result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'o' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
     }
     
-    inline void XMLParser::_parseJoined(const pugi::xml_node& node) {
-        roomId = node.attribute("roomId").value();
+    inline void XMLParser::_parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
+        strcpy(roomId, node.attribute("roomId").value());
+        result.emplace_back(MsgType::JOINED, std::string(roomId));
+    }
+
+    inline void XMLParser::_parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
+        result.emplace_back(MsgType::EXCEPT, data);
     }
 
     inline uint8_t XMLParser::_getPieceId(const std::string& pieceName) const {
@@ -425,5 +400,26 @@ namespace App {
                 break;
         }
     }
-    
+
+    inline const char* XMLParser::_getCurrentColor() const {
+        switch (turn % 4)
+        {
+        case 0:
+            return "BLUE";
+            break;
+        case 1:
+            return "YELLOW";
+            break;
+        case 2:
+            return "RED";
+            break;
+        case 3:
+            return "GREEN";
+            break;
+        default:
+            throw std::runtime_error("Could not deduce currentColor from turn '" + std::to_string(turn) + "'");
+            break;
+        }
+    }
+
 } // namespace App
