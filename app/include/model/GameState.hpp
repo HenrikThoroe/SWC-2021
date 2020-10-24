@@ -45,6 +45,9 @@ namespace Model {
             /// A collection of all remaining piece shapes stored as an array of their IDs for each color.
             std::array<std::array<uint8_t, Constants::PIECE_SHAPES>, 4> availablePieces {};
 
+            /// A history for each color which contains the order in which the pieces have been deployed.
+            std::array<std::stack<uint8_t>, 4> pushHistory;
+
             /// A cache which stores stores all deployed pieces possible on the board.
             /// @note Size: 268,800 * 84 Bytes = 22,579,200 Byte ~= 22 Megabyte
             std::vector<DeployedPiece> allPieces {};
@@ -72,6 +75,18 @@ namespace Model {
             /// Returns the color which may be deployed next.
             const PieceColor& getCurrentPieceColor() const;
 
+            /**
+             * Returns the player who commited the last move.
+             * @throw Throws an std::runtime_exception if the turn is 0.
+             */
+            const Player& getLastPlayer() const;
+
+            /**
+             * Returns the piece color of the last move even if it has been skipped.
+             * @throw Throws an std::runtime_exception if the turn is 0.
+             */
+            const PieceColor& getLastPieceColor() const;
+
             /// Finds and returns the possible moves on the current game board.
             std::vector<const Move*> getPossibleMoves();
 
@@ -96,7 +111,7 @@ namespace Model {
             /// Creates a unique hash for the game state which has no collisions.
             std::bitset<808> uniqueHash() const;
 
-            /// Evaluates the current state.
+            /// Evaluates the current state for the player who performed the last move.
             int evaluate() const;
 
             void freeMemory(float percent = 0.5);

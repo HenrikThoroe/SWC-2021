@@ -33,6 +33,9 @@ namespace Model {
             /// Reads the piece color at the given coordinates.
             const PieceColor& at(int x, int y) const;
 
+            /// Reads the piece color at the given coordinates. No validation checks are performed.
+            const PieceColor& at_unsafe(int x, int y) const;
+
             /// Calculates the available drop positions for the specified color.
             std::vector<Util::Position> getDropPositions(const PieceColor& color) const;
 

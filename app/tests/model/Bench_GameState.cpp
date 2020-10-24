@@ -139,4 +139,29 @@ TEST_CASE("Bench Game State", "[benchmark]") {
 
         return moves;
     };
+
+    BENCHMARK_ADVANCED("Eval") (Catch::Benchmark::Chronometer meter) {
+        std::vector<const Move*> moves;
+        int index;
+
+        for (int x = 0; x < 20; ++x) {
+            moves.clear();
+            state.assignPossibleMoves(moves);
+
+            if (moves.size() == 0) {
+                state.performMove(nullptr);
+            } else {
+                index = rand() % moves.size();
+                state.performMove(moves[index]);
+            }
+
+            meter.measure([&state] {
+                return state.evaluate();
+            });
+        }
+
+        for (int x = 0; x < 20; ++x) {
+            state.revertLastMove();
+        }
+    };
 }
