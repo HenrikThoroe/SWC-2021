@@ -61,8 +61,22 @@ namespace Model {
         return getCurrentPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
     }
 
+    const Player& GameState::getLastPlayer() const {
+        if (turn < 1) {
+            throw std::runtime_error("No last player available.");
+        }
+
+        return players[(turn - 1) % 2];
+    }
+
+    const PieceColor& GameState::getLastPieceColor() const {
+        const int idx = (turn - 1) % 4;
+        return getLastPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
+    }
+
     void GameState::performMove(const Move* move) {
         if (move != nullptr) {
+            pushHistory[static_cast<uint8_t>(move->color) - 1].push(move->pieceId);
             availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] -= 1;
             board.dropPiece(move);
             hashValue ^= hashpool[createIndex(move)];
@@ -78,6 +92,7 @@ namespace Model {
         std::optional<DeployedPiece>& piece = performedMoves.top();
 
         if (piece.has_value()) {
+            pushHistory[static_cast<uint8_t>(piece.value().color) - 1].pop();
             availablePieces[static_cast<uint8_t>(piece.value().color) - 1][piece.value().pieceId] += 1;
             board.removePiece(piece.value());
             hashValue ^= hashpool[createIndex(&piece.value())];
@@ -352,7 +367,36 @@ namespace Model {
     }
 
     int GameState::evaluate() const {
-        throw std::runtime_error("Not Implemented");
+        if (turn == 0) {
+            return 0;
+        }
+
+        const std::array<PieceColor, 2>& colors = getLastPlayer().getPieceColors();
+        int score = 0;
+
+        // Iterate the board and count how many fields are occupied by one of the players colors
+        for (uint8_t y = 0; y < Constants::BOARD_ROWS; ++y) {
+            for (uint8_t x = 0; x < Constants::BOARD_ROWS; ++x) {
+                const PieceColor& color = board.at_unsafe(x, y);
+
+                if (color == colors[0] || color == colors[1]) {
+                    score += 1;
+                } 
+            }    
+        }
+
+        // Check if all pieces have been deployed and if the last piece was the MONO
+        for (const PieceColor& color : colors) {
+            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
+                score += 15;
+
+                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
+                    score += 5;
+                }
+            }
+        }
+
+        return score;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {
