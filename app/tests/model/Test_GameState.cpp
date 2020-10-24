@@ -42,6 +42,35 @@ TEST_CASE("Test Game State", "[model]") {
         }
     }
 
+    SECTION("Can Handle Last Player") {
+        REQUIRE_THROWS(state.getLastPlayer());
+        REQUIRE_THROWS(state.getLastPieceColor());
+
+        state.performMove(nullptr);
+
+        REQUIRE(state.getLastPlayer().color == PlayerColor::BLUE);
+        REQUIRE(state.getLastPieceColor() == PieceColor::BLUE);
+
+        state.performMove(nullptr);
+
+        REQUIRE(state.getLastPlayer().color == PlayerColor::RED);
+        REQUIRE(state.getLastPieceColor() == PieceColor::YELLOW);
+
+        state.performMove(nullptr);
+
+        REQUIRE(state.getLastPlayer().color == PlayerColor::BLUE);
+        REQUIRE(state.getLastPieceColor() == PieceColor::RED);
+
+        state.performMove(nullptr);
+
+        REQUIRE(state.getLastPlayer().color == PlayerColor::RED);
+        REQUIRE(state.getLastPieceColor() == PieceColor::GREEN);
+
+        for (int i = 0; i < 4; ++i) {
+            state.revertLastMove();
+        }
+    }
+
     SECTION("Validate Move") {
         Move m2 = Move(20, PieceColor::BLUE, Rotation::PI, Vector2D(1, 1), Position(0, 0));
 
