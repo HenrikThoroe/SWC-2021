@@ -60,6 +60,10 @@ namespace Model {
         return fields[y][x];
     }  
 
+    const PieceColor& Board::at_unsafe(int x, int y) const {
+        return fields[y][x];
+    } 
+
     const PieceColor& Board::operator [] (const Util::Position& position) const {
         return fields[position.y][position.x];
     }
