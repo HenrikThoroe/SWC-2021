@@ -374,22 +374,24 @@ namespace Model {
         const std::array<PieceColor, 2>& colors = getLastPlayer().getPieceColors();
         int score = 0;
 
-        // Iterate the board and count how many fields are occupied by one of the players colors
-        for (uint8_t y = 0; y < Constants::BOARD_ROWS; ++y) {
-            for (uint8_t x = 0; x < Constants::BOARD_ROWS; ++x) {
-                const PieceColor& color = board.at_unsafe(x, y);
-
-                if (color == colors[0] || color == colors[1]) {
-                    score += 1;
-                } 
-            }    
-        }
-
-        // Check if all pieces have been deployed and if the last piece was the MONO
         for (const PieceColor& color : colors) {
+
+            // Iterate all shapes
+            for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
+
+                // Check if the shape has been deployed
+                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+
+                    // Add the size of the shape to the score
+                    score += PieceCollection::getPiece(id).size;
+                }
+            }
+
+            // Check if all pieces have been deployed
             if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
                 score += 15;
 
+                // Check if the last deployed piece is the MONOMINO
                 if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
                     score += 5;
                 }
