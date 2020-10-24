@@ -1001,5 +1001,4 @@ TEST_CASE("Test XMLParser", "[app]") {
         REQUIRE(payload3.cause[0] == ResultMsg::ResultCause::REGULAR);
         REQUIRE(payload3.cause[1] == ResultMsg::ResultCause::HARD_TIMEOUT);
     }
-
 }
