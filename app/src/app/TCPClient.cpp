@@ -7,7 +7,9 @@
 
 namespace App {
 
-    TCPClient::TCPClient() {}
+    TCPClient::TCPClient() {
+        messages->reserve(5);
+    }
 
     void TCPClient::connect(const std::string& address, const int port) {
         // Lock the mutex to avoid date races
