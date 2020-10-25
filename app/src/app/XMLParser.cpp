@@ -186,10 +186,42 @@ namespace App {
         return xmlStringWriter.result;
     }
 
+    const std::vector<Model::PieceColor>* const XMLParser::getColorsInGamePtr() const {
+        return &colorsInGame;
+    }
+
     //? Specific message parsers
 
     inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
+
+        colorsInGame.clear();
+        for (const pugi::xml_node color : data.child("orderedColors").children()) {
+            switch (color.child_value()[0]) {
+                // Blue
+                case 'B':
+                    colorsInGame.push_back(Model::PieceColor::BLUE);
+                    break;
+
+                // Yellow
+                case 'Y':
+                    colorsInGame.push_back(Model::PieceColor::YELLOW);
+                    break;
+
+                // Red
+                case 'R':
+                    colorsInGame.push_back(Model::PieceColor::RED);
+                    break;
+
+                // Green
+                case 'G':
+                    colorsInGame.push_back(Model::PieceColor::GREEN);
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         pugi::xml_node piece = data.child("lastMove").first_child();
         if (piece) {

@@ -150,6 +150,13 @@ TEST_CASE("Test XMLParser", "[app]") {
         REQUIRE(payload.lastMove == std::nullopt);
         REQUIRE(payload.startPiece == 19);
         REQUIRE(payload.currentTurn == 0);
+
+        const std::vector<PieceColor>* const colorsIG = parser.getColorsInGamePtr();
+        REQUIRE(colorsIG->size() == 4);
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::BLUE)   != colorsIG->end());
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::YELLOW) != colorsIG->end());
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::RED)    != colorsIG->end());
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::GREEN)  != colorsIG->end());
     }
 
     SECTION("Can parse normal Memento") {
@@ -575,7 +582,6 @@ TEST_CASE("Test XMLParser", "[app]") {
                         "<orderedColors>"
                             "<color>BLUE</color>"
                             "<color>YELLOW</color>"
-                            "<color>RED</color>"
                             "<color>GREEN</color>"
                         "</orderedColors>"
                         "<first displayName=\"One\">"
@@ -629,6 +635,15 @@ TEST_CASE("Test XMLParser", "[app]") {
 
         REQUIRE(payloadSkipped.startPiece == 0);
         REQUIRE(payloadSkipped.currentTurn == 7);
+
+        // We can test colorsInGame only here as it always holds the most current values (last to parse at the beginning of this TestCase)
+        const std::vector<PieceColor>* const colorsIG = parser.getColorsInGamePtr();
+        REQUIRE(colorsIG->size() == 3);
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::BLUE)   != colorsIG->end());
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::YELLOW) != colorsIG->end());
+        REQUIRE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::GREEN)  != colorsIG->end());
+
+        REQUIRE_FALSE(std::find(colorsIG->begin(), colorsIG->end(), PieceColor::RED) != colorsIG->end());
     }
 
     SECTION("Can make move") {

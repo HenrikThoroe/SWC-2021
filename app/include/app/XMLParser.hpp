@@ -18,6 +18,9 @@ namespace App {
 
             /// Current turn on the board
             uint8_t turn = 0;
+
+            /// Colors that are still in the game
+            std::vector<Model::PieceColor> colorsInGame{};
         public:
             XMLParser();
 
@@ -41,6 +44,9 @@ namespace App {
              * @returns Xml representation of move as string
              */
             std::string makeMoveMessage(const Model::Move* move) const;
+
+            /// Get a const pointer to a const vector containing all PieceColors that are still in the game
+            const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
         
         private:
             //? Specific message parsers
