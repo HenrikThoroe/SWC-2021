@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <atomic>
 #include <vector>
+#include <any>
 #include <boost/program_options.hpp>
 
 #include "EventLoop.hpp"
@@ -98,31 +99,44 @@ namespace App {
     inline bool EventLoop::_actOnMessage(const Message& msg) {
         switch (msg.type) {
             case MsgType::JOINED:
-                /* code */
+                std::cout << "\033[1;37mJoined room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
                 break;
             case MsgType::WELCOME:
-                /* code */
+                std::cout << "\033[1;37mGot assigned colors ";
+
+                if (std::any_cast<Model::PlayerColor>(msg.payload) == Model::PlayerColor::BLUE) {
+                    std::cout << "\033[1;34mBLUE \033[1;37m& \033[1;31mRED\033[0m";
+                } else {
+                    std::cout << "\033[1;33mYELLOW \033[1;37m& \033[1;32mGREEN\033[0m";
+                }
+
+                std::cout << std::endl;
                 break;
             case MsgType::GAMESTATE:
                 /* code */
                 break;
             case MsgType::MOVEREQUEST:
-                /* code */
+                #ifdef DEBUG
+                std::cout << "\033[1;37mReceived MoveRequest\033[0m" << std::endl;
+                #endif
+
                 break;
             case MsgType::LEFT:
-                /* code */
+                std::cout << "\033[1;37mOpponent left the game\033[0m" << std::endl;
                 return true;
                 break;
             case MsgType::RESULT:
-                /* code */
+                std::cout << "\033[1;37mThe results are in\033[0m" << std::endl;
                 return true;
                 break;
             case MsgType::EXCEPT:
-                /* code */
+                std::cout << "\033[1;31mAn error occurred\033[0m" << std::endl;
                 return true;
                 break;
             case MsgType::PROTOCOLEND:
-                /* code */
+                #ifdef DEBUG
+                std::cout << "\033[1;37mReceived ProtocolEnd\033[0m" << std::endl;
+                #endif
                 return true;
                 break;
             case MsgType::UNDEFINED:
