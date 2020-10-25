@@ -61,7 +61,7 @@ namespace App {
             // Main event loop in here
             if (messageReceivedFlag) {
                 //? Messages in queue
-                for (std::string& msg : *messageBroker.getMessages()) {
+                for (std::string& msg : *(messageBroker.getMessages())) {
                     messageBroker.parse(msg, messages);
 
                     for (Message& pMsg : messages) {
