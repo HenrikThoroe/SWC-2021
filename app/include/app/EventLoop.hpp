@@ -5,6 +5,7 @@
 #include <inttypes.h>
 
 #include "MessageBroker.hpp"
+#include "GameManager.hpp"
 #include "Message.hpp"
 #include "MsgType.hpp"
 
@@ -21,6 +22,9 @@ namespace App {
 
             /// Queue for scheduled background tasks
             mutable std::queue<Task> backgroundQueue{};
+
+            /// Middleware between EventLoop and GameState
+            Logic::GameManager gameManager;
 
         public:
             /**

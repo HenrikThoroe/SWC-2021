@@ -12,7 +12,7 @@ using namespace boost::program_options;
 
 namespace App {
 
-    EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()) {
+    EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr()) {
         // Hostname of gameserver to connect to
         std::string hostname;
 
@@ -43,9 +43,6 @@ namespace App {
         } else {
             _startConnection(hostname, port);
         }
-
-        //? Construct our logic instance
-        /* code */
     }
     
     EventLoop::~EventLoop() {}
@@ -106,20 +103,22 @@ namespace App {
 
                 if (std::any_cast<Model::PlayerColor>(msg.payload) == Model::PlayerColor::BLUE) {
                     std::cout << "\033[1;34mBLUE \033[1;37m& \033[1;31mRED\033[0m";
+                    gameManager.setColor(Model::PlayerColor::BLUE);
                 } else {
                     std::cout << "\033[1;33mYELLOW \033[1;37m& \033[1;32mGREEN\033[0m";
+                    gameManager.setColor(Model::PlayerColor::RED);
                 }
 
                 std::cout << std::endl;
                 break;
             case MsgType::GAMESTATE:
-                /* code */
+                gameManager.updateWithMemento(std::any_cast<MementoMsg>(msg.payload));
                 break;
             case MsgType::MOVEREQUEST:
                 #ifdef DEBUG
                 std::cout << "\033[1;37mReceived MoveRequest\033[0m" << std::endl;
                 #endif
-
+                messageBroker.sendMove(gameManager.moveRequest());
                 break;
             case MsgType::LEFT:
                 std::cout << "\033[1;37mOpponent left the game\033[0m" << std::endl;
