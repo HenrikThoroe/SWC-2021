@@ -32,6 +32,10 @@ namespace App {
         return tcpClient.hasMessages;
     }
 
+    const std::vector<Model::PieceColor>* const MessageBroker::getColorsInGamePtr() const {
+        return xmlParser.getColorsInGamePtr();
+    }
+
     void MessageBroker::sendProtocol() {
         tcpClient.send("<protocol>");
     }

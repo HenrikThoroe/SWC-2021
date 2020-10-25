@@ -11,6 +11,7 @@
 #include "Task.hpp"
 #include "Message.hpp"
 #include "MsgType.hpp"
+#include "color.hpp"
 
 namespace App {   
     
@@ -85,6 +86,13 @@ namespace App {
              * @returns Atomic bool
              */
             std::atomic<bool>& getHasMessagesFlag();
+
+            /**
+             * @brief Get a pointer to XMLParser`s vector of PieceColors still in the game
+             * 
+             * @returns Const Pointer to const vector of PieceColors
+             */
+            const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
     };
     
 } // namespace App
