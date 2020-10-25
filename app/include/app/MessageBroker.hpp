@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <queue>
+#include <vector>
 
 #include "TCPClient.hpp"
 #include "XMLParser.hpp"
