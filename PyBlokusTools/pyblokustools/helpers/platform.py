@@ -13,6 +13,6 @@ def assertPlatform() -> None:
     #? Check ld version > 2.32
     ldVersionStr = subprocess.run(["ld", "-v"], stdout=subprocess.PIPE).stdout.decode()
     ldVersion    = float(re.findall("\d+\.\d+", ldVersionStr)[0])
-    if not ldVersion > 2.32:
+    if not ldVersion >= 2.33:
         print(colorT(f"ld version {ldVersion} found, 2.33+ required", Colors.RED))
         raise SystemExit()
