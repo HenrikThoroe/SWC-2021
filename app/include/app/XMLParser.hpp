@@ -98,7 +98,7 @@ namespace App {
              * 
              * @returns Id of piece
              */
-            uint8_t _getPieceId(const std::string& pieceName) const;
+            uint8_t _getPieceId(const char* pieceName) const;
 
             /**
              * @brief Translate id of PieceColor to its name

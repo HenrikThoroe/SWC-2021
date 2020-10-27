@@ -230,15 +230,15 @@ namespace App {
                 // SetMove
 
                 //? Rotation
-                std::string pieceRotation = piece.attribute("rotation").value();
+                const char* pieceRotation = piece.attribute("rotation").value();
                 uint8_t rotation;
-                if (pieceRotation == "NONE") {
+                if (!strcmp(pieceRotation, "NONE")) {
                     rotation = 0;
-                } else if (pieceRotation == "RIGHT") {
+                } else if (!strcmp(pieceRotation, "RIGHT")) {
                     rotation = 1;
-                } else if (pieceRotation == "MIRROR") {
+                } else if (!strcmp(pieceRotation, "MIRROR")) {
                     rotation = 2;
-                } else if (pieceRotation == "LEFT") {
+                } else if (!strcmp(pieceRotation, "LEFT")) {
                     rotation = 3;
                 }
 
@@ -309,20 +309,20 @@ namespace App {
         pugi::xml_node score2 = score1.next_sibling();
 
         // Lambda that determines the game ending cause
-        auto getCause = [](std::string txt) -> ResultMsg::ResultCause {
-            if (txt == "REGULAR") {
+        auto getCause = [](const char* txt) -> ResultMsg::ResultCause {
+            if (!strcmp(txt, "REGULAR")) {
                 return ResultMsg::ResultCause::REGULAR;
-            } else if (txt == "LEFT") {
+            } else if (!strcmp(txt, "LEFT")) {
                 return ResultMsg::ResultCause::LEFT;
-            } else if (txt == "RULE_VIOLATION") {
+            } else if (!strcmp(txt, "RULE_VIOLATION")) {
                 return ResultMsg::ResultCause::RULE_VIOLATION;
-            } else if (txt == "SOFT_TIMEOUT") {
+            } else if (!strcmp(txt, "SOFT_TIMEOUT")) {
                 return ResultMsg::ResultCause::SOFT_TIMEOUT;
-            } else if (txt == "HARD_TIMEOUT") {
+            } else if (!strcmp(txt, "HARD_TIMEOUT")) {
                 return ResultMsg::ResultCause::HARD_TIMEOUT;
             }
 
-            throw std::runtime_error("Non valid gameEnding cause encountered: '" + txt + "'");
+            throw std::runtime_error("Non valid gameEnding cause encountered: '" + std::string(txt) + "'");
         };
         
         //! Maybe use std::unique_pointer to avoid copy?
@@ -361,52 +361,52 @@ namespace App {
         result.emplace_back(MsgType::EXCEPT, data);
     }
 
-    inline uint8_t XMLParser::_getPieceId(const std::string& pieceName) const {
-        if (pieceName == "MONO") {
+    inline uint8_t XMLParser::_getPieceId(const char* pieceName) const {
+        if (!strcmp(pieceName, "MONO")) {
             return 0;
-        } else if (pieceName == "DOMINO") {
+        } else if (!strcmp(pieceName, "DOMINO")) {
             return 1;
-        } else if (pieceName == "TRIO_L") {
+        } else if (!strcmp(pieceName, "TRIO_L")) {
             return 2;
-        } else if (pieceName == "TRIO_I") {
+        } else if (!strcmp(pieceName, "TRIO_I")) {
             return 3;
-        } else if (pieceName == "TETRO_I") {
+        } else if (!strcmp(pieceName, "TETRO_I")) {
             return 4;
-        } else if (pieceName == "TETRO_L") {
+        } else if (!strcmp(pieceName, "TETRO_L")) {
             return 5;
-        } else if (pieceName == "TETRO_O") {
+        } else if (!strcmp(pieceName, "TETRO_O")) {
             return 6;
-        } else if (pieceName == "TETRO_T") {
+        } else if (!strcmp(pieceName, "TETRO_T")) {
             return 7;
-        } else if (pieceName == "TETRO_Z") {
+        } else if (!strcmp(pieceName, "TETRO_Z")) {
             return 8;
-        } else if (pieceName == "PENTO_I") {
+        } else if (!strcmp(pieceName, "PENTO_I")) {
             return 9;
-        } else if (pieceName == "PENTO_U") {
+        } else if (!strcmp(pieceName, "PENTO_U")) {
             return 10;
-        } else if (pieceName == "PENTO_L") {
+        } else if (!strcmp(pieceName, "PENTO_L")) {
             return 11;
-        } else if (pieceName == "PENTO_V") {
+        } else if (!strcmp(pieceName, "PENTO_V")) {
             return 12;
-        } else if (pieceName == "PENTO_P") {
+        } else if (!strcmp(pieceName, "PENTO_P")) {
             return 13;
-        } else if (pieceName == "PENTO_W") {
+        } else if (!strcmp(pieceName, "PENTO_W")) {
             return 14;
-        } else if (pieceName == "PENTO_R") {
+        } else if (!strcmp(pieceName, "PENTO_R")) {
             return 15;
-        } else if (pieceName == "PENTO_X") {
+        } else if (!strcmp(pieceName, "PENTO_X")) {
             return 16;
-        } else if (pieceName == "PENTO_Z") {
+        } else if (!strcmp(pieceName, "PENTO_Z")) {
             return 17;
-        } else if (pieceName == "PENTO_Y") {
+        } else if (!strcmp(pieceName, "PENTO_Y")) {
             return 18;
-        } else if (pieceName == "PENTO_T") {
+        } else if (!strcmp(pieceName, "PENTO_T")) {
             return 19;
-        } else if (pieceName == "PENTO_S") {
+        } else if (!strcmp(pieceName, "PENTO_S")) {
             return 20;
         }
 
-        throw std::runtime_error("Piece of type '" + pieceName + "' not found");
+        throw std::runtime_error("Piece of type '" + std::string(pieceName) + "' not found");
     }
 
     inline const char* XMLParser::_getColor(const Model::PieceColor& colorId) const {
