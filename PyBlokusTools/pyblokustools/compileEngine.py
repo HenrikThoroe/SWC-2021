@@ -207,10 +207,12 @@ class Compiler():
             fileList {List[str]} -- Normalized header file paths
 
         Returns:
-            Tuple[List[str], List[str]] -- Tuple[sameNameList, noPragmaOnceList]
+            Tuple[List[str], List[str]] -- Tuple[sameNameList({base->headerName, files->clashingFiles}), noPragmaOnceList]
         """
-        errorsRet: Tuple[List[str], List[str]] = []
-        baseNames: List[str] = []
+        errorsRet: Tuple[List[str], List[Dict[str, Union[str, List[str]]]]] = [[], []] # See 'Returns'
+        baseNames: List[str] = [] # FileNames of headerFiles
+        
+        clashes: Dict[str, List[str]] = {} # base->clashingHeaderFiles
         
         for header in fileList:
             #? Check same name
@@ -218,42 +220,54 @@ class Compiler():
             if base not in baseNames:
                 baseNames.append(os.path.basename(header))
             else:
-                errorsRet[0].append(header)
-                
-                # Filter out multpile headers with the same name
-                i = 0
-                while True:
-                    try:
-                        i = baseNames.index(base, start=i)
-                        errorsRet[0].append(fileList[i])
-                        i += 1
-                    except:
-                        break
+                if base in clashes:
+                    clashes[base].append(header)
+                else:
+                    # Get other header with same name already in baseNames
+                    clashes[base] = [fileList[baseNames.index(base)], header]
             
             #? Check pragma once
             commentFlag = False
+            found       = False
             with open(header, "r") as file:
                 for line in file:
                     test = line.strip()
                     
+                    # Empty or simple comment
                     if test == "" or (len(test) > 1 and test[:2] == "//"):
                         continue
                     
+                    # Multiline comment start
                     if len(test) > 2 and test[:3] == "/**":
                         commentFlag = True
                         continue
                     
+                    # Multiline comment interior
                     if commentFlag:
-                        if len(test) > 0 and test[:1] == "*":
-                            continue
-                        if len(test) > 1 and test[:2] == "*/":
+                        if len(test) > 1 and test[-2:] == "*/":
                             commentFlag = False
-                            continue
+    
+                        continue
                     
-                    if test != "#pragma once":
-                        errorsRet[1].append(header)
+                    # Actual test after all empty lines and comments
+                    if test == "#pragma once":
+                        found = True
                     
                     break
+                
+                if not found:
+                    errorsRet[1].append(header)
+        
+        # Compile clashes into return format
+        for key, val in clashes.items():
+            errorsRet[0].append(
+                {
+                    "base"  : key,
+                    "files" : val,
+                }
+            )
+        
+        return errorsRet
         
     
     @staticmethod
@@ -328,15 +342,26 @@ class Compiler():
         # Check header files for errors
         headerErrors = Compiler.validateHeaders(header_files)
         if headerErrors[0] or headerErrors[1]:
-            with open(Settings.COMPILER_OUTPUT, "a") as compilerOutputFile:
+            with open(Settings.COMPILER_OUTPUT, "w") as compilerOutputFile:
+                
+                # Name collisions
                 if headerErrors[0]:
-                    compilerOutputFile.write(f"Naming errors:\n")
-                    for i in headerErrors[0]:
-                        compilerOutputFile.write(f"    - '{i}'")
+                    compilerOutputFile.write(f"[Header] Naming collisions:\n")
+                    for baseName in headerErrors[0]:
+                        compilerOutputFile.write(f"    - '{baseName['base']}':\n")
+                        for file in baseName['files']:
+                            compilerOutputFile.write(f"        - '{file}'\n")
+                    compilerOutputFile.write("\n")
+                
+                # Pragma once errors
                 if headerErrors[1]:
-                    compilerOutputFile.write(f"Pragma errors:\n")
-                    for i in headerErrors[1]:
-                        compilerOutputFile.write(f"    - '{i}'")
+                    compilerOutputFile.write(f"[Header] Pragma errors:\n")
+                    for file in headerErrors[1]:
+                        compilerOutputFile.write(f"    - '{file}'\n")
+                    compilerOutputFile.write("\n")
+                
+                compilerOutputFile.write("\n")
+            
             print(colorT("Header errors found (Dumped into compilerLog)", Colors.RED))
             return False
         
