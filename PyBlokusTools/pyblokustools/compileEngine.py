@@ -18,10 +18,10 @@ Settings.compileSettings()
 class CompileCache():
     def __init__(
         self,
-        fileHashes: Dict[str, Tuple[str, str, List[str]]]={},
+        fileHashes: Dict[str, Tuple[str, str, List[str], Dict[str, str]]]={},
         linkFilesHashes: Dict[str, str]={}
     ) -> None:
-        #? Dict containing file->hash values to detect changes (path->[lastCompiledFileHash, lastCompiledCompArgsHash, [outputFile]])
+        #? Dict containing file->hash values to detect changes (path->[lastCompiledFileHash, lastCompiledCompArgsHash, [outputFile], {headerName->lastCompiledFileHash(for Header)}])
         self.fileHashes                = fileHashes
         #? List containing all source files that need to be updated after successfull linking
         self.pendingLinkage: List[str] = []
@@ -55,14 +55,14 @@ class CompileCache():
         try:
             return CompileCache(**load)
         except:
-            return CompileCache()
-        
+            return CompileCache()     
     
-    def getChangedSourcesAndUpdate(self, currentFiles: List[str], compArgsHash: str) -> List[str]:
+    def getChangedSourcesAndUpdate(self, currentFiles: List[str], header_files: List[str], compArgsHash: str) -> List[str]:
         """Get all source files that changed and update hashes internally
 
         Arguments:
             currentFiles {List[str]} -- Files to check
+            header_files {List[str]} -- Header files to include
             compArgsHash {str}       -- Hash of shared compilation args
 
         Returns:
@@ -143,7 +143,7 @@ class CompileCache():
 class Compiler():
     @staticmethod
     def gatherFiles(sourceDir: Union[str, List[str]], extension: str) -> List[str]:
-        """Get all .cpp files in sourceDir
+        """Get all .extension files in sourceDir
 
         Arguments:
             sourceDir {str} -- Path to sourcedir from current working directory
@@ -200,6 +200,63 @@ class Compiler():
         return [os.path.normpath(os.path.normcase(path)) for path in fileList]
     
     @staticmethod
+    def validateHeaders(fileList: List[str]) -> List[str]:
+        """Check if all HeaderFiles are valid
+
+        Arguments:
+            fileList {List[str]} -- Normalized header file paths
+
+        Returns:
+            Tuple[List[str], List[str]] -- Tuple[sameNameList, noPragmaOnceList]
+        """
+        errorsRet: Tuple[List[str], List[str]] = []
+        baseNames: List[str] = []
+        
+        for header in fileList:
+            #? Check same name
+            base = os.path.basename(header)
+            if base not in baseNames:
+                baseNames.append(os.path.basename(header))
+            else:
+                errorsRet[0].append(header)
+                
+                # Filter out multpile headers with the same name
+                i = 0
+                while True:
+                    try:
+                        i = baseNames.index(base, start=i)
+                        errorsRet[0].append(fileList[i])
+                        i += 1
+                    except:
+                        break
+            
+            #? Check pragma once
+            commentFlag = False
+            with open(header, "r") as file:
+                for line in file:
+                    test = line.strip()
+                    
+                    if test == "" or (len(test) > 1 and test[:2] == "//"):
+                        continue
+                    
+                    if len(test) > 2 and test[:3] == "/**":
+                        commentFlag = True
+                        continue
+                    
+                    if commentFlag:
+                        if len(test) > 0 and test[:1] == "*":
+                            continue
+                        if len(test) > 1 and test[:2] == "*/":
+                            commentFlag = False
+                            continue
+                    
+                    if test != "#pragma once":
+                        errorsRet[1].append(header)
+                    
+                    break
+        
+    
+    @staticmethod
     def make(
         CWD           : str,
         outputFile    : str,
@@ -253,9 +310,6 @@ class Compiler():
             sources_incRe
         )
         
-        # Determine which files need to be compiled
-        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, comp_args_hash)
-        
         # Get all hpp files and filter them
         header_files = Compiler.filterFilesRe(
             Compiler.filterFiles(
@@ -271,6 +325,23 @@ class Compiler():
             ),
             headers_incRe
         )
+        # Check header files for errors
+        headerErrors = Compiler.validateHeaders(header_files)
+        if headerErrors[0] or headerErrors[1]:
+            with open(Settings.COMPILER_OUTPUT, "a") as compilerOutputFile:
+                if headerErrors[0]:
+                    compilerOutputFile.write(f"Naming errors:\n")
+                    for i in headerErrors[0]:
+                        compilerOutputFile.write(f"    - '{i}'")
+                if headerErrors[1]:
+                    compilerOutputFile.write(f"Pragma errors:\n")
+                    for i in headerErrors[1]:
+                        compilerOutputFile.write(f"    - '{i}'")
+            print(colorT("Header errors found (Dumped into compilerLog)", Colors.RED))
+            return False
+        
+        # Determine which files need to be compiled
+        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash)
         
         #? Shared variables
         compiled_out_dir = os.path.join(cache_dir, 'compiled')
