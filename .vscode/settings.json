@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "scripts\\venv\\Scripts\\python.exe",
     "files.associations": {
         "cctype": "cpp",
         "cmath": "cpp",
@@ -87,6 +86,20 @@
         "vector": "cpp",
         "future": "cpp",
         "random": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "condition_variable": "cpp",
+        "resumable": "cpp",
+        "xhash": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp",
+        "xmemory0": "cpp",
+        "xtree": "cpp",
+        "filesystem": "cpp",
+        "*.ipp": "cpp",
+        "clocale": "cpp",
+        "shared_mutex": "cpp",
+        "compare": "cpp"
     }
 }

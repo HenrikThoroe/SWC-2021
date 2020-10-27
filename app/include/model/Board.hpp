@@ -33,6 +33,9 @@ namespace Model {
             /// Reads the piece color at the given coordinates.
             const PieceColor& at(int x, int y) const;
 
+            /// Reads the piece color at the given coordinates. No validation checks are performed.
+            const PieceColor& at_unsafe(int x, int y) const;
+
             /// Calculates the available drop positions for the specified color.
             std::vector<Util::Position> getDropPositions(const PieceColor& color) const;
 
@@ -42,7 +45,12 @@ namespace Model {
             /// Checks if a piece of the passed color can be droped at the given coordinates.
             bool canDrop(const PieceColor& color, int x, int y) const;
 
+            /// Forces the specified position to be a drop zone for the passed color.
+            void makeDropPosition(const Util::Position& position, const PieceColor& color);
+
             friend std::ostream& operator << (std::ostream& os, const Board& board);
+
+            const PieceColor& operator [] (const Util::Position& position) const;
 
         private:
             /// A 20x20 array which stores the piece color for each position of the board.

@@ -9,8 +9,8 @@ namespace Model {
     Player::Player(const Player* player) : color(player->color) {}
 
     const std::array<std::array<PieceColor, 2>, 2> Player::pieceColors = {{
-        { PieceColor::BLUE, PieceColor::YELLOW },
-        { PieceColor::RED, PieceColor::GREEN }
+        { PieceColor::BLUE, PieceColor::RED },
+        { PieceColor::YELLOW, PieceColor::GREEN }
     }};
 
     const std::array<PieceColor, 2>& Player::getPieceColors() const {
