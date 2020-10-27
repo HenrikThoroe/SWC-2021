@@ -425,7 +425,8 @@ class Compiler():
                             compiled_out_dir,
                             os.path.splitext(source_file)[0] + ".o"
                         )
-                    )
+                    ),
+                    *Settings.COMP_LAST_FLAGS
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT
@@ -468,7 +469,8 @@ class Compiler():
                 *(lambda: Settings.LINK_DEBUG_FALGS if debug else Settings.LINK_PROD_FLAGS)(),
                 '-o',
                 os.path.realpath(outputFile),
-                *object_files
+                *object_files,
+                *Settings.LINK_LAST_FLAGS,
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT
