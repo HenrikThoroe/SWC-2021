@@ -7,6 +7,7 @@ import subprocess
 import json
 import re
 
+from .version import VERSION
 from .settings import Settings
 from .helpers.hashing import Hasher
 from .helpers.coloring import Colors, colorT
@@ -35,6 +36,7 @@ class CompileCache():
             str -- JSON formatted CompilerCache
         """
         dump = {
+            'version'         : VERSION,
             'fileHashes'      : self.fileHashes,
             'linkFilesHashes' : self.linkFilesHashes,
         }
@@ -53,9 +55,16 @@ class CompileCache():
         load = json.loads(dump)
         
         try:
+            #? New versions could make breaking changes
+            if load['version'] != VERSION:
+                return CompileCache()
+            else:
+                # Remove to avoid errors when spreading dict onto __init__
+                del load['version']
+            
             return CompileCache(**load)
         except:
-            return CompileCache()     
+            return CompileCache()
     
     def getChangedSourcesAndUpdate(self, currentFiles: List[str], header_files: List[str], compArgsHash: str) -> List[str]:
         """Get all source files that changed and update hashes internally
