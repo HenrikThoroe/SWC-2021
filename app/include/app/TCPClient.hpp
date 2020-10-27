@@ -43,7 +43,6 @@ namespace App
             std::atomic<bool> hasMessages = false;
         public:
             TCPClient();
-            ~TCPClient();
             
             /**
              * @brief Connect to the server
