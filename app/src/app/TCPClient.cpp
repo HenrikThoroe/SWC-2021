@@ -84,8 +84,7 @@ namespace App {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
 
-        if ((boost::asio::error::eof == ec) ||
-        (boost::asio::error::connection_reset == ec)) {
+        if (boost::asio::error::eof == ec || boost::asio::error::connection_reset == ec) {
             if (connected) throw std::runtime_error("Connection to server lost");
 
             return;
