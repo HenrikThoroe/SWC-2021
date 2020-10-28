@@ -36,11 +36,11 @@ namespace App {
         pugi::xml_document xmlDoc;
         xmlDoc.load_string(input.data());
         
-        for (pugi::xml_node msg : xmlDoc.first_child().children()) {
+        for (const pugi::xml_node& msg : xmlDoc.first_child().children()) {
             switch (msg.name()[0]) {
                 // room
                 case 'r': {
-                    pugi::xml_node data = msg.child("data");
+                    const pugi::xml_node data = msg.child("data");
                     switch (data.attribute("class").value()[0]) {
                         // memento
                         case 'm':
@@ -196,7 +196,7 @@ namespace App {
         turn = data.attribute("turn").as_int();
 
         colorsInGame.clear();
-        for (const pugi::xml_node color : data.child("orderedColors").children()) {
+        for (const pugi::xml_node& color : data.child("orderedColors").children()) {
             switch (color.child_value()[0]) {
                 // Blue
                 case 'B':
@@ -285,7 +285,7 @@ namespace App {
                 //? Origin
                 int8_t minX = 127;
                 int8_t minY = 127;
-                for (const Util::Vector2D piece: std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
+                for (const Util::Vector2D& piece : std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
                     if (piece.x < minX) minX = piece.x;
                     if (piece.y < minY) minY = piece.y;
                 }
