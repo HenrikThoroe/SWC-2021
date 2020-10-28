@@ -50,7 +50,7 @@ namespace App
              * @param address Resolved server addres (IP)
              * @param port Port to connect to
              */
-            void connect(const std::string& address, const int port);
+            void connect(const std::string& address, const unsigned short& port);
 
             /// Resolve a hostname to an address (IP)
             std::string resolveHostname(const std::string& hostname);

@@ -52,7 +52,7 @@ namespace App {
              * @param address Address of the gameserver
              * @param port Port of the gameserver
              */
-            void startConnection(const std::string& address, const uint8_t& port);
+            void startConnection(const std::string& address, const unsigned short& port);
 
             /**
              * @brief Starts a reserved connection with the gameserver

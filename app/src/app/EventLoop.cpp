@@ -81,7 +81,7 @@ namespace App {
 
     //? Private methods
 
-    void EventLoop::startConnection(const std::string& address, const uint8_t& port) {
+    void EventLoop::startConnection(const std::string& address, const unsigned short& port) {
         messageBroker.connect(address, port);
 
         messageBroker.sendJoinRequest();

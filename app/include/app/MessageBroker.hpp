@@ -35,7 +35,7 @@ namespace App {
              * @param hostname Server address
              * @param port Port to connect to
              */
-            void connect(const std::string hostname, const int port);
+            void connect(const std::string& hostname, const unsigned short& port);
 
             /**
              * @brief Consume all recieved Messages

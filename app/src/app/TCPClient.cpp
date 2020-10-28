@@ -11,7 +11,7 @@ namespace App {
         messages->reserve(5);
     }
 
-    void TCPClient::connect(const std::string& address, const int port) {
+    void TCPClient::connect(const std::string& address, const unsigned short& port) {
         // Lock the mutex to avoid date races
         std::lock_guard g{mutex};
 
