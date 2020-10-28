@@ -20,10 +20,10 @@ namespace App {
 
 
         /// Type of message
-        MsgType type;
+        const MsgType type;
 
         /// Payload of message of any type (requires casting on access with std::any_cast<T>(i.payload))
-        std::any payload;
+        const std::any payload;
     };
 
     struct MementoMsg {
@@ -38,13 +38,13 @@ namespace App {
 
 
         /// Index for PieceCollection pointing at the piece that has to be played in the first round
-        uint8_t startPiece;
+        const uint8_t startPiece;
 
         /// Index for 'allPieces' cache in GameState of last move on the field
-        std::optional<uint32_t> lastMove;
+        const std::optional<uint32_t> lastMove;
 
         /// Current turn on the board
-        uint8_t currentTurn;
+        const uint8_t currentTurn;
     };
 
     struct ResultMsg {
@@ -78,13 +78,13 @@ namespace App {
 
 
         /// Array that holds both players inGame score reached
-        std::array<uint8_t, 2>     score;
+        const std::array<uint8_t, 2>     score;
 
         /// Array that holds both players tournamentPoints earned in this round
-        std::array<ResultEnd, 2>   end;
+        const std::array<ResultEnd, 2>   end;
 
         /// Array that holds both players game-ending causes
-        std::array<ResultCause, 2> cause;
+        const std::array<ResultCause, 2> cause;
     };
     
 }
