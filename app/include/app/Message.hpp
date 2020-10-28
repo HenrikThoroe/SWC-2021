@@ -77,13 +77,13 @@ namespace App {
         ResultMsg(std::array<uint8_t, 2> score, std::array<ResultEnd, 2> end, std::array<ResultCause, 2> cause);
 
 
-        /// Array that holds both players inGame score reached
+        /// An array that holds both player's current in-game score
         const std::array<uint8_t, 2>     score;
 
-        /// Array that holds both players tournamentPoints earned in this round
+        /// An Array that holds both players tournamentPoints earned in this round
         const std::array<ResultEnd, 2>   end;
 
-        /// Array that holds both players game-ending causes
+        /// An Array that holds both players game-ending causes
         const std::array<ResultCause, 2> cause;
     };
     
