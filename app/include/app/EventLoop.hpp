@@ -52,7 +52,7 @@ namespace App {
              * @param address Address of the gameserver
              * @param port Port of the gameserver
              */
-            void _startConnection(const std::string& address, const uint8_t& port);
+            void startConnection(const std::string& address, const uint8_t& port);
 
             /**
              * @brief Starts a reserved connection with the gameserver
@@ -61,10 +61,10 @@ namespace App {
              * @param port Port of the gameserver
              * @param reservation Reservation code to join specific match
              */
-            void _startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation);
+            void startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation);
 
             /// Run actual eventLoop
-            void _loop();
+            void loop();
 
             /**
              * @brief Acts on the message recieved and respond accordingly
@@ -73,10 +73,10 @@ namespace App {
              * 
              * @returns Is game over
              */
-            bool _actOnMessage(const Message& msg);
+            bool actOnMessage(const Message& msg);
 
             /// Run a background task
-            void _runTask() const;
+            void runTask() const;
     };
     
 } // namespace App

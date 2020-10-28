@@ -39,9 +39,9 @@ namespace App {
 
         //? Connect to gameserver
         if (reservation != "") {
-            _startReservedConnection(hostname, port, reservation);
+            startReservedConnection(hostname, port, reservation);
         } else {
-            _startConnection(hostname, port);
+            startConnection(hostname, port);
         }
     }
     
@@ -62,7 +62,7 @@ namespace App {
                     messageBroker.parse(msg, messages);
 
                     for (Message& pMsg : messages) {
-                        gameOver = _actOnMessage(pMsg);
+                        gameOver = actOnMessage(pMsg);
 
                         if (gameOver) {
                             break;
@@ -74,26 +74,26 @@ namespace App {
             } else {
                 //? Can do background work
                 // Shouldnt last to long as we only check for new messages in a new itteration
-                _runTask();
+                runTask();
             }
         }
     }
 
     //? Private methods
 
-    void EventLoop::_startConnection(const std::string& address, const uint8_t& port) {
+    void EventLoop::startConnection(const std::string& address, const uint8_t& port) {
         messageBroker.connect(address, port);
 
         messageBroker.sendJoinRequest();
     }
     
-    void EventLoop::_startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation) {
+    void EventLoop::startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation) {
         messageBroker.connect(address, port);
 
         messageBroker.sendJoinReservedRequest(reservation);
     }
 
-    inline bool EventLoop::_actOnMessage(const Message& msg) {
+    inline bool EventLoop::actOnMessage(const Message& msg) {
         switch (msg.type) {
             case MsgType::JOINED:
                 std::cout << "\033[1;37mJoined room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
@@ -148,7 +148,7 @@ namespace App {
         return false;
     }
 
-    inline void EventLoop::_runTask() const {
+    inline void EventLoop::runTask() const {
         // (0: done, 1: paused, 2: failed)
         switch (backgroundQueue.front().run(messageReceivedFlag)) {
             case 0:

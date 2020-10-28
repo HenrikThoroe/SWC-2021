@@ -56,7 +56,7 @@ namespace App {
              * @param data Memento xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseMemento(const pugi::xml_node& data, std::vector<Message>& result);
+            void parseMemento(const pugi::xml_node& data, std::vector<Message>& result);
 
             /**
              * @brief Parse a Result message
@@ -64,7 +64,7 @@ namespace App {
              * @param data Result xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseResult(const pugi::xml_node& data, std::vector<Message>& result) const;
+            void parseResult(const pugi::xml_node& data, std::vector<Message>& result) const;
 
             /**
              * @brief Parse a Welcome message
@@ -72,7 +72,7 @@ namespace App {
              * @param data Welcome xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const;
+            void parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const;
 
             /**
              * @brief Parse a Joined message
@@ -80,7 +80,7 @@ namespace App {
              * @param node Joined xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseJoined(const pugi::xml_node& node, std::vector<Message>& result);
+            void parseJoined(const pugi::xml_node& node, std::vector<Message>& result);
 
             /**
              * @brief Parse an Error message
@@ -88,7 +88,7 @@ namespace App {
              * @param node Error xml node
              * @param result Vector to save parsed messages in
              */
-            void _parseError(const pugi::xml_node& node, std::vector<Message>& result) const;
+            void parseError(const pugi::xml_node& node, std::vector<Message>& result) const;
 
             //* Helpers
             /**
@@ -98,7 +98,7 @@ namespace App {
              * 
              * @returns Id of piece
              */
-            uint8_t _getPieceId(const char* pieceName) const;
+            uint8_t getPieceId(const char* pieceName) const;
 
             /**
              * @brief Translate id of PieceColor to its name
@@ -107,14 +107,14 @@ namespace App {
              * 
              * @returns Name of color
              */
-            const char* _getColor(const Model::PieceColor& colorId) const;
+            const char* getColor(const Model::PieceColor& colorId) const;
 
             /**
              * @brief Calculate current color based on turn
              * 
              * @returns Name of current color
              */
-            const char* _getCurrentColor() const;
+            const char* getCurrentColor() const;
     };
     
 } // namespace App

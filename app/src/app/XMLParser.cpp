@@ -44,7 +44,7 @@ namespace App {
                     switch (data.attribute("class").value()[0]) {
                         // memento
                         case 'm':
-                            _parseMemento(data.first_child(), result);
+                            parseMemento(data.first_child(), result);
                             break;
                         
                         // sc.framework.plugins.protocol.MoveRequest
@@ -54,17 +54,17 @@ namespace App {
                         
                         // result
                         case 'r':
-                            _parseResult(data, result);
+                            parseResult(data, result);
                             break;
                         
                         // welcomeMessage
                         case 'w':
-                            _parseWelcome(data, result);
+                            parseWelcome(data, result);
                             break;
                         
                         // error
                         case 'e':
-                            _parseError(data, result);
+                            parseError(data, result);
                             break;
                         
                         default:
@@ -76,7 +76,7 @@ namespace App {
 
                 // joined
                 case 'j':
-                    _parseJoined(msg, result);
+                    parseJoined(msg, result);
                     break;
                 
                 // left
@@ -109,7 +109,7 @@ namespace App {
             pugi::xml_node pieceNode = dataNode.append_child("piece");
 
             //? Color
-            pieceNode.append_attribute("color").set_value(_getColor(move->color));
+            pieceNode.append_attribute("color").set_value(getColor(move->color));
 
             //? Kind
             pieceNode.append_attribute("kind").set_value(Model::PieceCollection::getPiece(move->pieceId).name);
@@ -177,7 +177,7 @@ namespace App {
             pugi::xml_node data = roomNode.append_child("data");
             data.append_attribute("class").set_value("sc.plugin2021.SkipMove");
 
-            data.append_child("color").append_child(pugi::node_pcdata).set_value(_getCurrentColor());
+            data.append_child("color").append_child(pugi::node_pcdata).set_value(getCurrentColor());
         }
 
         Util::XMLStringWriter xmlStringWriter;
@@ -192,7 +192,7 @@ namespace App {
 
     //? Specific message parsers
 
-    inline void XMLParser::_parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
+    inline void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
 
         colorsInGame.clear();
@@ -247,7 +247,7 @@ namespace App {
                 }
 
                 //? PieceID
-                uint8_t pieceId = _getPieceId(piece.attribute("kind").value());
+                uint8_t pieceId = getPieceId(piece.attribute("kind").value());
 
                 //? Color
                 uint8_t color;
@@ -300,11 +300,11 @@ namespace App {
                 result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn));
             }
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(_getPieceId(data.attribute("startPiece").value()), std::nullopt, turn));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn));
         }
     }
 
-    inline void XMLParser::_parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
+    inline void XMLParser::parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
         pugi::xml_node score1 = data.first_child().next_sibling();
         pugi::xml_node score2 = score1.next_sibling();
 
@@ -348,20 +348,20 @@ namespace App {
         );
     }
 
-    inline void XMLParser::_parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
+    inline void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
         result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'o' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
     }
     
-    inline void XMLParser::_parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
+    inline void XMLParser::parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
         strcpy(roomId, node.attribute("roomId").value());
         result.emplace_back(MsgType::JOINED, std::string(roomId));
     }
 
-    inline void XMLParser::_parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
+    inline void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
         result.emplace_back(MsgType::EXCEPT, data);
     }
 
-    inline uint8_t XMLParser::_getPieceId(const char* pieceName) const {
+    inline uint8_t XMLParser::getPieceId(const char* pieceName) const {
         if (!strcmp(pieceName, "MONO")) {
             return 0;
         } else if (!strcmp(pieceName, "DOMINO")) {
@@ -409,7 +409,7 @@ namespace App {
         throw std::runtime_error("Piece of type '" + std::string(pieceName) + "' not found");
     }
 
-    inline const char* XMLParser::_getColor(const Model::PieceColor& colorId) const {
+    inline const char* XMLParser::getColor(const Model::PieceColor& colorId) const {
         switch (colorId) {
             case Model::PieceColor::RED:
                 return "RED";
@@ -433,7 +433,7 @@ namespace App {
         }
     }
 
-    inline const char* XMLParser::_getCurrentColor() const {
+    inline const char* XMLParser::getCurrentColor() const {
         switch (turn % 4)
         {
         case 0:
