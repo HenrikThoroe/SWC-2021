@@ -150,7 +150,6 @@ namespace App {
     }
 
     inline void EventLoop::runTask() const {
-        // (0: done, 1: paused, 2: failed)
         switch (backgroundQueue.front().run(messageReceivedFlag)) {
             case TaskStatus::DONE:
                 backgroundQueue.pop();
