@@ -98,6 +98,7 @@ namespace App {
             case MsgType::JOINED:
                 std::cout << "\033[1;37mJoined room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
                 break;
+            
             case MsgType::WELCOME:
                 std::cout << "\033[1;37mGot assigned colors ";
 
@@ -111,32 +112,35 @@ namespace App {
 
                 std::cout << std::endl;
                 break;
+            
             case MsgType::GAMESTATE:
                 gameManager.updateWithMemento(std::any_cast<MementoMsg>(msg.payload));
                 break;
+            
             case MsgType::MOVEREQUEST:
                 Util::debugPrint("\033[1;37mReceived MoveRequest\033[0m");
                 messageBroker.sendMove(gameManager.moveRequest());
                 break;
+            
             case MsgType::LEFT:
                 std::cout << "\033[1;37mOpponent left the game\033[0m" << std::endl;
                 return true;
-                break;
+            
             case MsgType::RESULT:
                 std::cout << "\033[1;37mThe results are in\033[0m" << std::endl;
                 return true;
-                break;
+            
             case MsgType::EXCEPT:
                 std::cout << "\033[1;31mAn error occurred\033[0m" << std::endl;
                 return true;
-                break;
+            
             case MsgType::PROTOCOLEND:
                 Util::debugPrint("\033[1;37mReceived ProtocolEnd\033[0m");
                 return true;
-                break;
+            
             case MsgType::UNDEFINED:
                 throw std::runtime_error("Can not act on Undefined message");
-                break;
+
             default:
                 throw std::runtime_error("_actOnMessage switch fell through"); 
         }
@@ -150,15 +154,17 @@ namespace App {
             case TaskStatus::DONE:
                 backgroundQueue.pop();
                 break;
+            
             case TaskStatus::PAUSED:
                 Util::debugPrint("Background task has been paused");
                 break;
+            
             case TaskStatus::FAILED:
                 Util::debugPrint("Background task failed; Exception caught and task discarded");
                 break;
+            
             default:
                 throw std::runtime_error("Got unexpected backgroundTask return code.");
-                break;
         }
     }
 

@@ -69,7 +69,6 @@ namespace App {
                         
                         default:
                             throw std::runtime_error("Memento of type '" + std::string(data.name()) + "' could not be parsed");
-                            break;
                     }
                     break;
                 }
@@ -158,7 +157,6 @@ namespace App {
                 
                 default:
                     throw std::runtime_error("Rotation with value '" + std::to_string(static_cast<uint8_t>(move->rotation)) + "' not found");
-                    break;
             }
 
             //? Coordinates
@@ -274,7 +272,6 @@ namespace App {
                     
                     default:
                         throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
-                        break;
                 }
 
                 //? X, Y
@@ -414,44 +411,37 @@ namespace App {
         switch (colorId) {
             case Model::PieceColor::RED:
                 return "RED";
-                break;
 
             case Model::PieceColor::BLUE:
                 return "BLUE";
-                break;
 
             case Model::PieceColor::GREEN:
                 return "GREEN";
-                break;
 
             case Model::PieceColor::YELLOW:
                 return "YELLOW";
-                break;
-            
+
             default:
                 throw std::runtime_error("Color with value '" + std::to_string(static_cast<uint8_t>(colorId)) + "' not found");
-                break;
         }
     }
 
     inline const char* XMLParser::getCurrentColor() const {
-        switch (turn % 4)
-        {
-        case 0:
-            return "BLUE";
-            break;
-        case 1:
-            return "YELLOW";
-            break;
-        case 2:
-            return "RED";
-            break;
-        case 3:
-            return "GREEN";
-            break;
-        default:
-            throw std::runtime_error("Could not deduce currentColor from turn '" + std::to_string(turn) + "'");
-            break;
+        switch (turn % 4) {
+            case 0:
+                return "BLUE";
+
+            case 1:
+                return "YELLOW";
+
+            case 2:
+                return "RED";
+            
+            case 3:
+                return "GREEN";
+            
+            default:
+                throw std::runtime_error("Could not deduce currentColor from turn '" + std::to_string(turn) + "'");
         }
     }
 
