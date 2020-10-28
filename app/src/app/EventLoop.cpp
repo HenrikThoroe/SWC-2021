@@ -58,7 +58,8 @@ namespace App {
             // Main event loop in here
             if (messageReceivedFlag) {
                 //? Messages in queue
-                for (std::string& msg : *(messageBroker.getMessages())) {
+                std::shared_ptr<MessageQueue> msgQueue = messageBroker.getMessages();
+                for (std::string& msg : *msgQueue) {
                     messageBroker.parse(msg, messages);
 
                     for (Message& pMsg : messages) {
