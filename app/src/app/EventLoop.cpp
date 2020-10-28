@@ -12,7 +12,7 @@ using namespace boost::program_options;
 
 namespace App {
 
-    EventLoop::EventLoop(int argc, char *argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr()) {
+    EventLoop::EventLoop(int argc, char* argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr()) {
         // Hostname of gameserver to connect to
         std::string hostname;
 

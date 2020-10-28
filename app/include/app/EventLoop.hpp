@@ -33,7 +33,7 @@ namespace App {
              * @param argc Number of console arguments
              * @param argv Array of pointers to console argument strings (first argument is own filename)
              */
-            EventLoop(int argc, char *argv[]);
+            EventLoop(int argc, char* argv[]);
 
             /// No copy constructors allowed
             EventLoop(EventLoop* other) = delete;
