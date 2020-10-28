@@ -98,8 +98,23 @@
         "xtree": "cpp",
         "filesystem": "cpp",
         "*.ipp": "cpp",
+        "queue": "cpp",
+        "any": "cpp",
+        "cfenv": "cpp",
         "clocale": "cpp",
+        "codecvt": "cpp",
+        "compare": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "execution": "cpp",
+        "forward_list": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "memory_resource": "cpp",
+        "ranges": "cpp",
+        "scoped_allocator": "cpp",
         "shared_mutex": "cpp",
-        "compare": "cpp"
+        "unordered_set": "cpp",
+        "valarray": "cpp"
     }
 }

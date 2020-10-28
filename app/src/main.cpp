@@ -1,3 +1,5 @@
+#include "EventLoop.hpp"
+
 /**
  * @brief Main function of the client and starting point of program flow
  * 
@@ -6,6 +8,9 @@
  * 
  * @return Exit status code
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
+    App::EventLoop loop(argc, argv);
+    loop.run();
+    
     return 0;
 }
