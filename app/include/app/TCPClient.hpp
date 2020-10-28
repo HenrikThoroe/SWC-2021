@@ -84,4 +84,4 @@ namespace App
             void on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred);
     }; 
     
-} // namespace App
+}

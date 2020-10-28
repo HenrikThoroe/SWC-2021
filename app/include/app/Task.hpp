@@ -30,4 +30,4 @@ namespace App {
             virtual bool _run() = 0;
     };
 
-} // namespace App
+}

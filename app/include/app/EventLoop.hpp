@@ -79,4 +79,4 @@ namespace App {
             void runTask() const;
     };
     
-} // namespace App
+}

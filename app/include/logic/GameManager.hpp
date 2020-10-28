@@ -51,4 +51,4 @@ namespace Logic {
             const Model::Move* moveRequest();
     };
 
-} // namespace Logic
+}

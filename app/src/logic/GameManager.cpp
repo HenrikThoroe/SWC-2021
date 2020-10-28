@@ -18,4 +18,4 @@ namespace Logic {
         return &m;
     }
 
-} // namespace Logic
+}

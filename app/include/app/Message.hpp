@@ -84,4 +84,4 @@ namespace App {
             std::array<ResultCause, 2> cause;
     };
     
-} // namespace App
+}

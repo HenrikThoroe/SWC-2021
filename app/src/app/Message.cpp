@@ -8,4 +8,4 @@ namespace App {
 
     MementoMsg::MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, uint8_t currentTurn) : startPiece(startPiece), lastMove(lastMove), currentTurn(currentTurn) {}
 
-} // namespace App
+}

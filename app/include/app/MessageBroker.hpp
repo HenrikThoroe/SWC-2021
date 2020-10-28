@@ -96,4 +96,4 @@ namespace App {
             const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
     };
     
-} // namespace App
+}

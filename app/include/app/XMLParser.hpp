@@ -117,4 +117,4 @@ namespace App {
             const char* getCurrentColor() const;
     };
     
-} // namespace App
+}
