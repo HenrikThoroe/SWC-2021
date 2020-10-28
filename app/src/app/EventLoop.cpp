@@ -115,9 +115,7 @@ namespace App {
                 gameManager.updateWithMemento(std::any_cast<MementoMsg>(msg.payload));
                 break;
             case MsgType::MOVEREQUEST:
-                #ifdef DEBUG
-                std::cout << "\033[1;37mReceived MoveRequest\033[0m" << std::endl;
-                #endif
+                Util::debugPrint("\033[1;37mReceived MoveRequest\033[0m");
                 messageBroker.sendMove(gameManager.moveRequest());
                 break;
             case MsgType::LEFT:
@@ -133,9 +131,7 @@ namespace App {
                 return true;
                 break;
             case MsgType::PROTOCOLEND:
-                #ifdef DEBUG
-                std::cout << "\033[1;37mReceived ProtocolEnd\033[0m" << std::endl;
-                #endif
+                Util::debugPrint("\033[1;37mReceived ProtocolEnd\033[0m");
                 return true;
                 break;
             case MsgType::UNDEFINED:
