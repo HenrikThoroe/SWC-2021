@@ -38,9 +38,11 @@ namespace App
 
             /// The socket used by boost asio
             boost::asio::ip::tcp::socket socket{ioService};
+
         public:
             /// Bool that indicates messages received state
             std::atomic<bool> hasMessages = false;
+            
         public:
             TCPClient();
             

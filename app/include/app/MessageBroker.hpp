@@ -26,7 +26,7 @@ namespace App {
             XMLParser    xmlParser = XMLParser();
             
         public:
-            MessageBroker(/* args */);
+            MessageBroker();
             ~MessageBroker();
 
             /**

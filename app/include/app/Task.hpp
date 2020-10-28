@@ -7,6 +7,7 @@ namespace App {
     class Task {
         public:
             bool taskDone = false;
+            
         public:
             /// No copy constructors allowed
             Task(Task* task) = delete;

@@ -21,6 +21,7 @@ namespace App {
 
             /// Colors that are still in the game
             std::vector<Model::PieceColor> colorsInGame{};
+            
         public:
             XMLParser();
 
