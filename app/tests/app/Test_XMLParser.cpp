@@ -609,7 +609,7 @@ TEST_CASE("Test XMLParser", "[app]") {
 
         REQUIRE(payloadNotFlipped.lastMove.has_value());
         
-        REQUIRE(payloadNotFlipped.lastMove.value() == 33500);
+        REQUIRE(payloadNotFlipped.lastMove.value() == 33139);
 
         REQUIRE(payloadNotFlipped.startPiece == 0);
         REQUIRE(payloadNotFlipped.currentTurn == 7);
@@ -621,7 +621,7 @@ TEST_CASE("Test XMLParser", "[app]") {
 
         REQUIRE(payloadFlipped.lastMove.has_value());
         
-        REQUIRE(payloadFlipped.lastMove.value() == 35100);
+        REQUIRE(payloadFlipped.lastMove.value() == 34739);
 
         REQUIRE(payloadFlipped.startPiece == 0);
         REQUIRE(payloadFlipped.currentTurn == 7);

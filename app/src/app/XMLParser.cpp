@@ -292,7 +292,7 @@ namespace App {
 
                 //? Calculate index
                 // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
-                const int index = ((x-minX + y-minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
+                const int index = (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
 
                 result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn));
             } else {
