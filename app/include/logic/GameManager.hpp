@@ -37,7 +37,7 @@ namespace Logic {
             void setColor(const Model::PlayerColor& color);
 
             /**
-             * @brief Update own GameState with MementoMessage send by server
+             * @brief Update own GameState with MementoMessage sent by server
              * 
              * @param memento Memento received from server
              */
