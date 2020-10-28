@@ -15,7 +15,7 @@ typedef std::vector<std::string> MessageQueue;
 namespace App
 {
 
-    /// An asynchronous TCPClient for cummunicating with the SWC server
+    /// An asynchronous TCPClient for communicating with the SWC server
     class TCPClient {
         private:
             /// Mutex to lock multithreaded access
