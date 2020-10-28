@@ -92,7 +92,7 @@ namespace App {
 
         messages->emplace_back(
             boost::asio::buffers_begin(receiveBuffer.data()),
-            boost::asio::buffers_begin(receiveBuffer.data()) + bytes_transferred //- 7 //!
+            boost::asio::buffers_begin(receiveBuffer.data()) + bytes_transferred
         );
 
         receiveBuffer.consume(bytes_transferred);
