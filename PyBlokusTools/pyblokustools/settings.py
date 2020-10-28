@@ -13,6 +13,8 @@ class Settings():
     SOURCES_EXT : str = '.cpp'
     HEADERS_EXT : str = '.hpp'
     
+    HEADER_PRAGMA_EXCLUDEDIRS = ['app/include/libraries', 'app/tests']
+    
     SOURCES_EXCLUDE_PROD  : List[str] = []
     SOURCES_EXCLUDE_DEBUG : List[str] = []
     

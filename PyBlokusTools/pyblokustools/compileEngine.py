@@ -235,6 +235,11 @@ class Compiler():
                     # Get other header with same name already in baseNames
                     clashes[base] = [fileList[baseNames.index(base)], header]
             
+            #? Dont check pragma once for files in HEADER_PRAGMA_EXCLUDEDIRS dirs
+            relPath = os.path.relpath(header)
+            if any([relPath.startswith(exclude) for exclude in Settings.HEADER_PRAGMA_EXCLUDEDIRS]):
+                continue
+            
             #? Check pragma once
             commentFlag = False
             found       = False
