@@ -349,6 +349,7 @@ namespace App {
     }
 
     inline void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
+        // Checks the first character of the color attribute on the data node in the welcome message to determine own PlayerColor
         result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'o' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
     }
     
