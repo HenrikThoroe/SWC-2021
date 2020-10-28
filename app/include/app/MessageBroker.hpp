@@ -19,10 +19,10 @@ namespace App {
     /// Interface for everything communication related (TCP, XML)
     class MessageBroker {
         private:
-            ///TCPClient for communication with server
+            /// TCPClient for communication with server
             TCPClient   tcpClient = TCPClient();
 
-            ///XMLParser to parse and serialize xml messages from to to the server
+            /// XMLParser to parse and serialize xml messages from to to the server
             XMLParser    xmlParser = XMLParser();
             
         public:
@@ -61,10 +61,10 @@ namespace App {
              */
             void dispatch(const std::string& msg);
 
-            ///Create and dispatch a <protocol> message
+            /// Create and dispatch a <protocol> message
             void sendProtocol();
 
-            ///Create and dispatch a joinRequest
+            /// Create and dispatch a joinRequest
             void sendJoinRequest();
 
             /**
