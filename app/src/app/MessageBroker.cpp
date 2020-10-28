@@ -10,7 +10,7 @@ namespace App {
         tcpClient.disconnect();
     }
 
-    void MessageBroker::connect(const std::string& hostname, const unsigned short& port) {
+    void MessageBroker::connect(const std::string& hostname, const uint16_t& port) {
         std::string address = tcpClient.resolveHostname(hostname);
         tcpClient.connect(address, port);
         sendProtocol();

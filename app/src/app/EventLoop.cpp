@@ -17,7 +17,7 @@ namespace App {
         std::string hostname;
 
         // Listening port of gameserver to connect to
-        unsigned short port;
+        uint16_t port;
 
         // Reservation code to redeem with gameserver ("" -> None)
         std::string reservation;
@@ -26,7 +26,7 @@ namespace App {
         options_description optionsDesribtion("C++ client");
         optionsDesribtion.add_options()
             ("host,h", value<std::string>()->default_value("localhost"), "Host")
-            ("port,p", value<unsigned short>()->default_value(13050), "Port")
+            ("port,p", value<uint16_t>()->default_value(13050), "Port")
             ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
         ;
 
@@ -34,7 +34,7 @@ namespace App {
         store(parse_command_line(argc, argv, optionsDesribtion), varibaleMap);
 
         hostname    = varibaleMap["host"].as<std::string>();
-        port        = varibaleMap["port"].as<unsigned short>();
+        port        = varibaleMap["port"].as<uint16_t>();
         reservation = varibaleMap["reservation"].as<std::string>();
 
         //? Connect to gameserver
@@ -81,7 +81,7 @@ namespace App {
 
     //? Private methods
 
-    void EventLoop::startConnection(const std::string& address, const unsigned short& port) {
+    void EventLoop::startConnection(const std::string& address, const uint16_t& port) {
         messageBroker.connect(address, port);
 
         messageBroker.sendJoinRequest();

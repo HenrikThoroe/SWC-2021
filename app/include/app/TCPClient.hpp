@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <optional>
+#include <inttypes.h>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/streambuf.hpp>
@@ -52,7 +53,7 @@ namespace App
              * @param address Resolved server addres (IP)
              * @param port Port to connect to
              */
-            void connect(const std::string& address, const unsigned short& port);
+            void connect(const std::string& address, const uint16_t& port);
 
             /// Resolve a hostname to an address (IP)
             std::string resolveHostname(const std::string& hostname);

@@ -5,6 +5,7 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <inttypes.h>
 
 #include "TCPClient.hpp"
 #include "XMLParser.hpp"
@@ -35,7 +36,7 @@ namespace App {
              * @param hostname Server address
              * @param port Port to connect to
              */
-            void connect(const std::string& hostname, const unsigned short& port);
+            void connect(const std::string& hostname, const uint16_t& port);
 
             /**
              * @brief Consume all recieved Messages
