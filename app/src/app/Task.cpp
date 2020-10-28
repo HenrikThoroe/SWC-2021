@@ -4,17 +4,17 @@
 
 namespace App {
     
-    int Task::run(std::atomic<bool>& flag) {
+    TaskStatus Task::run(std::atomic<bool>& flag) {
         while (true) {
             // Check if message was recieved and task has to pause
-            if (flag) return 1;
+            if (flag) return TaskStatus::PAUSED;
 
             try {
                 // Run task iteration and return if done
-                if (_run()) return 0;
+                if (_run()) return TaskStatus::DONE;
             } catch (...) {
                 // Catch all exceptions and let task return with exception
-                return 2;
+                return TaskStatus::FAILED;
             }
         }
     }

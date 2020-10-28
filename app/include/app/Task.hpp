@@ -3,6 +3,14 @@
 #include <atomic>
 
 namespace App {
+
+    /// An enum of different task return-types.
+    /// @note types map to uint8_t
+    enum class TaskStatus: uint8_t {
+        DONE   = 0, 
+        PAUSED = 1,
+        FAILED = 2, 
+    };
     
     class Task {
         public:
@@ -20,7 +28,7 @@ namespace App {
              * 
              * @returns Task exit code (0: done, 1: paused, 2: failed)
              */
-            int run(std::atomic<bool>& flag);
+            TaskStatus run(std::atomic<bool>& flag);
 
         private:
             /**

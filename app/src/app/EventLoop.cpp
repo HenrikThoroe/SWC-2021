@@ -151,13 +151,13 @@ namespace App {
     inline void EventLoop::runTask() const {
         // (0: done, 1: paused, 2: failed)
         switch (backgroundQueue.front().run(messageReceivedFlag)) {
-            case 0:
+            case TaskStatus::DONE:
                 backgroundQueue.pop();
                 break;
-            case 1:
+            case TaskStatus::PAUSED:
                 Util::debugPrint("Background task has been paused");
                 break;
-            case 3:
+            case TaskStatus::FAILED:
                 Util::debugPrint("Background task failed; Exception caught and task discarded");
                 break;
             default:
