@@ -45,3 +45,5 @@ blokusdoc
 ```
 
 For more detailed information about available flags use `blokus* --help` where `*` should be replaced with `test`, `bench`, ...
+
+You can setup your development environment using `source ./dev-setup`. It will install some handy aliases for a better workflow.
