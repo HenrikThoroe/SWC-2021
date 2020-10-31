@@ -13,6 +13,7 @@ namespace App {
     void MessageBroker::connect(const std::string& hostname, const uint16_t& port) {
         std::string address = tcpClient.resolveHostname(hostname);
         tcpClient.connect(address, port);
+        tcpClient.listen();
         sendProtocol();
     }
 

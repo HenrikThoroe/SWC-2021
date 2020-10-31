@@ -133,6 +133,7 @@ namespace App {
             
             case MsgType::EXCEPT:
                 std::cout << "\033[1;31mAn error occurred\033[0m" << std::endl;
+                std::cout << std::any_cast<std::string>(msg.payload) << std::endl;
                 return true;
             
             case MsgType::PROTOCOLEND:
@@ -150,21 +151,23 @@ namespace App {
     }
 
     inline void EventLoop::runTask() const {
-        switch (backgroundQueue.front().run(messageReceivedFlag)) {
-            case TaskStatus::DONE:
-                backgroundQueue.pop();
-                break;
-            
-            case TaskStatus::PAUSED:
-                Util::debugPrint("Background task has been paused");
-                break;
-            
-            case TaskStatus::FAILED:
-                Util::debugPrint("Background task failed; Exception caught and task discarded");
-                break;
-            
-            default:
-                throw std::runtime_error("Got unexpected backgroundTask return code.");
+        if (!backgroundQueue.empty()) {
+            switch (backgroundQueue.front().run(messageReceivedFlag)) {
+                case TaskStatus::DONE:
+                    backgroundQueue.pop();
+                    break;
+                
+                case TaskStatus::PAUSED:
+                    Util::debugPrint("Background task has been paused");
+                    break;
+                
+                case TaskStatus::FAILED:
+                    Util::debugPrint("Background task failed; Exception caught and task discarded");
+                    break;
+                
+                default:
+                    throw std::runtime_error("Got unexpected backgroundTask return code.");
+            }
         }
     }
 
