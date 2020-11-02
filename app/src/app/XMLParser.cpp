@@ -356,7 +356,10 @@ namespace App {
     }
 
     inline void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
-        result.emplace_back(MsgType::EXCEPT, data);
+        Util::XMLStringWriter xmlStringWriter;
+        data.print(xmlStringWriter, " ", pugi::format_default);
+
+        result.emplace_back(MsgType::EXCEPT, xmlStringWriter.result);
     }
 
     inline uint8_t XMLParser::getPieceId(const char* pieceName) const {
