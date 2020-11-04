@@ -9,13 +9,35 @@ namespace Logic {
     }
 
     void GameManager::updateWithMemento(const App::MementoMsg& memento) {
-        /* code */
+        if (state.initialPiece == -1) {
+            state.initialPiece = static_cast<int>(memento.startPiece);
+        }
+
+        if (memento.currentTurn > 0) {
+            state.update(memento.lastMove);
+
+            /// TODO: Handle possibility that one or more colors are skipped by the server
+        }
+
+
     }
 
     const Model::Move* GameManager::moveRequest() {
-        // This will throw a ptr error when dereferenced (Just so test compilation works)
-        Model::Move m = Model::Move(0, Util::Position(0, 0), Model::Rotation::ZERO, Model::PieceColor::NONE);
-        return &m;
+        lastTurnWithActivity = state.getTurn();
+        
+        std::vector<const Model::Move*> moves;
+        state.assignPossibleMoves(moves);
+
+        if (moves.size() == 0) {
+            std::cout << "Skiping" << std::endl;
+            return nullptr;
+        }
+
+        const Model::Move* move = moves[rand() % moves.size()];
+
+        std::cout << *move << std::endl;
+
+        return move;
     }
 
 }

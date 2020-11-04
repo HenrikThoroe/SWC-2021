@@ -5,6 +5,7 @@
 #include "Message.hpp"
 #include "Move.hpp"
 #include "color.hpp"
+#include "GameState.hpp"
 
 namespace Logic {
 
@@ -16,6 +17,10 @@ namespace Logic {
 
             /// Own PlayerColor
             Model::PlayerColor ownColor;
+
+            Model::GameState state = Model::GameState(-1);
+
+            uint8_t lastTurnWithActivity = 0;
 
         public:
             /**
