@@ -74,6 +74,14 @@ namespace Model {
         return getLastPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
     }
 
+    void GameState::update(std::optional<uint32_t> move) {
+        if (move) {
+            performMove(&allPieces[move.value()]);
+        } else {
+            performMove(nullptr);
+        }
+    }
+
     void GameState::performMove(const Move* move) {
         if (move != nullptr) {
             pushHistory[static_cast<uint8_t>(move->color) - 1].push(move->pieceId);

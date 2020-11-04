@@ -17,7 +17,7 @@ namespace Model {
     class GameState {
         public:
 
-            const int initialPiece;
+            int initialPiece;
 
         private:
 
@@ -65,6 +65,8 @@ namespace Model {
             GameState(int initialPiece);
             GameState(GameState* other) = delete;
             GameState(GameState& other) = delete;
+
+            void update(std::optional<uint32_t> move);
 
             /// Returns the current turn.
             const uint8_t& getTurn() const;
