@@ -2,4 +2,4 @@
 chmod u+rwx ./dist/prodSWC-2021.out
 
 blokusprod
-./dist/prodSWC-2021.out "@"
+./dist/prodSWC-2021.out "$@"
