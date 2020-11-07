@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <optional>
+
 #include "GameManager.hpp"
 
 namespace Logic {
@@ -16,7 +19,9 @@ namespace Logic {
         if (memento.currentTurn > 0) {
             state.update(memento.lastMove);
 
-            /// TODO: Handle possibility that one or more colors are skipped by the server
+            while (state.getTurn() < 100 && std::find(colorsInGame->begin(), colorsInGame->end(), state.getCurrentPieceColor()) == colorsInGame->end()) {
+                state.update(std::nullopt);
+            }
         }
 
 
