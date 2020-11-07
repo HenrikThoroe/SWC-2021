@@ -97,7 +97,7 @@ namespace App {
     inline bool EventLoop::actOnMessage(const Message& msg) {
         switch (msg.type) {
             case MsgType::JOINED:
-                std::cout << "\033[1;37mJoined room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
+                std::cout << "\033[1;37mJoined Room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
                 break;
             
             case MsgType::WELCOME:
@@ -119,25 +119,43 @@ namespace App {
                 break;
             
             case MsgType::MOVEREQUEST:
-                Util::debugPrint("\033[1;37mReceived MoveRequest\033[0m");
+                Util::debugPrint("\033[1;37mReceived Move Request\033[0m");
                 messageBroker.sendMove(gameManager.moveRequest());
                 break;
             
             case MsgType::LEFT:
-                std::cout << "\033[1;37mOpponent left the game\033[0m" << std::endl;
+                std::cout << "\033[1;37mOpponent Left the Game\033[0m" << std::endl;
                 return true;
             
             case MsgType::RESULT:
-                std::cout << "\033[1;37mThe results are in\033[0m" << std::endl;
+                { // Block scope to allow variable declaration in switch case
+                    const int id = static_cast<int>(gameManager.getPlayerColor());
+                    std::string result;
+
+                    switch (std::any_cast<ResultMsg>(msg.payload).end[id]) {
+                        case ResultMsg::ResultEnd::LOSE:
+                            result = "LOSE";
+                            break;
+                        case ResultMsg::ResultEnd::DRAW:
+                            result = "DRAW";
+                            break;
+                        case ResultMsg::ResultEnd::WIN:
+                            result = "WON";
+                            break;
+                    }
+                    
+                    std::cout << "\033[1;37mReceived Results - " << result << "\033[0m" << std::endl;
+                }
+
                 return true;
             
             case MsgType::EXCEPT:
-                std::cout << "\033[1;31mAn error occurred\033[0m" << std::endl;
+                std::cout << "\033[1;31mAn Error Occurred\033[0m" << std::endl;
                 std::cout << std::any_cast<std::string>(msg.payload) << std::endl;
                 return true;
             
             case MsgType::PROTOCOLEND:
-                Util::debugPrint("\033[1;37mReceived ProtocolEnd\033[0m");
+                Util::debugPrint("\033[1;37mReceived Protocol Terminator\033[0m");
                 return true;
             
             case MsgType::UNDEFINED:
