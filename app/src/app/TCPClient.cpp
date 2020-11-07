@@ -4,6 +4,7 @@
 #include <boost/asio/write.hpp>
 
 #include "TCPClient.hpp"
+#include "FileStream.hpp"
 
 namespace App {
 
@@ -78,6 +79,8 @@ namespace App {
         if (errorCode) {
             throw std::runtime_error("Sending failed: " + errorCode.message());
         }
+        
+        Util::Log::sent << message;
     }
 
     void TCPClient::on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred) {
@@ -96,6 +99,10 @@ namespace App {
         );
 
         receiveBuffer.consume(bytes_transferred);
+        
+        for (const std::string& message : *messages) {
+            Util::Log::received << message;
+        }
 
         hasMessages = true;
 
