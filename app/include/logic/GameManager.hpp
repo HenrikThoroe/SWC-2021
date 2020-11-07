@@ -52,6 +52,8 @@ namespace Logic {
              * @returns Const ptr to move the logic deemed best
              */
             const Model::Move* moveRequest();
+
+            const Model::PlayerColor& getPlayerColor() const;
     };
 
 }

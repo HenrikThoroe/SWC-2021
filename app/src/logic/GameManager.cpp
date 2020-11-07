@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <optional>
+#include <stdexcept>
 
 #include "GameManager.hpp"
 
@@ -9,6 +10,10 @@ namespace Logic {
 
     void GameManager::setColor(const Model::PlayerColor& color) {
         ownColor = color;
+    }
+
+    const Model::PlayerColor& GameManager::getPlayerColor() const {
+        return ownColor;
     }
 
     void GameManager::updateWithMemento(const App::MementoMsg& memento) {
@@ -32,15 +37,10 @@ namespace Logic {
         state.assignPossibleMoves(moves);
 
         if (moves.size() == 0) {
-            std::cout << "Skiping" << std::endl;
-            return nullptr;
+            throw std::runtime_error("No moves found. This should not happen because the server only requests a move if possible.");
         }
 
-        const Model::Move* move = moves[rand() % moves.size()];
-
-        std::cout << *move << std::endl;
-
-        return move;
+        return moves[rand() % moves.size()];
     }
 
 }
