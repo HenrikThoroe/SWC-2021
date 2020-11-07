@@ -20,8 +20,6 @@ namespace Logic {
 
             Model::GameState state = Model::GameState(-1);
 
-            uint8_t lastTurnWithActivity = 0;
-
         public:
             /**
              * @brief Construct a new GameManager instance

@@ -27,9 +27,7 @@ namespace Logic {
 
     }
 
-    const Model::Move* GameManager::moveRequest() {
-        lastTurnWithActivity = state.getTurn();
-        
+    const Model::Move* GameManager::moveRequest() {  
         std::vector<const Model::Move*> moves;
         state.assignPossibleMoves(moves);
 
