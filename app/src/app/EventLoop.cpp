@@ -128,24 +128,20 @@ namespace App {
                 return true;
             
             case MsgType::RESULT:
-                { // Block scope to allow variable declaration in switch case
-                    const int id = static_cast<int>(gameManager.getPlayerColor());
-                    std::string result;
 
-                    switch (std::any_cast<ResultMsg>(msg.payload).end[id]) {
-                        case ResultMsg::ResultEnd::LOSE:
-                            result = "LOSE";
-                            break;
-                        case ResultMsg::ResultEnd::DRAW:
-                            result = "DRAW";
-                            break;
-                        case ResultMsg::ResultEnd::WIN:
-                            result = "WON";
-                            break;
-                    }
-                    
-                    std::cout << "\033[1;37mReceived Results - " << result << "\033[0m" << std::endl;
+                std::cout << "\033[1;37mReceived Results - ";
+                switch (std::any_cast<ResultMsg>(msg.payload).end[static_cast<int>(gameManager.getPlayerColor())]) {
+                    case ResultMsg::ResultEnd::LOSE:
+                        std::cout << "\033[1;31mLOSE";
+                        break;
+                    case ResultMsg::ResultEnd::DRAW:
+                        std::cout << "\033[1;36mDRAW";
+                        break;
+                    case ResultMsg::ResultEnd::WIN:
+                        std::cout << "\033[1;32mWIN";
+                        break;
                 }
+                std::cout << "\033[0m" << std::endl;
 
                 return true;
             
