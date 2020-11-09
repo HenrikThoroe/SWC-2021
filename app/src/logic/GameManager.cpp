@@ -1,3 +1,7 @@
+#include <algorithm>
+#include <optional>
+#include <stdexcept>
+
 #include "GameManager.hpp"
 
 namespace Logic {
@@ -8,14 +12,35 @@ namespace Logic {
         ownColor = color;
     }
 
-    void GameManager::updateWithMemento(const App::MementoMsg& memento) {
-        /* code */
+    const Model::PlayerColor& GameManager::getPlayerColor() const {
+        return ownColor;
     }
 
-    const Model::Move* GameManager::moveRequest() {
-        // This will throw a ptr error when dereferenced (Just so test compilation works)
-        Model::Move m = Model::Move(0, Util::Position(0, 0), Model::Rotation::ZERO, Model::PieceColor::NONE);
-        return &m;
+    void GameManager::updateWithMemento(const App::MementoMsg& memento) {
+        if (state.initialPiece == -1) {
+            state.initialPiece = static_cast<int>(memento.startPiece);
+        }
+
+        if (memento.currentTurn > 0) {
+            state.update(memento.lastMove);
+
+            while (state.getTurn() < 100 && std::find(colorsInGame->begin(), colorsInGame->end(), state.getCurrentPieceColor()) == colorsInGame->end()) {
+                state.update(std::nullopt);
+            }
+        }
+
+
+    }
+
+    const Model::Move* GameManager::moveRequest() {  
+        std::vector<const Model::Move*> moves;
+        state.assignPossibleMoves(moves);
+
+        if (moves.size() == 0) {
+            throw std::runtime_error("No moves found. This should not happen because the server only requests a move if possible.");
+        }
+
+        return moves[rand() % moves.size()];
     }
 
 }

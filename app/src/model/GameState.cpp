@@ -74,6 +74,14 @@ namespace Model {
         return getLastPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
     }
 
+    void GameState::update(std::optional<uint32_t> move) {
+        if (move) {
+            performMove(&allPieces[move.value()]);
+        } else {
+            performMove(nullptr);
+        }
+    }
+
     void GameState::performMove(const Move* move) {
         if (move != nullptr) {
             pushHistory[static_cast<uint8_t>(move->color) - 1].push(move->pieceId);
@@ -407,8 +415,10 @@ namespace Model {
         os << "Color: " << state.getCurrentPieceColor() << " (" << static_cast<int>(state.getCurrentPieceColor()) << ")" << std::endl;
         os << "Available: ";
         
-        for (int pieceId : state.availablePieces[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1]) {
-            os << pieceId << " ";
+        for (int pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
+            if (state.availablePieces[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1][pieceId] != 0) {
+                os << PieceCollection::getPiece(pieceId).name << " ";
+            }
         }
 
         os << std::endl;

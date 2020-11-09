@@ -5,6 +5,7 @@
 #include "Message.hpp"
 #include "Move.hpp"
 #include "color.hpp"
+#include "GameState.hpp"
 
 namespace Logic {
 
@@ -16,6 +17,8 @@ namespace Logic {
 
             /// Own PlayerColor
             Model::PlayerColor ownColor;
+
+            Model::GameState state = Model::GameState(-1);
 
         public:
             /**
@@ -49,6 +52,8 @@ namespace Logic {
              * @returns Const ptr to move the logic deemed best
              */
             const Model::Move* moveRequest();
+
+            const Model::PlayerColor& getPlayerColor() const;
     };
 
 }

@@ -4,6 +4,7 @@
 #include <boost/asio/write.hpp>
 
 #include "TCPClient.hpp"
+#include "FileStream.hpp"
 
 namespace App {
 
@@ -12,7 +13,7 @@ namespace App {
     }
 
     void TCPClient::connect(const std::string& address, const uint16_t& port) {
-        // Lock the mutex to avoid date races
+        // Lock the mutex to avoid data races
         std::lock_guard g{mutex};
 
         socket.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(address), port));
@@ -29,8 +30,8 @@ namespace App {
     }
 
     void TCPClient::disconnect() {
-        // Lock the mutex to avoid date races
-        std::lock_guard g{mutex};
+        // Lock the mutex to avoid data races and access to shared ressources after this call
+        mutex.lock();
         
         connected = false;
 
@@ -39,7 +40,7 @@ namespace App {
     }
 
     std::shared_ptr<MessageQueue> TCPClient::consumeMessages() {
-        // Lock the mutex to avoid date races
+        // Lock the mutex to avoid data races
         std::lock_guard g{mutex};
 
         std::shared_ptr<MessageQueue> newRet = std::make_shared<MessageQueue>();
@@ -53,7 +54,7 @@ namespace App {
     }
 
     void TCPClient::listen() {
-        // Lock the mutex to avoid date races
+        // Lock the mutex to avoid data races
         std::lock_guard g{mutex};
 
         if (listening) return;
@@ -78,10 +79,12 @@ namespace App {
         if (errorCode) {
             throw std::runtime_error("Sending failed: " + errorCode.message());
         }
+        
+        Util::Log::sent << message;
     }
 
     void TCPClient::on_read(const boost::system::error_code& ec, const std::size_t& bytes_transferred) {
-        // Lock the mutex to avoid date races
+        // Lock the mutex to avoid data races
         std::lock_guard g{mutex};
 
         if (boost::asio::error::eof == ec || boost::asio::error::connection_reset == ec) {
@@ -96,6 +99,8 @@ namespace App {
         );
 
         receiveBuffer.consume(bytes_transferred);
+        
+        Util::Log::received << messages->back();
 
         hasMessages = true;
 

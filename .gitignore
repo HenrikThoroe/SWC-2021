@@ -246,3 +246,6 @@ docs/
 
 # Own working/testing directory
 .dev
+
+# Directory for client logs
+logs/
