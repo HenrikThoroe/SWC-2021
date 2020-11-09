@@ -66,6 +66,10 @@ namespace Model {
             GameState(GameState* other) = delete;
             GameState(GameState& other) = delete;
 
+            /**
+             * @brief Updates the state with the given move.
+             * @param move The id of the move, which should be performed, or nullopt if the move should be skipped.
+             */
             void update(std::optional<uint32_t> move);
 
             /// Returns the current turn.
