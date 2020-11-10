@@ -3,6 +3,7 @@ from typing import List
 import os
 import subprocess
 import argparse
+import zipfile
 
 from pyblokustools.compileEngine import Compiler
 from pyblokustools.helpers.coloring import Colors, colorT
@@ -105,7 +106,7 @@ def compileProduction() -> None:
         debug         = False,
         makeAll       = args.all,
         forceLink     = args.forcelink,
-        extraFlags    = args.extraflags,
+        extraFlags    = args.extraflags + ['-march=broadwell', '-DNOLOG'],
         sources_incRe = args.sourcesincre,
         headers_incRe = args.headersincre,
         )
@@ -115,3 +116,8 @@ def compileProduction() -> None:
         raise SystemExit()
 
     print(colorT("\nCompiled successfully, placed in 'dist/'", Colors.GREEN))
+
+    zipf = zipfile.ZipFile('dist/client.zip', 'w', zipfile.ZIP_DEFLATED)
+    zipf.write(os.path.abspath('start.sh'), '/start.sh')
+    zipf.write(os.path.abspath('dist/prod.out'), 'dist/prod.out')
+    zipf.close()
