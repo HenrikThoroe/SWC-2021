@@ -106,7 +106,7 @@ def compileProduction() -> None:
         debug         = False,
         makeAll       = args.all,
         forceLink     = args.forcelink,
-        extraFlags    = args.extraflags + ['-march=broadwell', '-DNOLOG'],
+        extraFlags    = list(set(args.extraflags) | {'-march=broadwell', '-DNOLOG'}),
         sources_incRe = args.sourcesincre,
         headers_incRe = args.headersincre,
         )

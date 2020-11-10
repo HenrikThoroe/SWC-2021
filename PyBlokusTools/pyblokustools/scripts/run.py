@@ -113,7 +113,7 @@ def run() -> None:
         debug         = False,
         makeAll       = args.all,
         forceLink     = args.forcelink,
-        extraFlags    = args.extraflags + ['-DDEBUG'],
+        extraFlags    = list(set(args.extraflags) | {'-DDEBUG'}),
         sources_incRe = args.sourcesincre,
         headers_incRe = args.headersincre,
         )
