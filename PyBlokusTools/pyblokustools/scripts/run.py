@@ -9,7 +9,7 @@ from pyblokustools.helpers.coloring import Colors, colorT
 from pyblokustools.helpers.platform import assertPlatform
 from pyblokustools.version import VERSION
 
-def compileProduction() -> None:
+def run() -> None:
     assertPlatform()
     
     def parseOn_args(value: str) -> List[str]:
@@ -89,10 +89,18 @@ def compileProduction() -> None:
         help='regex of valid header files',
         default="."
         )
+    parser.add_argument(
+        '-c',
+        '--clientflags',
+        action='store',
+        type=parseOn_args,
+        help='flags for the client',
+        default=[]
+        )
     
     args = parser.parse_args()
 
-    print(colorT("Compiling in production mode", Colors.WHITE))
+    print(colorT("Compiling in optimized mode", Colors.WHITE))
 
     out_file = 'dist/client.out'
 
@@ -115,3 +123,4 @@ def compileProduction() -> None:
         raise SystemExit()
 
     print(colorT("\nRunning client:\n", Colors.GREEN))
+    os.execv(f'./{out_file}', ['client.out' ,*args.clientflags])
