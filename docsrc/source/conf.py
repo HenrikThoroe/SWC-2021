@@ -18,9 +18,9 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'BlockusC++-AI'
-copyright = '2020, Henrik Thøre, Rubin Raithel'
-author = 'Henrik Thøre, Rubin Raithel'
+project = 'Blokus AI'
+copyright = '2020, Henrik Thorøe, Rubin Raithel'
+author = 'Henrik Thorøe, Rubin Raithel'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.0'
@@ -32,8 +32,13 @@ release = '0.0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_rtd_theme'
+    'sphinx_rtd_theme',
+    'breathe'
 ]
+
+# Breathe Configuration
+breathe_projects = { "Blokus AI": "../doxyBuild/xml/" }
+breathe_default_project = "Blokus AI"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

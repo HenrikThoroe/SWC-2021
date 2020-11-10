@@ -237,5 +237,15 @@ $RECYCLE.BIN/
 
 
 ## Project specific ##
-# Scripts settings
-scripts/helpers/config.json
+# Scripts
+.pybt-cache
+compilerOutput.txt
+
+# Documentation
+docs/
+
+# Own working/testing directory
+.dev
+
+# Directory for client logs
+logs/
