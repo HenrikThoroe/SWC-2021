@@ -68,7 +68,7 @@ def runTests() -> None:
 
     print(colorT("Running unittests", Colors.WHITE))
 
-    out_file = 'dist/testsRun.out'
+    out_file = 'dist/tests.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),

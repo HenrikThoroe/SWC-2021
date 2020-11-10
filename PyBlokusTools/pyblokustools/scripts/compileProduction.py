@@ -94,7 +94,7 @@ def compileProduction() -> None:
 
     print(colorT("Compiling in production mode", Colors.WHITE))
 
-    out_file = 'dist/prodSWC-2021.out'
+    out_file = 'dist/prod.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),

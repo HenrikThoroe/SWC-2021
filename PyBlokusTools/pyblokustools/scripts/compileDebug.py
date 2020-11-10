@@ -103,7 +103,7 @@ def compileDebug() -> None:
 
     print(colorT("Running with gdb in debug mode", Colors.WHITE))
 
-    out_file = 'dist/debugSWC-2021.out'
+    out_file = 'dist/debug.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),

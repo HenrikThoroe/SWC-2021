@@ -68,7 +68,7 @@ def runBenchmarks() -> None:
 
     print(colorT("Running benchmarks", Colors.WHITE))
 
-    out_file = 'dist/benchmarksRun.out'
+    out_file = 'dist/benchmarks.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),
