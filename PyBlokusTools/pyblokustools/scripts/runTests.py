@@ -88,4 +88,4 @@ def runTests() -> None:
         raise SystemExit()
 
     print(colorT("\nRunning tests:\n", Colors.PURPLE))
-    os.execv(f'./{out_file}', ['testsRun.out' ,*args.testflags])
+    os.execv(f'./{out_file}', ['tests.out' ,*args.testflags])
