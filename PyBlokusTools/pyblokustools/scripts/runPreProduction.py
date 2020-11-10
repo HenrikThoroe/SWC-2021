@@ -3,26 +3,25 @@ from typing import List
 import os
 import subprocess
 import argparse
-import zipfile
 
 from pyblokustools.compileEngine import Compiler
 from pyblokustools.helpers.coloring import Colors, colorT
 from pyblokustools.helpers.platform import assertPlatform
 from pyblokustools.version import VERSION
 
-def compileProduction() -> None:
+def runPreProduction() -> None:
     assertPlatform()
     
     def parseOn_args(value: str) -> List[str]:
         return value.split()
     
     parser = argparse.ArgumentParser(
-        prog='blokusprod',
-        description='Compile SWC-2021 Blokus in production mode.',
+        prog='blokusrun',
+        description='Compile SWC-2021 Blokus in optimized mode and run it.',
         epilog='Copyright (C) 2020 Rubin Raithel, Henrik Thorøe'
         )
     
-    parser.version = f'BlokusProd v{VERSION}' # type: ignore
+    parser.version = f'BlokusRun v{VERSION}' # type: ignore
     
     parser.add_argument(
         '-v',
@@ -90,12 +89,20 @@ def compileProduction() -> None:
         help='regex of valid header files',
         default="."
         )
+    parser.add_argument(
+        '-c',
+        '--clientflags',
+        action='store',
+        type=parseOn_args,
+        help='flags for the client',
+        default=[]
+        )
     
     args = parser.parse_args()
 
-    print(colorT("Compiling in production mode", Colors.WHITE))
+    print(colorT("Compiling in optimized mode", Colors.WHITE))
 
-    out_file = 'dist/prod.out'
+    out_file = 'dist/client.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),
@@ -106,7 +113,7 @@ def compileProduction() -> None:
         debug         = False,
         makeAll       = args.all,
         forceLink     = args.forcelink,
-        extraFlags    = list(set(args.extraflags) | {'-march=broadwell', '-DNOLOG'}),
+        extraFlags    = list(set(args.extraflags) | {'-DDEBUG'}),
         sources_incRe = args.sourcesincre,
         headers_incRe = args.headersincre,
         )
@@ -115,16 +122,5 @@ def compileProduction() -> None:
         print(colorT("Could not compile, please see 'compilerOutput.txt'", Colors.ORANGE))
         raise SystemExit()
 
-    print(colorT("\nCompiled successfully, placed in 'dist/'", Colors.GREEN))
-
-    zipf = zipfile.ZipFile('dist/client.zip', 'w', zipfile.ZIP_DEFLATED)
-    zipf.write(os.path.abspath('start.sh'), '/start.sh')
-    zipf.write(os.path.abspath('dist/prod.out'), 'dist/prod.out')
-    failedFiles = zipf.testzip()
-    zipf.close()
-
-    if failedFiles:
-        print(colorT("\nFailed to compress files. Error in: {}".format(str.join(", ", failedFiles)), Colors.RED))
-        raise SystemExit()
-
-    print(colorT("Compressed successfully, placed in 'dist/'", Colors.GREEN))
+    print(colorT("\nRunning client:\n", Colors.GREEN))
+    os.execv(f'./{out_file}', ['client.out' ,*args.clientflags])
