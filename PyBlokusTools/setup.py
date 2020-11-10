@@ -28,7 +28,7 @@ setuptools.setup(
             'blokusprod = pyblokustools.scripts.compileProduction:compileProduction',
             'blokusdebug = pyblokustools.scripts.compileDebug:compileDebug',
             'blokusdoc = pyblokustools.scripts.makeDocumentation:makeDocumentation',
-            'blokusrun = pyblokustools.scripts.run:run',
+            'blokusrun = pyblokustools.scripts.runPreProduction:runPreProduction',
         ]
     },
 )

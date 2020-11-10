@@ -9,7 +9,7 @@ from pyblokustools.helpers.coloring import Colors, colorT
 from pyblokustools.helpers.platform import assertPlatform
 from pyblokustools.version import VERSION
 
-def run() -> None:
+def runPreProduction() -> None:
     assertPlatform()
     
     def parseOn_args(value: str) -> List[str]:
