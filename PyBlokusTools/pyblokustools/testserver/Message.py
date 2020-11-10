@@ -9,39 +9,40 @@ class Message():
         self.payload: Final[Any]     = payload
 
 class MementoMsg():
-    def __init__(self, currentTurn: int) -> None:
-        """Construct a new MementoMsg
+    """Construct a new MementoMsg
 
-        Arguments:
-            currentTurn {int} -- Current turn
-        """
+    Arguments:
+        currentTurn {int} -- Current turn
+    """
+    def __init__(self, currentTurn: int) -> None:
         self.currentTurn: Final[int] = currentTurn
 
+class ResultCause(Enum):
+    """An enum of different game end causes.
+    """
+    REGULAR        = 0
+    LEFT           = 1
+    RULE_VIOLATION = 2
+    SOFT_TIMEOUT   = 3
+    HARD_TIMEOUT   = 4
+
+class ResultEnd(Enum):
+    """An enum of different game endings.
+    """
+    LOSE = 0
+    DRAW = 1
+    WIN  = 2
+
 class ResultMsg():
-    class ResultCause(Enum):
-        """An enum of different game end causes.
-        """
-        REGULAR        = 0
-        LEFT           = 1
-        RULE_VIOLATION = 2
-        SOFT_TIMEOUT   = 3
-        HARD_TIMEOUT   = 4
-    
-    class ResultEnd(Enum):
-        """An enum of different game endings.
-        """
-        LOSE = 0
-        DRAW = 1
-        WIN  = 2
+    """Construct a new ResultMsg
+
+    Arguments:
+        score {Tuple[int, int]}                 -- GameScore both players reached
+        end   {Tuple[ResultEnd, ResultEnd]}     -- TournamentPoints both players earned
+        cause {Tuple[ResultCause, ResultCause]} -- Game-ending causes for both players
+    """
     
     def __init__(self, score: Tuple[int, int], end: Tuple[ResultEnd, ResultEnd], cause: Tuple[ResultCause, ResultCause]) -> None:
-        """Construct a new ResultMsg
-
-        Arguments:
-            score {Tuple[int, int]}                 -- GameScore both players reached
-            end   {Tuple[ResultEnd, ResultEnd]}     -- TournamentPoints both players earned
-            cause {Tuple[ResultCause, ResultCause]} -- Game-ending causes for both players
-        """
         self.score: Final[Tuple[int, int]]                 = score
         self.end:   Final[Tuple[ResultEnd, ResultEnd]]     = end
         self.cause: Final[Tuple[ResultCause, ResultCause]] = cause
