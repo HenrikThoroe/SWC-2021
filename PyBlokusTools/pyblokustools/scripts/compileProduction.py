@@ -120,4 +120,11 @@ def compileProduction() -> None:
     zipf = zipfile.ZipFile('dist/client.zip', 'w', zipfile.ZIP_DEFLATED)
     zipf.write(os.path.abspath('start.sh'), '/start.sh')
     zipf.write(os.path.abspath('dist/prod.out'), 'dist/prod.out')
+    failedFiles = zipf.testzip()
     zipf.close()
+
+    if failedFiles:
+        print(colorT("\nFailed to compress files. Error in: {}".format(str.join(", ", failedFiles)), Colors.RED))
+        raise SystemExit()
+
+    print(colorT("Compressed successfully, placed in 'dist/'", Colors.GREEN))
