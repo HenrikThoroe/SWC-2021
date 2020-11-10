@@ -37,7 +37,10 @@ blokusbench
 # Create a debug build of the client
 blokusdebug
 
-# Create a production build of the client
+# Create an optimized build and run it with debug flag and log file support
+blokusrun
+
+# Create a production build of the client and prepare for upload
 blokusprod
 
 # Create the documentation from ./docsrc
