@@ -61,7 +61,7 @@ namespace App {
              * @param port Port of the gameserver
              * @param reservation Reservation code to join specific match
              */
-            void startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation);
+            void startReservedConnection(const std::string& address, const uint16_t& port, const std::string& reservation);
 
             /// Run actual eventLoop
             void loop();

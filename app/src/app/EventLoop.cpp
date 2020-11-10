@@ -88,7 +88,7 @@ namespace App {
         messageBroker.sendJoinRequest();
     }
     
-    void EventLoop::startReservedConnection(const std::string& address, const uint8_t& port, const std::string& reservation) {
+    void EventLoop::startReservedConnection(const std::string& address, const uint16_t& port, const std::string& reservation) {
         messageBroker.connect(address, port);
 
         messageBroker.sendJoinReservedRequest(reservation);
