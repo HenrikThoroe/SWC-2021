@@ -35,10 +35,10 @@ class TCPClient():
         self.socket.send(msg.encode("utf-8"))
     
     def receive(self) -> str:
-        """Recieve one message
+        """Receive one message
 
         Returns:
-            str -- Message recieved
+            str -- Message received
         """
         while True:
             index = self.buffer.find("</room>")
