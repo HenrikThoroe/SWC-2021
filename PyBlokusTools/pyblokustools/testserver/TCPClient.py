@@ -1,6 +1,12 @@
 import socket
 
 class TCPClient():
+    """A synchronous TCPClient for communicating with the SWC server
+
+    Arguments:
+        hostname {str} -- Hostname of server to connect to
+        port     {int} -- Port on which the server listens
+    """
     def __init__(self, hostname: str, port: int) -> None:
         self.buffer = ""
         
@@ -16,9 +22,9 @@ class TCPClient():
         self.socket = socket.create_connection(
             address = (
                 socket.gethostbyname(hostname),
-                port
-                )
+                port,
             )
+        )
     
     def send(self, msg: str) -> None:
         """Send a message to the server
@@ -37,7 +43,7 @@ class TCPClient():
         while True:
             index = self.buffer.find("</room>")
             if index != -1:
-                ret = self.buffer[:index+7] # Return first message (till </room>)
+                ret         = self.buffer[:index+7] # Return first message (till </room>)
                 self.buffer = self.buffer[index+7:] # Consume message from the buffer
                 
                 return ret
