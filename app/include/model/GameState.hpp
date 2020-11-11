@@ -117,8 +117,8 @@ namespace Model {
             /// Creates a unique hash for the game state which has no collisions.
             std::bitset<808> uniqueHash() const;
 
-            /// Evaluates the current state for the player who performed the last move.
-            int evaluate() const;
+            /// Evaluates the current state for the assigned player.
+            int evaluate(const PlayerColor& player) const;
 
             void freeMemory(float percent = 0.5);
 

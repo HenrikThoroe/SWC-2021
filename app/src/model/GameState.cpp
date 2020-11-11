@@ -374,12 +374,12 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate() const {
+    int GameState::evaluate(const PlayerColor& player) const {
         if (turn == 0) {
             return 0;
         }
 
-        const std::array<PieceColor, 2>& colors = getLastPlayer().getPieceColors();
+        const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
 
         for (const PieceColor& color : colors) {
