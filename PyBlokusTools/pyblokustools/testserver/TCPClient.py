@@ -1,3 +1,5 @@
+from typing import Union
+
 import socket
 
 class TCPClient():
@@ -7,8 +9,11 @@ class TCPClient():
         hostname {str} -- Hostname of server to connect to
         port     {int} -- Port on which the server listens
     """
+    
+    MSG_SIGNALS = ("</room>", "</prepared>", "</protocol>")
+    
     def __init__(self, hostname: str, port: int) -> None:
-        self.buffer = ""
+        self._buffer = ""
         
         self.connect(hostname, port)
     
@@ -19,12 +24,13 @@ class TCPClient():
             hostname {str} -- Hostname of server to connect to
             port     {int} -- Port on which the server listens
         """
-        self.socket = socket.create_connection(
+        self._socket = socket.create_connection(
             address = (
                 socket.gethostbyname(hostname),
                 port,
             )
         )
+        self._socket.settimeout(2)
     
     def send(self, msg: str) -> None:
         """Send a message to the server
@@ -32,21 +38,25 @@ class TCPClient():
         Arguments:
             msg {str} -- Message to send
         """
-        self.socket.send(msg.encode("utf-8"))
+        self._socket.send(msg.encode("utf-8"))
     
-    def receive(self) -> str:
+    def receive(self) -> Union[str, False]:
         """Receive one message
 
         Returns:
-            str -- Message received
+            str -- Message received, or False on timeout
         """
         while True:
-            index = self.buffer.find("</room>")
-            if index != -1:
-                ret         = self.buffer[:index+7] # Return first message (till </room>)
-                self.buffer = self.buffer[index+7:] # Consume message from the buffer
-                
-                return ret
+            for signal in TCPClient.MSG_SIGNALS: # Multiple xml endings signal a full valid message
+                index = self._buffer.find(signal)
+                if index != -1:
+                    ret          = self._buffer[:index+len(signal)] # Return first message (till end of signal str)
+                    self._buffer = self._buffer[index+len(signal):] # Consume message from the buffer
+                    
+                    return ret
             
             #? Read if no full message was received yet
-            self.buffer += self.socket.recv(4096).decode("utf-8")
+            try:
+                self._buffer += self._socket.recv(4096).decode()
+            except socket.timeout:
+                return False # We return on timeout to avoid deadlock due to non working clients
