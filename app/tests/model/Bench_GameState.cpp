@@ -156,7 +156,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state] {
-                return state.evaluate();
+                return state.evaluate(PlayerColor::BLUE);
             });
         }
 
