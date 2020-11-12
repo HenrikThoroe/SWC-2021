@@ -31,6 +31,14 @@ class TCPClient():
             )
         )
         self._socket.settimeout(2)
+        
+        self.send('<protocol>')
+    
+    def disconnect(self) -> None:
+        """Disconnect from the SWC server
+        """
+        self.send('</protocol>')
+        self._socket.close()
     
     def send(self, msg: str) -> None:
         """Send a message to the server
@@ -40,7 +48,7 @@ class TCPClient():
         """
         self._socket.send(msg.encode("utf-8"))
     
-    def receive(self) -> Union[str, False]:
+    def receive(self) -> Union[str, bool]:
         """Receive one message
 
         Returns:
