@@ -120,6 +120,9 @@ namespace Model {
             /// Evaluates the current state for the assigned player.
             int evaluate(const PlayerColor& player) const;
 
+            /// Returns whether performing a move on the current state would be illegal.
+            bool isGameOver() const;
+
             void freeMemory(float percent = 0.5);
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);

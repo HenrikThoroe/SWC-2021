@@ -409,6 +409,20 @@ namespace Model {
         return score;
     }
 
+    bool GameState::isGameOver() const {
+        if (turn >= 100) {
+            return true;
+        }
+
+        for (int p = 0; p < 4; ++p) {
+            if (pushHistory[p].size() == Constants::PIECE_SHAPES) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     std::ostream& operator << (std::ostream& os, const GameState& state) {
         os << "Turn: " << static_cast<int>(state.turn) << std::endl;
         os << "Player: " << state.getCurrentPlayer().color << std::endl;
