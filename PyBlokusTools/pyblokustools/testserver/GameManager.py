@@ -12,11 +12,11 @@ class GameManager():
 
     Arguments:
         serverClient    {TCPClient}        -- TCPClient already connected and authenticated
-        clients         {Tuple[str]}       -- Paths to the two clients to test
-        clientNames     {Tuple[str]}       -- Names for the two clients
-        clientArguments {Tuple[List[str]]} -- Arguments to start clients with
+        clients         {Tuple[str, str]}       -- Paths to the two clients to test
+        clientNames     {Tuple[str, str]}       -- Names for the two clients
+        clientArguments {Tuple[List[str], List[str]]} -- Arguments to start clients with
     """
-    def __init__(self, serverClient: TCPClient, clients: Tuple[str], clientNames: Tuple[str], clientArguments: Tuple[List[str]]) -> None:
+    def __init__(self, serverClient: TCPClient, clients: Tuple[str, str], clientNames: Tuple[str, str], clientArguments: Tuple[List[str], List[str]]) -> None:
         self.serverClient    = serverClient
         self.clients         = clients
         self.clientNames     = clientNames
@@ -68,7 +68,7 @@ class GameManager():
         self._roomId = ""
         self._turn   = 0
     
-    def _prepareGame(self) -> Tuple[str]:
+    def _prepareGame(self) -> Tuple[str, str]:
         """Prepare a new game
 
         Returns:

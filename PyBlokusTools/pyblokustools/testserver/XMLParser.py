@@ -59,7 +59,7 @@ class XMLParser():
             'observed' : XMLParser._parseObserved,  
         }
         for msg in xmlDoc:
-            switch[msg.tag](msg, result)
+            switch.get(msg.tag, XMLParser._parseError)(msg, result)
         
         if protocolEnd:
             result.append(
@@ -84,7 +84,7 @@ class XMLParser():
             'error'          : XMLParser._parseError,
         }
         roomData = data[0]
-        switch.get(roomData.get("class"), lambda data, result: None)(roomData, result)
+        switch.get(roomData.get("class", "error"), lambda data, result: None)(roomData, result)
     
     #? Specific message parsers
     @staticmethod
@@ -208,8 +208,8 @@ class XMLParser():
                 PreparedMsg(
                     data.get("roomId", ""),
                     (
-                       data[0].text,
-                       data[1].text,
+                       data[0].text or "",
+                       data[1].text or "",
                     )
                 )
             )

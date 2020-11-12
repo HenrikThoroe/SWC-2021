@@ -83,9 +83,9 @@ class PreparedMsg():
         roomId       {str}       -- RoomId of newly prepared game
         reservations {Tuple[str]} -- Reservation codes for clients associated with the game
     """
-    def __init__(self, roomId: str, reservations: Tuple[str]) -> None:
+    def __init__(self, roomId: str, reservations: Tuple[str, str]) -> None:
         self.roomId:       Final[str]        = roomId
-        self.reservations: Final[Tuple[str]] = reservations
+        self.reservations: Final[Tuple[str, str]] = reservations
     
     def __repr__(self) -> str:
         """Represent object instance

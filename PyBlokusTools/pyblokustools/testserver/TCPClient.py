@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 import socket
 
@@ -48,7 +48,7 @@ class TCPClient():
         """
         self._socket.send(msg.encode("utf-8"))
     
-    def receive(self) -> Union[str, bool]:
+    def receive(self) -> Union[str, Literal[False]]:
         """Receive one message
 
         Returns:
