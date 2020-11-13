@@ -99,27 +99,27 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         }
     };
 
-    // BENCHMARK("Full Run Dynamic") {
-    //     std::vector<const Move*> moves {};
-    //     int index;
+    BENCHMARK("Full Run Dynamic") {
+        std::vector<const Move*> moves {};
+        int index;
 
-    //     for (int i = 0; i < 2000; ++i) {       
-    //         for (int x = 0; x < 20; ++x) {
-    //             moves.clear();
-    //             state.assignPossibleMoves(moves);
-    //             if (moves.size() == 0) {
-    //                 state.performMove(nullptr);
-    //             } else {
-    //                 index = rand() % moves.size();
-    //                 state.performMove(moves[index]);
-    //             }
-    //         }
+        for (int i = 0; i < 2000; ++i) {       
+            for (int x = 0; x < 20; ++x) {
+                moves.clear();
+                state.assignPossibleMoves(moves);
+                if (moves.size() == 0) {
+                    state.performMove(nullptr);
+                } else {
+                    index = rand() % moves.size();
+                    state.performMove(moves[index]);
+                }
+            }
 
-    //         for (int x = 0; x < 20; ++x) {
-    //             state.revertLastMove();
-    //         }
-    //     }
-    // };
+            for (int x = 0; x < 20; ++x) {
+                state.revertLastMove();
+            }
+        }
+    };
 
     BENCHMARK_ADVANCED("Hash") (Catch::Benchmark::Chronometer meter) {
         std::vector<const Move*> moves = state.getPossibleMoves();
