@@ -115,6 +115,11 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
+        // A skip move can always be performed / No piece can always be deployed
+        if (piece == nullptr) {
+            return true;
+        } 
+
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
@@ -173,6 +178,10 @@ namespace Model {
 
         // Reserve 550 items to prevent repeated resizing of moves vector
         moves.reserve(550);
+        
+        if (turn > 3) {
+            moves.push_back(nullptr);
+        }
 
         auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
 
