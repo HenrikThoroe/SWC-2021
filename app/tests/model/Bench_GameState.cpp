@@ -70,7 +70,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state, &moves] {
-                return state.canBeDeployed(moves[0]);
+                return state.canBeDeployed(moves[moves.size() - 1]);
             });
 
             int index = rand() % moves.size();
@@ -90,7 +90,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             for (int x = 0; x < 20; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                state.performMove(moves[0]);
+                state.performMove(moves[moves.size() - 1]);
             }
 
             for (int x = 0; x < 20; ++x) {
@@ -99,27 +99,27 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         }
     };
 
-    BENCHMARK("Full Run Dynamic") {
-        std::vector<const Move*> moves {};
-        int index;
+    // BENCHMARK("Full Run Dynamic") {
+    //     std::vector<const Move*> moves {};
+    //     int index;
 
-        for (int i = 0; i < 2000; ++i) {       
-            for (int x = 0; x < 20; ++x) {
-                moves.clear();
-                state.assignPossibleMoves(moves);
-                if (moves.size() == 0) {
-                    state.performMove(nullptr);
-                } else {
-                    index = rand() % moves.size();
-                    state.performMove(moves[index]);
-                }
-            }
+    //     for (int i = 0; i < 2000; ++i) {       
+    //         for (int x = 0; x < 20; ++x) {
+    //             moves.clear();
+    //             state.assignPossibleMoves(moves);
+    //             if (moves.size() == 0) {
+    //                 state.performMove(nullptr);
+    //             } else {
+    //                 index = rand() % moves.size();
+    //                 state.performMove(moves[index]);
+    //             }
+    //         }
 
-            for (int x = 0; x < 20; ++x) {
-                state.revertLastMove();
-            }
-        }
-    };
+    //         for (int x = 0; x < 20; ++x) {
+    //             state.revertLastMove();
+    //         }
+    //     }
+    // };
 
     BENCHMARK_ADVANCED("Hash") (Catch::Benchmark::Chronometer meter) {
         std::vector<const Move*> moves = state.getPossibleMoves();

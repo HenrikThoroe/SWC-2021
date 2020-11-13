@@ -136,11 +136,16 @@ TEST_CASE("Test Game State", "[model]") {
             for (int x = 0; x < 25; ++x) {
                 std::vector<const Move*> moves = state.getPossibleMoves();
 
-                if (moves.size() == 0) {
+                if (moves.size() <= 1) {
                     FAIL(state);
                 }
 
                 int index = rand() % moves.size();
+
+                // Ignore skip moves, because hash does not take the current turn into account, but uniqueHash does
+                while (moves[index] == nullptr) {
+                    index = rand() % moves.size();
+                }
 
                 state.performMove(moves[index]);
                 
