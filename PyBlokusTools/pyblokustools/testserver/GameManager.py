@@ -11,9 +11,9 @@ class GameManager():
     """Main GameManager for playing actual games
 
     Arguments:
-        serverClient    {TCPClient}        -- TCPClient already connected and authenticated
-        clients         {Tuple[str, str]}       -- Paths to the two clients to test
-        clientNames     {Tuple[str, str]}       -- Names for the two clients
+        serverClient    {TCPClient}                   -- TCPClient already connected and authenticated
+        clients         {Tuple[str, str]}             -- Paths to the two clients to test
+        clientNames     {Tuple[str, str]}             -- Names for the two clients
         clientArguments {Tuple[List[str], List[str]]} -- Arguments to start clients with
     """
     def __init__(self, serverClient: TCPClient, clients: Tuple[str, str], clientNames: Tuple[str, str], clientArguments: Tuple[List[str], List[str]]) -> None:
