@@ -163,7 +163,7 @@ namespace Model {
 
     void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
 
-        if (movesCache.contains(hashValue)) {
+        if (movesCache.contains(hashValue) && movesCache[hashValue].turn % 4 == turn % 4) {
             moves = movesCache[hashValue].value;
             movesCache[hashValue].accesses += 1;
             movesCache[hashValue].turn = turn;
