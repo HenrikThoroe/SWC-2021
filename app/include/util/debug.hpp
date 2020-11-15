@@ -5,6 +5,8 @@
 #endif
 #include <string>
 
+#include "DeployedPiece.hpp"
+
 namespace Util
 {
     /**
@@ -20,4 +22,8 @@ namespace Util
      * @param str A string to print
      */
     void debugPrint(std::string str);
-} // namespace Util
+
+    void debugPrint(const Model::DeployedPiece* piece);
+
+    void debugPrint(const Model::DeployedPiece& piece);
+}
