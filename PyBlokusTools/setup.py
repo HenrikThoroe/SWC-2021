@@ -30,6 +30,7 @@ setuptools.setup(
             'blokusdebug = pyblokustools.scripts.compileDebug:compileDebug',
             'blokusdoc = pyblokustools.scripts.makeDocumentation:makeDocumentation',
             'blokusrun = pyblokustools.scripts.runPreProduction:runPreProduction',
+            'blokusmass = pyblokustools.scripts.massTest:massTest',
         ]
     },
 )
