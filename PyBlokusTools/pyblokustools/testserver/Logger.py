@@ -1,6 +1,7 @@
-from typing import Final, Callable, Tuple, Dict
+from typing import overload, Final, Union, Callable, Tuple, Dict
 from io import BufferedReader
 
+import re
 from functools import wraps
 from pathlib import Path
 from datetime import datetime
@@ -13,6 +14,7 @@ def logger_enabled(func: Callable) -> Callable:
 
     Arguments:
         func {Callable} -- Original Logger method
+    
     Returns:
         Callable -- Active only Logger method
     """
@@ -21,6 +23,26 @@ def logger_enabled(func: Callable) -> Callable:
         if self._enabled:
             func(self, *args, **kwargs)
     return if_logger_enabled
+
+_ansi_escapeStr = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+_ansi_escapeByt = re.compile(rb'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+@overload
+def filterAnsi(inp: str) -> str: ...
+@overload
+def filterAnsi(inp: bytes) -> bytes: ...
+def filterAnsi(inp: Union[str, bytes]) -> Union[str, bytes]:
+    """Filters all ANSI sequences from a text
+
+    Arguments:
+        inp {Union[str, bytes]} -- String/bytes with potential ANSI sequences
+
+    Returns:
+        Union[str, bytes] -- Cleaned string/bytes
+    """
+    if isinstance(inp, str):
+        return _ansi_escapeStr.sub('', inp)
+    else:
+        return _ansi_escapeByt.sub(b'', inp)
 
 class ColoredFormatter(logging.Formatter):
     """Logging Formatter that colors the output
@@ -89,6 +111,11 @@ class Logger(logging.Handler):
         try:
             msg = self.format(record)
             tqdm.write(msg)
+            
+            #? Write all logs Warning >= to main log file
+            if record.levelno >= 30:
+                self.logFile(msg+'\n')
+            
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
@@ -117,17 +144,17 @@ class Logger(logging.Handler):
             log    {BufferedReader} -- Stdout attribute of proccess
         """
         with open(f'{self._folder}/{self._clientNames[client]}.txt', 'ab') as file:
-            file.write(log.read())
+            file.write(filterAnsi(log.read()))
     
     @logger_enabled
-    def logServer(self, message: str) -> None:
-        """Log any message to the main server log file
-
+    def logServer(self, log: BufferedReader) -> None:
+        """Copy current server log to specific folder
+        
         Arguments:
-            message {str} -- Message to write
+            log    {BufferedReader} -- Stdout attribute of proccess
         """
-        with open(f'{self._folder}/server.txt', 'a') as file:
-            file.write(message)
+        with open(f'{self._folder}/server.txt', 'ab') as file:
+            file.write(filterAnsi(log.read()))
         
     @logger_enabled
     def logFile(self, message: str) -> None:
@@ -136,5 +163,5 @@ class Logger(logging.Handler):
         Arguments:
             message {str} -- Message to write
         """
-        with open(f'{self._folder}/log.txt', 'a') as file:
-            file.write(message)
+        with open(f'{self._dirName}/log.txt', 'a') as file:
+            file.write(filterAnsi(message))
