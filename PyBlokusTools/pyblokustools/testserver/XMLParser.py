@@ -146,8 +146,8 @@ class XMLParser():
             Message(
                 MsgType.RESULT,
                 ResultMsg(
-                    (int(score1[1].text or -1), int(score2[1].text or -1)),
-                    (
+                    [int(score1[1].text or -1), int(score2[1].text or -1)],
+                    [
                         ResultEnd(
                             int(
                                 score1[0].text or 1
@@ -158,8 +158,8 @@ class XMLParser():
                                 score2[0].text or 1
                             )
                         ),
-                    ),
-                    (getCause(score1.get("cause")), getCause(score2.get("cause"))),
+                    ],
+                    [getCause(score1.get("cause")), getCause(score2.get("cause"))],
                 )
             )
         )

@@ -1,5 +1,5 @@
-from typing import Any, Final, Tuple
-from enum import Enum
+from typing import Any, Final, Tuple, List
+from enum import IntEnum
 
 from .MsgType import MsgType
 
@@ -39,7 +39,7 @@ class MementoMsg():
         """
         return f"MementoMsg({self.currentTurn})"
 
-class ResultCause(Enum):
+class ResultCause(IntEnum):
     """An enum of different game end causes.
     """
     REGULAR        = 0
@@ -48,7 +48,7 @@ class ResultCause(Enum):
     SOFT_TIMEOUT   = 3
     HARD_TIMEOUT   = 4
 
-class ResultEnd(Enum):
+class ResultEnd(IntEnum):
     """An enum of different game endings.
     """
     LOSE = 0
@@ -59,14 +59,21 @@ class ResultMsg():
     """Message that holds a game's result
 
     Arguments:
-        score {Tuple[int, int]}                 -- GameScore both players reached
-        end   {Tuple[ResultEnd, ResultEnd]}     -- TournamentPoints both players earned
-        cause {Tuple[ResultCause, ResultCause]} -- Game-ending causes for both players
+        score {List[int, int]}                 -- GameScore both players reached
+        end   {List[ResultEnd, ResultEnd]}     -- TournamentPoints both players earned
+        cause {List[ResultCause, ResultCause]} -- Game-ending causes for both players
     """
-    def __init__(self, score: Tuple[int, int], end: Tuple[ResultEnd, ResultEnd], cause: Tuple[ResultCause, ResultCause]) -> None:
-        self.score: Final[Tuple[int, int]]                 = score
-        self.end:   Final[Tuple[ResultEnd, ResultEnd]]     = end
-        self.cause: Final[Tuple[ResultCause, ResultCause]] = cause
+    def __init__(self, score: List[int], end: List[ResultEnd], cause: List[ResultCause]) -> None:
+        self.score: Final[List[int]]         = score
+        self.end:   Final[List[ResultEnd]]   = end
+        self.cause: Final[List[ResultCause]] = cause
+    
+    def swap(self) -> None:
+        """Swap Player1 & Player2 in place
+        """
+        self.score.reverse()
+        self.end.reverse()
+        self.cause.reverse()
     
     def __repr__(self) -> str:
         """Represent object instance
