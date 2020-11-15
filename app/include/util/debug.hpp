@@ -23,7 +23,17 @@ namespace Util
      */
     void debugPrint(std::string str);
 
+    /**
+     * @brief Print a deployed piece in debug mode
+     * 
+     * @param piece The piece to print or nullptr for skip move
+     */
     void debugPrint(const Model::DeployedPiece* piece);
 
+    /**
+     * @brief Print a deployed piece in debug mode
+     * 
+     * @param piece The piece to print
+     */
     void debugPrint(const Model::DeployedPiece& piece);
 }
