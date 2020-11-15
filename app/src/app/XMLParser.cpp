@@ -175,7 +175,7 @@ namespace App {
             pugi::xml_node data = roomNode.append_child("data");
             data.append_attribute("class").set_value("sc.plugin2021.SkipMove");
 
-            data.append_child("color").append_child(pugi::node_pcdata).set_value(getCurrentColor());
+            data.append_child("color").append_child(pugi::node_pcdata).set_value(getCurrentColorName());
         }
 
         Util::XMLStringWriter xmlStringWriter;
@@ -192,6 +192,7 @@ namespace App {
 
     inline void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
+        colorIndex = data.attribute("currentColorIndex").as_int();
 
         colorsInGame.clear();
         for (const pugi::xml_node& color : data.child("orderedColors").children()) {
@@ -291,13 +292,13 @@ namespace App {
                 // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
                 const int index = (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
 
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn, colorsInGame[colorIndex]));
             } else {
                 // SkipMove
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, colorsInGame[colorIndex]));
             }
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn, colorsInGame[colorIndex]));
         }
     }
 
@@ -429,23 +430,12 @@ namespace App {
         }
     }
 
-    inline const char* XMLParser::getCurrentColor() const {
-        switch (turn % 4) {
-            case 0:
-                return "BLUE";
+    inline const Model::PieceColor& XMLParser::getCurrentColor() const {
+        return colorsInGame[colorIndex];
+    }
 
-            case 1:
-                return "YELLOW";
-
-            case 2:
-                return "RED";
-            
-            case 3:
-                return "GREEN";
-            
-            default:
-                throw std::runtime_error("Could not deduce currentColor from turn '" + std::to_string(turn) + "'");
-        }
+    inline const char* XMLParser::getCurrentColorName() const {
+        return getColor(colorsInGame[colorIndex]);
     }
 
 }
