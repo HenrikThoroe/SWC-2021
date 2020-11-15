@@ -3,6 +3,8 @@
 #include <stdexcept>
 
 #include "GameManager.hpp"
+#include "Search.hpp"
+#include "debug.hpp"
 
 namespace Logic {
     
@@ -24,23 +26,19 @@ namespace Logic {
         if (memento.currentTurn > 0) {
             state.update(memento.lastMove);
 
-            while (state.getTurn() < 100 && std::find(colorsInGame->begin(), colorsInGame->end(), state.getCurrentPieceColor()) == colorsInGame->end()) {
+            while (state.getTurn() < 100 && state.getCurrentPieceColor() != memento.currentColor) {
                 state.update(std::nullopt);
             }
         }
-
-
     }
 
-    const Model::Move* GameManager::moveRequest() {  
-        std::vector<const Model::Move*> moves;
-        state.assignPossibleMoves(moves);
+    const Model::Move* GameManager::moveRequest() { 
+        Search agent = Search(state, ownColor);
+        SearchResult result = agent.find();
 
-        if (moves.size() == 0) {
-            throw std::runtime_error("No moves found. This should not happen because the server only requests a move if possible.");
-        }
+        Util::debugPrint(result.move);
 
-        return moves[rand() % moves.size()];
+        return result.move;
     }
 
 }
