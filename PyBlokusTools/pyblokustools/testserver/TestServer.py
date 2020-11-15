@@ -148,7 +148,7 @@ class TestServer():
             TCPClient -- Connected and authenticated client
         """
         self.serverProc = Popen(
-            [self.config.serverPath, '-p', str(self.serverPort)],
+            ['sh', self.config.serverPath, '-p', str(self.serverPort)],
             stdout     = PIPE,
             stderr     = STDOUT,
             cwd        = os.path.dirname(self.config.serverPath),
