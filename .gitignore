@@ -249,3 +249,6 @@ docs/
 
 # Directory for client logs
 logs/
+
+# Directory for mass test logs
+massLogs/
