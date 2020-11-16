@@ -30,7 +30,19 @@ namespace Logic {
             Util::Print::Text::formatDouble(nodesPerS)
         });
 
-        std::cout << std::endl << table << std::endl;
+        std::cout << std::endl << std::endl << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 100) << std::endl << std::endl;
+        std::cout << Util::Print::Text::bold("Selected Move: ");
+
+        if (selectedMove == nullptr) {
+            std::cout << "Skip Move";
+        } else {
+            std::cout << *selectedMove;
+        }
+
+        std::cout << std::endl << std::endl;
+
+        std::cout << table;
+        std::cout << std::endl << Util::Print::Text::repeat('*', 122) << std::endl << std::endl << std::endl;
     }
 
     void Search::reset() {
