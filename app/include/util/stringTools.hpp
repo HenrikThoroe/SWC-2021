@@ -60,4 +60,7 @@ namespace Util::Print::Text {
      */
     std::string formatTime(uint64_t time, TimeUnit baseUnit, char thousandSeperator = '_');
 
+    /// Changes the passed string so it will be printed bold when written to cli
+    std::string bold(std::string text);
+
 }

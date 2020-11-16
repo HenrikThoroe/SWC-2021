@@ -105,4 +105,8 @@ namespace Util::Print::Text {
         }
     }
 
+    std::string bold(std::string text) {
+        return "\033[1;37m" + text + "\033[0m";
+    }
+
 }
