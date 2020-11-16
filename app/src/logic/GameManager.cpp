@@ -36,7 +36,9 @@ namespace Logic {
         Search agent = Search(state, ownColor);
         SearchResult result = agent.find();
 
-        Util::debugPrint(result.move);
+        #ifdef DEBUG
+        agent.log();
+        #endif
 
         return result.move;
     }
