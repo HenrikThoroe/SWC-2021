@@ -85,6 +85,9 @@ namespace Logic {
             /// Calculates the elapsed time since last `reset` call
             std::chrono::high_resolution_clock::duration getElpasedTime() const;
 
+            /// Sort the given moves by principal variation
+            void sortMoves(std::vector<const Model::Move*>& moves) const;
+
         private:
 
             /**

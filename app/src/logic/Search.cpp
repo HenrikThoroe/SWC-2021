@@ -64,6 +64,22 @@ namespace Logic {
         return clock.now() - startTime;
     }
 
+    void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
+        auto compareDescending = [](const Model::Move* lhs, const Model::Move* rhs) {
+            if (lhs == nullptr) {
+                return false;
+            }
+
+            if (rhs == nullptr) {
+                return true;
+            }
+
+            return lhs->pieceId > rhs->pieceId;
+        };
+
+        std::sort(moves.begin(), moves.end(), compareDescending);
+    }
+
     int Search::alphaBeta() {
         maxDepth = 3;
         return max(INT_MIN, INT_MAX, 3);
@@ -78,6 +94,7 @@ namespace Logic {
         std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
+        sortMoves(moves);
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
@@ -107,6 +124,7 @@ namespace Logic {
         std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
+        sortMoves(moves);
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
