@@ -20,17 +20,25 @@ namespace Logic {
         const double nodesPerNs = static_cast<double>(searchedNodes) / static_cast<double>(elapsed);
         const double nodesPerMs = nodesPerNs * 1000000;
         const double nodesPerS = nodesPerMs * 1000;
+        double cutoffRatio = 0;
 
-        Util::Print::Table table = Util::Print::Table(4, 25);
-        table.addRow({ "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second" });
+        if (searchedNodes > 0) {
+            cutoffRatio = static_cast<double>(alphaCutoffs + betaCutoffs) / static_cast<double>(searchedNodes);
+        }
+
+        Util::Print::Table table = Util::Print::Table(7, 25);
+        table.addRow({ "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio" });
         table.addRow({
             Util::Print::Text::formatInt(searchedNodes),
             Util::Print::Text::formatTime(elapsed, Util::Print::Text::TimeUnit::NS),
             Util::Print::Text::formatDouble(nodesPerMs),
-            Util::Print::Text::formatDouble(nodesPerS)
+            Util::Print::Text::formatDouble(nodesPerS),
+            Util::Print::Text::formatInt(alphaCutoffs),
+            Util::Print::Text::formatInt(betaCutoffs),
+            Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%"
         });
 
-        std::cout << std::endl << std::endl << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 100) << std::endl << std::endl;
+        std::cout << std::endl << std::endl << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 150) << std::endl << std::endl;
         std::cout << Util::Print::Text::bold("Selected Move: ");
 
         if (selectedMove == nullptr) {
@@ -42,12 +50,14 @@ namespace Logic {
         std::cout << std::endl << std::endl;
 
         std::cout << table;
-        std::cout << std::endl << Util::Print::Text::repeat('*', 122) << std::endl << std::endl << std::endl;
+        std::cout << std::endl << Util::Print::Text::repeat('*', 172) << std::endl << std::endl << std::endl;
     }
 
     void Search::reset() {
         startTime = clock.now();
         searchedNodes = 0;
+        alphaCutoffs = 0;
+        betaCutoffs = 0;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
@@ -79,6 +89,7 @@ namespace Logic {
                 min = score;
 
                 if (min <= alpha) {
+                    alphaCutoffs += 1;
                     break;
                 }
             }
@@ -109,6 +120,7 @@ namespace Logic {
                     selectedMove = move;
                 }
                 if (max >= beta) {
+                    betaCutoffs += 1;
                     break;
                 }
             }

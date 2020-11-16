@@ -48,6 +48,12 @@ namespace Logic {
 
             /// Number of visited nodes / game states.
             int searchedNodes;
+
+            /// The number of alpha cutoffs. Used to create detailed statistics.
+            int alphaCutoffs;
+
+            /// The number of beta cutoffs. Used to create detailed statistics.
+            int betaCutoffs;
         
         public:
 
