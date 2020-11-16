@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #include "Move.hpp"
 #include "GameState.hpp"
 
@@ -22,6 +24,14 @@ namespace Logic {
      * By default Alpha Beta search is used.
      */
     class Search {
+        private:
+
+            /// Internal high resolution clock
+            std::chrono::high_resolution_clock clock;
+
+            /// The start time of the most recent search. Call `reset` to initiate.
+            std::chrono::high_resolution_clock::time_point startTime;
+
         protected:
 
             /// A reference to the used game state
@@ -35,6 +45,9 @@ namespace Logic {
 
             /// The maximum search depth
             int maxDepth;
+
+            /// Number of visited nodes / game states.
+            int searchedNodes;
         
         public:
 
@@ -49,6 +62,9 @@ namespace Logic {
              */
             virtual SearchResult find();
 
+            /// Prints the stats of the most recent search to cout. Should only be used when #DEBUG is set
+            void log() const;
+
         protected:
 
             /**
@@ -56,6 +72,12 @@ namespace Logic {
              * @return The score of the best move
              */
             int alphaBeta();
+
+            /// Resets internal state to meassure performance and other data
+            void reset();
+
+            /// Calculates the elapsed time since last `reset` call
+            std::chrono::high_resolution_clock::duration getElpasedTime() const;
 
         private:
 
@@ -70,7 +92,7 @@ namespace Logic {
              * @returns The score of the evaluated state
              */
             int max(int alpha, int beta, int depth);
-            
+
     };
 
 }
