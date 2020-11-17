@@ -10,8 +10,13 @@ namespace Logic {
 
     SearchResult Search::find() {
         reset();
+        int score;
 
-        const int score = alphaBeta();
+        do {
+            score = alphaBeta();
+            maxDepth += 1;
+        } while (!timedOut() && score != Constants::WIN_POINTS && score != Constants::LOSE_POINTS);
+
         return SearchResult(selectedMove, score);
     }
 
@@ -26,9 +31,10 @@ namespace Logic {
             cutoffRatio = static_cast<double>(alphaCutoffs + betaCutoffs) / static_cast<double>(searchedNodes);
         }
 
-        Util::Print::Table table = Util::Print::Table(7, 25);
-        table.addRow({ "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio" });
+        Util::Print::Table table = Util::Print::Table(8, 25);
+        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio" });
         table.addRow({
+            Util::Print::Text::formatInt(maxDepth),
             Util::Print::Text::formatInt(searchedNodes),
             Util::Print::Text::formatTime(elapsed, Util::Print::Text::TimeUnit::NS),
             Util::Print::Text::formatDouble(nodesPerMs),
@@ -58,20 +64,36 @@ namespace Logic {
         searchedNodes = 0;
         alphaCutoffs = 0;
         betaCutoffs = 0;
+        maxDepth = 1;
+        selectedMove = nullptr;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
         return clock.now() - startTime;
     }
 
+    inline bool Search::timedOut() const {
+        return getElpasedTime().count() >= 1500000000;
+    }
+
     void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
-        auto compareDescending = [](const Model::Move* lhs, const Model::Move* rhs) {
+        const Model::Move* selectedMove = this->selectedMove;
+
+        auto compareDescending = [&selectedMove] (const Model::Move* lhs, const Model::Move* rhs) {
             if (lhs == nullptr) {
                 return false;
             }
 
             if (rhs == nullptr) {
                 return true;
+            }
+
+            if (lhs == selectedMove) {
+                return true;
+            }
+
+            if (rhs == selectedMove) {
+                return false;
             }
 
             return lhs->pieceId > rhs->pieceId;
@@ -81,8 +103,7 @@ namespace Logic {
     }
 
     int Search::alphaBeta() {
-        maxDepth = 3;
-        return max(INT_MIN, INT_MAX, 3);
+        return max(INT_MIN, INT_MAX, maxDepth);
     }
 
     int Search::min(int alpha, int beta, int depth) {
@@ -109,6 +130,10 @@ namespace Logic {
                     alphaCutoffs += 1;
                     break;
                 }
+            }
+
+            if (timedOut()) {
+                break;
             }
         }
 
@@ -141,6 +166,10 @@ namespace Logic {
                     betaCutoffs += 1;
                     break;
                 }
+            }
+
+            if (timedOut()) {
+                break;
             }
         }
 

@@ -88,6 +88,8 @@ namespace Logic {
             /// Sort the given moves by principal variation
             void sortMoves(std::vector<const Model::Move*>& moves) const;
 
+            bool timedOut() const;
+
         private:
 
             /**
