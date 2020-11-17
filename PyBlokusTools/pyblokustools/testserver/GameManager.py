@@ -41,6 +41,7 @@ class GameManager():
         self._l              = logging.getLogger("TestServer.GameManager")
         
         self.playedGames     = 0 # Number of games already played (to switch client colors)
+        self.kill: Callable[[], None] = lambda: None
     
     def run(self) -> Optional[ResultMsg]:
         """Play one game with both clients
@@ -59,6 +60,22 @@ class GameManager():
         # Start clients
         client1 = Popen([self.clients[player1], '-p', self.serverPort, '-r', reservations[player1], *self.clientArguments[player1]], stdout=PIPE, stderr=STDOUT)
         client2 = Popen([self.clients[player2], '-p', self.serverPort, '-r', reservations[player2], *self.clientArguments[player2]], stdout=PIPE, stderr=STDOUT)
+        
+        def kill() -> None:
+            """Kill all running clients
+            """
+            try:
+                client1.kill()
+                client1.wait()
+            except:
+                pass
+            try:
+                client2.kill()
+                client2.wait()
+            except:
+                pass
+        
+        self.kill = kill
         
         sleep(0.5) # See Bugreport on Discord -> Server is overwhelmed lmao
         self.serverClient.send(f'<pause roomId="{self._roomId}" pause="false" />') # Start game
@@ -159,7 +176,8 @@ class GameManager():
         # Clear Server Messages
         while self.serverClient.receive():
             pass
-        self.serverClient._buffer = ""
+        self.serverClient._buffer        = b''
+        self.serverClient._decodedBuffer = ""
         
         # Clear internal state
         self._roomId = ""

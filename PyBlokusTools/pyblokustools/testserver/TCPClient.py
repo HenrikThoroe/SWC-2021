@@ -13,7 +13,8 @@ class TCPClient():
     MSG_SIGNALS = ("</room>", "</prepared>", "</protocol>")
     
     def __init__(self, hostname: str, port: int) -> None:
-        self._buffer = ""
+        self._buffer = b''
+        self._decodedBuffer = ""
         
         self.connect(hostname, port)
     
@@ -55,16 +56,26 @@ class TCPClient():
             str -- Message received, or False on timeout
         """
         while True:
-            for signal in TCPClient.MSG_SIGNALS: # Multiple xml endings signal a full valid message
-                index = self._buffer.find(signal)
-                if index != -1:
-                    ret          = self._buffer[:index+len(signal)] # Return first message (till end of signal str)
-                    self._buffer = self._buffer[index+len(signal):] # Consume message from the buffer
-                    
-                    return ret
+            try:
+                for signal in TCPClient.MSG_SIGNALS: # Multiple xml endings signal a full valid message
+                    index = self._decodedBuffer.find(signal)
+                    if index != -1:
+                        ret          = self._decodedBuffer[:index+len(signal)] # Return first message (till end of signal str)
+                        self._decodedBuffer = self._decodedBuffer[index+len(signal):] # Consume message from the buffer
+                        
+                        return ret
+            except:
+                pass
             
             #? Read if no full message was received yet
             try:
-                self._buffer += self._socket.recv(4096).decode()
+                self._buffer += self._socket.recv(4096)
             except socket.timeout:
                 return False # We return on timeout to avoid deadlock due to non working clients
+            
+            #? Try to decode buffer, wait for more bytes on failure
+            try:
+                self._decodedBuffer += self._buffer.decode()
+                self._buffer         = b''
+            except:
+                pass

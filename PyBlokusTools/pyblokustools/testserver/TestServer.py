@@ -71,6 +71,7 @@ class TestServer():
             )
         
         self.scores = [0, 0]
+        self.failedGames = 0
         
         self.config.save()
     
@@ -267,11 +268,25 @@ class TestServer():
             # Run actual game
             try:
                 result = self.manager.run()
+                sleep(2) # Wait for server logs to populate
                 
                 if not result:
-                    #? Log handling should have occurred in GameManager
+                    #? Game failed
+                    self.manager.kill()
+                    self.failedGames += 1
+                    sleep(2) # Wait for server logs to populate
+                    
+                    self.logger.logFile(f"Could not finish Game {self.manager.playedGames}:\n\tScore is now: {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\n")
+                    
+                    # Write Serverlogs to current game logs
+                    self.logger.logServer(self.serverProc.stdout)
                     return
             except Exception as e:
+                #? Game crashed
+                self.manager.kill()
+                self.failedGames += 1
+                sleep(2) # Wait for server logs to populate
+                
                 self._l.critical(f"Fatal error during game {self.manager.playedGames}?", exc_info=True)
                 # Write Serverlogs to current game logs
                 self.logger.logServer(self.serverProc.stdout)
@@ -289,4 +304,4 @@ class TestServer():
         
         self._l.info("Running MassTests...")
         _run()
-        self.logger.logFile(f"\n\nFinal Scores {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\nAfter {self.manager.playedGames} games")
+        self.logger.logFile(f"\n\nFinal Scores {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\nAfter {self.manager.playedGames} games ({self.failedGames} failed)")
