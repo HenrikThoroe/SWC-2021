@@ -41,8 +41,10 @@ def filterAnsi(inp: Union[str, bytes]) -> Union[str, bytes]:
     """
     if isinstance(inp, str):
         return _ansi_escapeStr.sub('', inp)
-    else:
+    elif isinstance(inp, bytes):
         return _ansi_escapeByt.sub(b'', inp)
+    else:
+        return inp
 
 class ColoredFormatter(logging.Formatter):
     """Logging Formatter that colors the output
@@ -109,6 +111,10 @@ class Logger(logging.Handler):
             record {logging.LogRecord} -- A logging event
         """
         try:
+            #? Add game info if games already started
+            if self._folder != "":
+                record.msg += f" (Subfolder: {self.subfolder})"
+            
             msg = self.format(record)
             tqdm.write(msg)
             
@@ -144,7 +150,7 @@ class Logger(logging.Handler):
             log    {BufferedReader} -- Stdout attribute of proccess
         """
         with open(f'{self._folder}/{self._clientNames[client]}.txt', 'ab') as file:
-            file.write(filterAnsi(log.read()))
+            file.write(filterAnsi(log.read() or b''))
     
     @logger_enabled
     def logServer(self, log: BufferedReader) -> None:
@@ -154,7 +160,7 @@ class Logger(logging.Handler):
             log    {BufferedReader} -- Stdout attribute of proccess
         """
         with open(f'{self._folder}/server.txt', 'ab') as file:
-            file.write(filterAnsi(log.read()))
+            file.write(filterAnsi(log.read() or b''))
         
     @logger_enabled
     def logFile(self, message: str) -> None:
