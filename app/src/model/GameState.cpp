@@ -384,12 +384,10 @@ namespace Model {
     }
 
     int GameState::evaluate(const PlayerColor& player) const {
-        if (turn == 0) {
-            return 0;
-        }
-
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
+        const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
+        int opponentScore = 0;
 
         for (const PieceColor& color : colors) {
 
@@ -412,6 +410,40 @@ namespace Model {
                 if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
                     score += 5;
                 }
+            }
+        }
+
+        for (const PieceColor& color : opponentColors) {
+
+            // Iterate all shapes
+            for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
+
+                // Check if the shape has been deployed
+                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+
+                    // Add the size of the shape to the score
+                    opponentScore += PieceCollection::getPiece(id).size;
+                }
+            }
+
+            // Check if all pieces have been deployed
+            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
+                opponentScore += 15;
+
+                // Check if the last deployed piece is the MONOMINO
+                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
+                    opponentScore += 5;
+                }
+            }
+        }
+
+        if (isGameOver()) {
+            if (score > opponentScore) {
+                return Constants::WIN_POINTS;
+            } else if (score < opponentScore) {
+                return Constants::LOSE_POINTS;
+            } else {
+                return 0;
             }
         }
 
