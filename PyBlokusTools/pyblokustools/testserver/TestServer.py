@@ -8,7 +8,7 @@ import logging
 import signal
 from time import sleep, time
 from functools import wraps
-from datetime import datetime, timedelta
+from datetime import timedelta
 from subprocess import Popen, PIPE, STDOUT
 from tqdm import tqdm, trange # type: ignore
 from requests import get
@@ -58,7 +58,7 @@ class TestServer():
         self.serverPath = self._fetchServer()
         
         self.serverProc: Popen
-        self.client = self._startServer()
+        self.client, tcpFactory = self._startServer()
         
         self.manager = GameManager(
             serverClient    = self.client,
@@ -67,6 +67,7 @@ class TestServer():
             clientNames     = clientNames,
             clientArguments = clientArguments,
             logger          = self.logger,
+            tcpFactory      = tcpFactory,
             )
         
         self.scores = [0, 0]
@@ -141,11 +142,12 @@ class TestServer():
         self._l.error("Did not find 'software-challenge-server.zip' in assets")
         return fallback()
 
-    def _startServer(self) -> TCPClient:
+    def _startServer(self) -> Tuple[TCPClient, Callable[[], TCPClient]]:
         """Start the SWC Server and establish a connection to it
 
         Returns:
-            TCPClient -- Connected and authenticated client
+            TCPClient               -- Connected and authenticated client
+            Callable[[], TCPClient] -- Factory function to create new connected TCPClients
         """
         self.serverProc = Popen(
             ['sh', self.config.serverPath, '-p', str(self.serverPort)],
@@ -169,11 +171,19 @@ class TestServer():
         self._l.info("Booting up SWC server...")
         sleep(5)
         
-        client = TCPClient("localhost", self.serverPort)
+        def tcpFactory() -> TCPClient:
+            """Create a connected TCPClient instance
+
+            Returns:
+                TCPClient -- Client connected to the SWC server
+            """
+            return TCPClient("localhost", self.serverPort)
+        
+        client = tcpFactory()
         client.send('<authenticate password="examplepassword" />')
         
         self._l.info(f"SWC server started on port '{self.serverPort}'")        
-        return client
+        return client, tcpFactory
     
     def run(self, *, iterations: Optional[int] = None, deltatime: Optional[timedelta] = None) -> None:
         """Run configured mass tests (specify either iterations or time)
@@ -257,6 +267,10 @@ class TestServer():
             # Run actual game
             try:
                 result = self.manager.run()
+                
+                if not result:
+                    #? Log handling should have occurred in GameManager
+                    return
             except Exception as e:
                 self._l.critical(f"Fatal error during game {self.manager.playedGames}?", exc_info=True)
                 # Write Serverlogs to current game logs

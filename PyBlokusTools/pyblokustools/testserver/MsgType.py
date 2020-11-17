@@ -10,4 +10,5 @@ class MsgType(Enum):
     PREPARED    = 4
     OBSERVED    = 5
     PROTOCOLEND = 6
-    UNDEFINED   = 7
+    CLOSECONN   = 7
+    UNDEFINED   = 8

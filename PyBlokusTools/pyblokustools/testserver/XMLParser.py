@@ -1,4 +1,4 @@
-from typing import Any, Final, Optional, List
+from typing import Optional, List
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 
@@ -57,6 +57,7 @@ class XMLParser():
             'left'     : XMLParser._parseLeft,
             'prepared' : XMLParser._parsePrepared,
             'observed' : XMLParser._parseObserved,  
+            'sc.protocol.responses.CloseConnection' : XMLParser._parseCloseConnection,
         }
         for msg in xmlDoc:
             switch.get(msg.tag, XMLParser._parseError)(msg, result)
@@ -227,5 +228,20 @@ class XMLParser():
             Message(
                 MsgType.OBSERVED,
                 data.get("roomId", ""),
+            )
+        )
+
+    @staticmethod
+    def _parseCloseConnection(data: Element, result: List[Message]) -> None:
+        """Parse a CloseConnection message
+
+        Arguments:
+            data   {Element}       -- CloseConnection xml node
+            result {List[Message]} -- Vector to save parsed messages in
+        """
+        result.append(
+            Message(
+                MsgType.CLOSECONN,
+                None,
             )
         )
