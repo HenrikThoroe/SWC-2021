@@ -12,6 +12,13 @@ namespace Util::Print::Text {
         RIGHT
     };
 
+    /// Colors for writing text to the command line
+    enum class TextColor {
+        RED,
+        GREEN,
+        BLUE
+    };
+
     /// Flags for specifying a time unit
     enum class TimeUnit : uint8_t {
         NS = 0, 
@@ -62,5 +69,8 @@ namespace Util::Print::Text {
 
     /// Changes the passed string so it will be printed bold when written to cli
     std::string bold(std::string text);
+
+    /// Prepares the string to be printed colorful to the terminal
+    std::string color(std::string text, TextColor color);
 
 }

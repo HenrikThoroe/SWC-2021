@@ -109,4 +109,20 @@ namespace Util::Print::Text {
         return "\033[1;37m" + text + "\033[0m";
     }
 
+    std::string color(std::string text, TextColor color) {
+        switch (color) {
+            case TextColor::RED:
+                text.insert(0, "\033[31m");
+                break;
+            case TextColor::GREEN:
+                text.insert(0, "\033[32m");
+                break;
+            case TextColor::BLUE:
+                text.insert(0, "\033[34m");
+                break;
+        }
+
+        return text + "\033[0m";
+    }
+
 }
