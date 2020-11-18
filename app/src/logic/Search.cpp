@@ -17,6 +17,8 @@ namespace Logic {
             maxDepth += 1;
         } while (!timedOut() && score != Constants::WIN_POINTS && score != Constants::LOSE_POINTS);
 
+        lastScore = score;
+
         return SearchResult(selectedMove, score);
     }
 
@@ -53,6 +55,9 @@ namespace Logic {
             std::cout << *selectedMove;
         }
 
+        std::cout << std::endl << Util::Print::Text::bold("Score: ");
+        std::cout << lastScore;
+
         std::cout << std::endl << std::endl;
 
         std::cout << table;
@@ -66,6 +71,8 @@ namespace Logic {
         betaCutoffs = 0;
         maxDepth = 1;
         selectedMove = nullptr;
+        invalidColors.reset();
+        lastScore = 0;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
@@ -115,6 +122,15 @@ namespace Logic {
         std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
+
+        if (moves.size() == 1) {
+            invalidColors[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1] = true;
+        }
+
+        if (invalidColors.count() == 4) {
+            return state.evaluate(player, true);
+        }
+
         sortMoves(moves);
 
         for (const Model::Move* move : moves) {
@@ -149,6 +165,15 @@ namespace Logic {
         std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
+
+        if (moves.size() == 1) {
+            invalidColors[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1] = true;
+        }
+
+        if (invalidColors.count() == 4) {
+            return state.evaluate(player, true);
+        }
+
         sortMoves(moves);
 
         for (const Model::Move* move : moves) {

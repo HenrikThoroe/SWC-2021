@@ -383,7 +383,7 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate(const PlayerColor& player) const {
+    int GameState::evaluate(const PlayerColor& player, bool gameOver) const {
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
         const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
@@ -437,7 +437,7 @@ namespace Model {
             }
         }
 
-        if (isGameOver()) {
+        if (isGameOver() || gameOver) {
             if (score > opponentScore) {
                 return Constants::WIN_POINTS;
             } else if (score < opponentScore) {
@@ -447,7 +447,7 @@ namespace Model {
             }
         }
 
-        return score;
+        return score - opponentScore;
     }
 
     bool GameState::isGameOver() const {

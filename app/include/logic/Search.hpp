@@ -54,6 +54,12 @@ namespace Logic {
 
             /// The number of beta cutoffs. Used to create detailed statistics.
             int betaCutoffs;
+
+            /// The last found score
+            int lastScore;
+
+            /// Storage for all colors which cannot perform moves except a skip move
+            std::bitset<4> invalidColors {};
         
         public:
 

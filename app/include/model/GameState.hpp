@@ -117,8 +117,12 @@ namespace Model {
             /// Creates a unique hash for the game state which has no collisions.
             std::bitset<808> uniqueHash() const;
 
-            /// Evaluates the current state for the assigned player.
-            int evaluate(const PlayerColor& player) const;
+            /**
+             * @brief Evaluates the current state for the assigned player.
+             * @param player The player whose score should be calculated
+             * @param gameOver A flag which tells the function if the node is a terminal node
+             */
+            int evaluate(const PlayerColor& player, bool gameOver = false) const;
 
             /// Returns whether performing a move on the current state would be illegal.
             bool isGameOver() const;
