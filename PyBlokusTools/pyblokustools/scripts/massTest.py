@@ -30,6 +30,9 @@ def massTest() -> None:
             print(colorT(f"Invalid log level '{value}'", Colors.YELLOW))
         return switch[value]
     
+    def parseStrip_args(value: str) -> str:
+        return value.strip()
+    
     def parse_time(time_str: str) -> timedelta:
         """Modified from https://stackoverflow.com/a/4628148/851699
         """
@@ -74,7 +77,7 @@ def massTest() -> None:
         '-c1n',
         '--client1name',
         action='store',
-        type=str,
+        type=parseStrip_args,
         help='name of client1',
         default="Client1"
         )
@@ -82,7 +85,7 @@ def massTest() -> None:
         '-c2n',
         '--client2name',
         action='store',
-        type=str,
+        type=parseStrip_args,
         help='name of client2',
         default="Client2"
         )
@@ -145,6 +148,10 @@ def massTest() -> None:
     
     if args.iterations is None and args.time is None:
         print(colorT("Please specify iterations or time", Colors.YELLOW))
+        raise SystemExit()
+    
+    if args.client1name == args.client2name:
+        print(colorT("Please name the clients uniquely", Colors.YELLOW))
         raise SystemExit()
 
     massTests = TestServer(
