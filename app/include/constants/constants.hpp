@@ -20,4 +20,6 @@ namespace Constants {
 
     constexpr int LOSE_POINTS = INT_MIN;
 
+    constexpr int64_t SEARCH_TIMEOUT = 1800000000; 
+
 }

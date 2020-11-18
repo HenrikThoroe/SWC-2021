@@ -1,6 +1,7 @@
 #include "Search.hpp"
 #include "Table.hpp"
 #include "stringTools.hpp"
+#include "constants.hpp"
 
 namespace Logic {
 
@@ -80,7 +81,7 @@ namespace Logic {
     }
 
     inline bool Search::timedOut() const {
-        return getElpasedTime().count() >= 1500000000;
+        return getElpasedTime().count() >= Constants::SEARCH_TIMEOUT;
     }
 
     void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
