@@ -57,7 +57,14 @@ namespace Logic {
         }
 
         std::cout << std::endl << Util::Print::Text::bold("Score: ");
-        std::cout << lastScore;
+
+        if (lastScore == Constants::WIN_POINTS) {
+            std::cout << Util::Print::Text::color("WIN", Util::Print::Text::TextColor::GREEN);
+        } else if (lastScore == Constants::LOSE_POINTS) {
+            std::cout << Util::Print::Text::color("LOSE", Util::Print::Text::TextColor::RED);
+        } else {
+            std::cout << lastScore;
+        }
 
         std::cout << std::endl << std::endl;
 
