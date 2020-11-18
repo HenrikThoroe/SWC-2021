@@ -58,8 +58,8 @@ class GameManager():
         reservations = self._prepareGame(player1=player1, player2=player2)
         
         # Start clients
-        client1 = Popen([self.clients[player1], '-p', self.serverPort, '-r', reservations[player1], *self.clientArguments[player1]], stdout=PIPE, stderr=STDOUT)
-        client2 = Popen([self.clients[player2], '-p', self.serverPort, '-r', reservations[player2], *self.clientArguments[player2]], stdout=PIPE, stderr=STDOUT)
+        client1 = Popen([self.clients[player1], '-p', self.serverPort, '-r', reservations[0], *self.clientArguments[player1]], stdout=PIPE, stderr=STDOUT)
+        client2 = Popen([self.clients[player2], '-p', self.serverPort, '-r', reservations[1], *self.clientArguments[player2]], stdout=PIPE, stderr=STDOUT)
         
         def kill() -> None:
             """Kill all running clients
@@ -147,8 +147,8 @@ class GameManager():
                     #? Game didnt start? -> Try out both gameCodes to see which client failed to connect
                     rTCPClient1, rTCPClient2 = self.tcpFactory(), self.tcpFactory()
                     
-                    rTCPClient1.send(f'<joinPrepared reservationCode="{reservations[player1]}" />')
-                    rTCPClient2.send(f'<joinPrepared reservationCode="{reservations[player2]}" />')
+                    rTCPClient1.send(f'<joinPrepared reservationCode="{reservations[0]}" />')
+                    rTCPClient2.send(f'<joinPrepared reservationCode="{reservations[1]}" />')
                     
                     inp1 = rTCPClient1.receive()
                     inp2 = rTCPClient2.receive()
