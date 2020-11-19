@@ -447,7 +447,7 @@ namespace Model {
             }
         }
 
-        return score - opponentScore;
+        return score;
     }
 
     bool GameState::isGameOver() const {
