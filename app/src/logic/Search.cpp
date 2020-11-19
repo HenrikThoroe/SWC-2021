@@ -79,7 +79,7 @@ namespace Logic {
         betaCutoffs = 0;
         maxDepth = 1;
         selectedMove = nullptr;
-        invalidColors.reset();
+        invalidColors = 0;
         lastScore = 0;
     }
 
@@ -132,10 +132,10 @@ namespace Logic {
         state.assignPossibleMoves(moves);
 
         if (moves.size() == 1) {
-            invalidColors[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1] = true;
+            invalidColors += 1;
         }
 
-        if (invalidColors.count() == 4) {
+        if (invalidColors >= 4) {
             return state.evaluate(player, true);
         }
 
@@ -161,6 +161,10 @@ namespace Logic {
             }
         }
 
+        if (moves.size() == 1) {
+            invalidColors -= 1;
+        }
+
         return min;
     }
 
@@ -175,10 +179,10 @@ namespace Logic {
         state.assignPossibleMoves(moves);
 
         if (moves.size() == 1) {
-            invalidColors[static_cast<uint8_t>(state.getCurrentPieceColor()) - 1] = true;
+            invalidColors += 1;
         }
 
-        if (invalidColors.count() == 4) {
+        if (invalidColors >= 4) {
             return state.evaluate(player, true);
         }
 
@@ -204,6 +208,10 @@ namespace Logic {
             if (timedOut()) {
                 break;
             }
+        }
+
+        if (moves.size() == 1) {
+            invalidColors -= 1;
         }
 
         return max;

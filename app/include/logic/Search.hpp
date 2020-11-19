@@ -58,8 +58,8 @@ namespace Logic {
             /// The last found score
             int lastScore;
 
-            /// Storage for all colors which cannot perform moves except a skip move
-            std::bitset<4> invalidColors {};
+            /// Counter for invalid colors. If >= 4 the game is over
+            uint32_t invalidColors;
         
         public:
 
