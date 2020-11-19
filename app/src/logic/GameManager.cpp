@@ -5,6 +5,7 @@
 #include "GameManager.hpp"
 #include "Search.hpp"
 #include "debug.hpp"
+#include "stringTools.hpp"
 
 namespace Logic {
     
@@ -16,6 +17,20 @@ namespace Logic {
 
     const Model::PlayerColor& GameManager::getPlayerColor() const {
         return ownColor;
+    }
+
+    void GameManager::handleResults(const App::ResultMsg& message) const {
+        #ifdef DEBUG
+        std::cout << "Score: ";
+
+        if (ownColor == Model::PlayerColor::BLUE) {
+            std::cout << Util::Print::Text::bold(std::to_string(message.score[0])) << " : " << std::to_string(message.score[1]);
+        } else {
+            std::cout << std::to_string(message.score[0]) << " : " << Util::Print::Text::bold(std::to_string(message.score[1]));
+        }
+
+        std::cout << std::endl << state << std::endl;
+        #endif
     }
 
     void GameManager::updateWithMemento(const App::MementoMsg& memento) {

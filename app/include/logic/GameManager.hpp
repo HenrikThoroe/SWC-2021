@@ -54,6 +54,8 @@ namespace Logic {
             const Model::Move* moveRequest();
 
             const Model::PlayerColor& getPlayerColor() const;
+
+            void handleResults(const App::ResultMsg& message) const;
     };
 
 }

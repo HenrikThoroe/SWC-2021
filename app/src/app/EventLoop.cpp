@@ -142,6 +142,7 @@ namespace App {
                         break;
                 }
                 std::cout << "\033[0m" << std::endl;
+                gameManager.handleResults(std::any_cast<ResultMsg>(msg.payload));
 
                 return true;
             
