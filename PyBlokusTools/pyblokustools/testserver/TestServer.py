@@ -28,6 +28,7 @@ class TestServer():
         serverPort      {int}                         -- Port the server should run on    (default: 13055)
         logEnabled      {bool}                        -- Logging enabled                  (default: True)
         logLevel        {int}                         -- Log level to use                 (default: logging.INFO)
+        jsonLogs        {bool}                        -- Special JSONLogs enabled         (default: False)
     """
     def __init__(
         self,
@@ -37,11 +38,13 @@ class TestServer():
         serverPort      : int                          = 13055,
         logEnabled      : bool                         = True,
         logLevel        : int                          = logging.INFO,
+        jsonLogs        : bool                         = False,
     ) -> None:
         self.clients         = clients
         self.clientNames     = clientNames
         self.clientArguments = clientArguments
         self.serverPort      = serverPort
+        self.jsonLogs        = jsonLogs
         
         self.config = Config.load()
         
@@ -70,7 +73,8 @@ class TestServer():
             tcpFactory      = tcpFactory,
             )
         
-        self.scores = [0, 0]
+        self.scores = [0, 0] # 0: Lose, 1: Draw, 2: Win
+        self.points = [0, 0] # Summ of all in game points
         self.failedGames = 0
         
         self.config.save()
@@ -292,9 +296,11 @@ class TestServer():
                 self.logger.logServer(self.serverProc.stdout)
                 return
                             
-            # Update scores and log them
+            # Update scores, points and log them
             self.scores[0] += int(result.end[0])
             self.scores[1] += int(result.end[1])
+            self.points[0] += int(result.score[0])
+            self.points[1] += int(result.score[1])
             self.logger.logFile(f"Finished Game {self.manager.playedGames}:\n\t{result.__repr__()}\n\tScore is now: {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\n")
             
             self._l.debug(f"Finished game {self.manager.playedGames} - {result.end[0]}:{result.end[1]}")
@@ -304,4 +310,23 @@ class TestServer():
         
         self._l.info("Running MassTests...")
         _run()
-        self.logger.logFile(f"\n\nFinal Scores {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\nAfter {self.manager.playedGames} games ({self.failedGames} failed)")
+        self.logger.logFile(f"\n\nFinal Scores {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\nFinal Points {self.clientNames[0]}: {self.points[0]}, {self.clientNames[1]}: {self.points[1]}\nAfter {self.manager.playedGames} games ({self.failedGames} failed)")
+
+        if self.jsonLogs:
+            #? Special JSONLogs for automated analysis
+            self.logger.logJSONFile(
+                {
+                    'games'   : self.manager.playedGames,
+                    'failed'  : self.failedGames,
+                    'clients' : {
+                        self.clientNames[0] : {
+                            'score'  : self.scores[0],
+                            'points' : self.points[0],
+                        },
+                        self.clientNames[1] : {
+                            'score'  : self.scores[1],
+                            'points' : self.points[1],
+                        },
+                    },
+                }
+            )

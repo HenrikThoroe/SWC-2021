@@ -4,6 +4,7 @@ from io import BufferedReader
 import re
 from functools import wraps
 from pathlib import Path
+from json import dump
 from datetime import datetime
 
 import logging
@@ -49,7 +50,7 @@ def filterAnsi(inp: Union[str, bytes]) -> Union[str, bytes]:
 class ColoredFormatter(logging.Formatter):
     """Logging Formatter that colors the output
     """
-
+    
     white    = "\033[38;21m"
     yellow   = "\033[33;21m"
     red      = "\033[31;21m"
@@ -161,7 +162,7 @@ class Logger(logging.Handler):
         """
         with open(f'{self._folder}/server.txt', 'ab') as file:
             file.write(filterAnsi(log.read() or b''))
-        
+    
     @logger_enabled
     def logFile(self, message: str) -> None:
         """Log any message to the main log file
@@ -171,3 +172,13 @@ class Logger(logging.Handler):
         """
         with open(f'{self._dirName}/log.txt', 'a') as file:
             file.write(filterAnsi(message))
+    
+    @logger_enabled
+    def logJSONFile(self, message: dict) -> None:
+        """Write any JSON serializable dict to the main JSON log file
+
+        Arguments:
+            message {dict} -- Message to write
+        """
+        with open(f'{self._dirName}/log.json', 'w') as file:
+            dump(message, file)

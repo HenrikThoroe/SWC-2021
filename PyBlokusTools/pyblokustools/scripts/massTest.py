@@ -143,6 +143,12 @@ def massTest() -> None:
         help='log level to print to the console',
         default=20
     )
+    parser.add_argument(
+        '-j',
+        '--jsonlogs',
+        action='store_true',
+        help='enable JSON logs for automated analysis',
+    )
     
     args = parser.parse_args()
     
@@ -161,6 +167,7 @@ def massTest() -> None:
         serverPort      = args.port,
         logEnabled      = not args.nolog,
         logLevel        = args.loglevel,
+        jsonLogs        = args.jsonlogs,
         )
     
     massTests.run(
