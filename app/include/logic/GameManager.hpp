@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Message.hpp"
+#include "Search.hpp"
 #include "Move.hpp"
 #include "color.hpp"
 #include "GameState.hpp"
@@ -19,6 +20,8 @@ namespace Logic {
             Model::PlayerColor ownColor;
 
             Model::GameState state = Model::GameState(-1);
+
+            Search agent;
 
         public:
             /**

@@ -3,13 +3,12 @@
 #include <stdexcept>
 
 #include "GameManager.hpp"
-#include "Search.hpp"
 #include "debug.hpp"
 #include "stringTools.hpp"
 
 namespace Logic {
     
-    GameManager::GameManager(const std::vector<Model::PieceColor>* const colorsInGame) : colorsInGame(colorsInGame) {}
+    GameManager::GameManager(const std::vector<Model::PieceColor>* const colorsInGame) : colorsInGame(colorsInGame), agent(state, ownColor) {}
 
     void GameManager::setColor(const Model::PlayerColor& color) {
         ownColor = color;
@@ -44,11 +43,12 @@ namespace Logic {
             while (state.getTurn() < 100 && state.getCurrentPieceColor() != memento.currentColor) {
                 state.update(std::nullopt);
             }
+
+            agent.setInvalidColors(4 - colorsInGame->size());
         }
     }
 
     const Model::Move* GameManager::moveRequest() { 
-        Search agent = Search(state, ownColor);
         SearchResult result = agent.find();
 
         #ifdef DEBUG
