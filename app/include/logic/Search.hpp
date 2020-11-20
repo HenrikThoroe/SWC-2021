@@ -77,6 +77,9 @@ namespace Logic {
             /// Prints the stats of the most recent search to cout. Should only be used when #DEBUG is set
             void log() const;
 
+            /// Sets the number of colors which are out of game
+            void setInvalidColors(uint32_t count);
+
         protected:
 
             /**

@@ -23,6 +23,10 @@ namespace Logic {
         return SearchResult(selectedMove, score);
     }
 
+    void Search::setInvalidColors(uint32_t count) {
+        invalidColors = count;
+    }
+
     void Search::log() const {
         const int64_t elapsed = getElpasedTime().count();
         const double nodesPerNs = static_cast<double>(searchedNodes) / static_cast<double>(elapsed);
@@ -79,7 +83,6 @@ namespace Logic {
         betaCutoffs = 0;
         maxDepth = 1;
         selectedMove = nullptr;
-        invalidColors = 0;
         lastScore = 0;
     }
 
@@ -131,7 +134,7 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
-        if (moves.size() == 1) {
+        if (moves.size() <= 1) {
             invalidColors += 1;
         }
 
@@ -161,7 +164,7 @@ namespace Logic {
             }
         }
 
-        if (moves.size() == 1) {
+        if (moves.size() <= 1) {
             invalidColors -= 1;
         }
 
@@ -178,7 +181,7 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
-        if (moves.size() == 1) {
+        if (moves.size() <= 1) {
             invalidColors += 1;
         }
 
@@ -210,7 +213,7 @@ namespace Logic {
             }
         }
 
-        if (moves.size() == 1) {
+        if (moves.size() <= 1) {
             invalidColors -= 1;
         }
 
