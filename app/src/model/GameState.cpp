@@ -388,25 +388,10 @@ namespace Model {
         const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
         int opponentScore = 0;
-        int dropPositions = 0;
-        int opponentDropPositions = 0;
-        int performedMoves = 1;
-        int opponentPerformedMoves = 1;
 
         int x = player == getCurrentPlayer().color ? -1 : 1;
 
         for (const PieceColor& color : colors) {
-            dropPositions += board.getDropPositions(color).size();
-            performedMoves += pushHistory[static_cast<uint8_t>(color) - 1].size();
-        }
-
-        for (const PieceColor& color : opponentColors) {
-            opponentDropPositions += board.getDropPositions(color).size();
-            opponentPerformedMoves += pushHistory[static_cast<uint8_t>(color) - 1].size();
-        }
-
-        for (const PieceColor& color : colors) {
-
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
@@ -430,7 +415,6 @@ namespace Model {
         }
 
         for (const PieceColor& color : opponentColors) {
-
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
@@ -463,7 +447,7 @@ namespace Model {
             }
         }
 
-        return ((100 - turn) * score) - ((100 + x - turn) * opponentScore) + (dropPositions - opponentDropPositions);
+        return ((100 - turn) * score) - ((100 + x - turn) * opponentScore);
     }
 
     bool GameState::isGameOver() const {
