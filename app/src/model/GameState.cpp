@@ -456,11 +456,13 @@ namespace Model {
     bool GameState::isGameOver() const {
         if (turn >= 100) {
             return true;
-        }
-
-        for (int p = 0; p < 4; ++p) {
-            if (pushHistory[p].size() == Constants::PIECE_SHAPES) {
-                return true;
+        }  
+        
+        if (turn >= Constants::PIECE_SHAPES * 4) {
+            for (int p = 0; p < 4; ++p) {
+                if (pushHistory[p].size() == Constants::PIECE_SHAPES) {
+                    return true;
+                }
             }
         }
 
