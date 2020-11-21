@@ -11,7 +11,7 @@ namespace Logic {
     struct SearchResult {
         SearchResult(const Model::Move* move, const int score);
 
-        /// The best move found by the search algorythm
+        /// The best move found by the search algorithm
         const Model::Move* move;
 
         /// The associated score of the found move.
@@ -20,7 +20,7 @@ namespace Logic {
 
     /**
      * The base class for finding the best move. 
-     * It provides the foundation for more advanced search algorythms.
+     * It provides the foundation for more advanced search algorithms.
      * By default Alpha Beta search is used.
      */
     class Search {
@@ -83,7 +83,7 @@ namespace Logic {
         protected:
 
             /**
-             * Default search algorythm
+             * Default search algorithm
              * @return The score of the best move
              */
             int alphaBeta();
