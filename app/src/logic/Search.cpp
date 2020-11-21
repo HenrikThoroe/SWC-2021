@@ -51,7 +51,7 @@ namespace Logic {
             Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%"
         });
 
-        std::cout << std::endl << std::endl << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 150) << std::endl << std::endl;
+        std::cout << '\n' << '\n' << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 150) << '\n' << '\n';
         std::cout << Util::Print::Text::bold("Selected Move: ");
 
         if (selectedMove == nullptr) {
@@ -60,7 +60,7 @@ namespace Logic {
             std::cout << *selectedMove;
         }
 
-        std::cout << std::endl << Util::Print::Text::bold("Score: ");
+        std::cout << '\n' << Util::Print::Text::bold("Score: ");
 
         if (lastScore == Constants::WIN_POINTS) {
             std::cout << Util::Print::Text::color("WIN", Util::Print::Text::TextColor::GREEN);
@@ -70,10 +70,10 @@ namespace Logic {
             std::cout << lastScore;
         }
 
-        std::cout << std::endl << std::endl;
+        std::cout << '\n' << '\n';
 
         std::cout << table;
-        std::cout << std::endl << Util::Print::Text::repeat('*', 172) << std::endl << std::endl << std::endl;
+        std::cout << '\n' << Util::Print::Text::repeat('*', 172) << '\n' << '\n' << std::endl;
     }
 
     void Search::reset() {
