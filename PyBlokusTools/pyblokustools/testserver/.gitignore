@@ -1,0 +1,4 @@
+# Files that should not be checked into git specific to the TestServer
+config.json
+
+swcServer/

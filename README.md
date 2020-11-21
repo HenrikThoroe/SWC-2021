@@ -43,6 +43,9 @@ blokusrun
 # Create a production build of the client and prepare for upload
 blokusprod
 
+# Run mass tests with two clients competing
+blokusmass
+
 # Create the documentation from ./docsrc
 blokusdoc
 ```

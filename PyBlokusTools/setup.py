@@ -20,6 +20,8 @@ setuptools.setup(
         'Sphinx>=3.2.1',
         'sphinx-rtd-theme>=0.5.0',
         'breathe>=4.22.1',
+        'tqdm>=4.51.0',
+        'requests>=2.25.0',
     ],
     entry_points = {
         "console_scripts": [
@@ -29,6 +31,7 @@ setuptools.setup(
             'blokusdebug = pyblokustools.scripts.compileDebug:compileDebug',
             'blokusdoc = pyblokustools.scripts.makeDocumentation:makeDocumentation',
             'blokusrun = pyblokustools.scripts.runPreProduction:runPreProduction',
+            'blokusmass = pyblokustools.scripts.massTest:massTest',
         ]
     },
 )
