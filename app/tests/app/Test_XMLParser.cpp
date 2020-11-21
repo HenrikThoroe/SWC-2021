@@ -819,7 +819,6 @@ TEST_CASE("Test XMLParser", "[app]") {
                                         "  <color>GREEN</color>\n"
                                     " </data>\n"
                                 "</room>\n";
-            INFO(parser.makeMoveMessage(nullptr));
             REQUIRE(parser.makeMoveMessage(nullptr) == expected);
         }
     }
