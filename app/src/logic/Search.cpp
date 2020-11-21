@@ -7,7 +7,7 @@ namespace Logic {
 
     SearchResult::SearchResult(const Model::Move* move, const int score) : move(move), score(score) {}
 
-    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0) {}
+    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), invalidColors(0) {}
 
     SearchResult Search::find() {
         reset();
