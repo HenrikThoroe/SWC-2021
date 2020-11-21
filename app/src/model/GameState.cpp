@@ -389,7 +389,10 @@ namespace Model {
         int score = 0;
         int opponentScore = 0;
 
-        int x = player == getCurrentPlayer().color ? -1 : 1;
+        // An offset to reduce score ossizalition. 
+        // When the own player performed the last move (player != getCurrentPlayer().color) the opponent is lagging one piece behind.
+        // Therefore the turn is adjusted by 1 to give the naturally fewer points of the opponent a higher rating.
+        int normalizationOffset = (player == getCurrentPlayer().color) ? -1 : 1;
 
         for (const PieceColor& color : colors) {
             // Iterate all shapes
@@ -447,7 +450,7 @@ namespace Model {
             }
         }
 
-        return ((100 - turn) * score) - ((100 + x - turn) * opponentScore);
+        return ((100 - turn) * score) - ((100 + normalizationOffset - turn) * opponentScore);
     }
 
     bool GameState::isGameOver() const {
