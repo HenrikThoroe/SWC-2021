@@ -5,6 +5,7 @@
 #include "GameManager.hpp"
 #include "debug.hpp"
 #include "stringTools.hpp"
+#include "Process.hpp"
 
 namespace Logic {
     
@@ -20,6 +21,8 @@ namespace Logic {
 
     void GameManager::handleResults(const App::ResultMsg& message) const {
         #ifdef DEBUG
+        const Util::Process proc = Util::Process();
+
         std::cout << "Score: ";
 
         if (ownColor == Model::PlayerColor::BLUE) {
@@ -28,7 +31,9 @@ namespace Logic {
             std::cout << std::to_string(message.score[0]) << " : " << Util::Print::Text::bold(std::to_string(message.score[1]));
         }
 
-        std::cout << std::endl << state << std::endl;
+        std::cout << '\n' << state << '\n' << '\n';
+
+        proc.printSystemStatus();
         #endif
     }
 
