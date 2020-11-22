@@ -4,7 +4,7 @@
 
 namespace Util::Print::Text {
 
-    std::string fixedWidth(std::string str, uint32_t width, TextAlignment align) {
+    std::string fixedWidth(std::string str, const uint32_t width, const TextAlignment align) {
         if (str.length() > width) {
             return str.substr(0, width);
         }
@@ -35,7 +35,7 @@ namespace Util::Print::Text {
         return str;
     }
 
-    std::string repeat(char character, uint32_t count) {
+    std::string repeat(const char character, const uint32_t count) {
         std::string out;
 
         while (out.length() < count) {
@@ -45,7 +45,7 @@ namespace Util::Print::Text {
         return out;
     }
 
-    std::string formatInt(int number, char thousandSeperator) {
+    std::string formatInt(const int number, const char thousandSeperator) {
         std::string out = std::to_string(number);
         std::string seperator = std::string(1, thousandSeperator);
 
@@ -56,7 +56,7 @@ namespace Util::Print::Text {
         return out;
     }
 
-    std::string formatDouble(double number, uint8_t fixed, char thousandSeperator) {
+    std::string formatDouble(const double number, const uint8_t fixed, const char thousandSeperator) {
         std::string str = std::to_string(number);
         std::string intPart = formatInt(static_cast<int>(number), thousandSeperator);
         std::string floatPart = str.substr(str.find_first_of('.') + 1);
@@ -71,7 +71,7 @@ namespace Util::Print::Text {
         return out;
     }
 
-    std::string formatTime(uint64_t time, TimeUnit baseUnit, char thousandSeperator) {
+    std::string formatTime(const uint64_t time, const TimeUnit baseUnit, const char thousandSeperator) {
         uint8_t unit = static_cast<uint8_t>(baseUnit);
         uint8_t decimals = 0;
         double factor = 1;
@@ -105,11 +105,11 @@ namespace Util::Print::Text {
         }
     }
 
-    std::string bold(std::string text) {
+    std::string bold(const std::string& text) {
         return "\033[1;37m" + text + "\033[0m";
     }
 
-    std::string color(std::string text, TextColor color) {
+    std::string color(std::string text, const TextColor color) {
         switch (color) {
             case TextColor::RED:
                 text.insert(0, "\033[31m");
