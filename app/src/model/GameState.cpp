@@ -115,6 +115,11 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
+        // A skip move can always be performed / No piece can always be deployed
+        if (piece == nullptr) {
+            return true;
+        } 
+
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
@@ -158,7 +163,7 @@ namespace Model {
 
     void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
 
-        if (movesCache.contains(hashValue)) {
+        if (movesCache.contains(hashValue) && movesCache[hashValue].turn % 4 == turn % 4) {
             moves = movesCache[hashValue].value;
             movesCache[hashValue].accesses += 1;
             movesCache[hashValue].turn = turn;
@@ -173,6 +178,10 @@ namespace Model {
 
         // Reserve 550 items to prevent repeated resizing of moves vector
         moves.reserve(550);
+        
+        if (turn > 3) {
+            moves.push_back(nullptr);
+        }
 
         auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
 
@@ -374,16 +383,18 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate() const {
-        if (turn == 0) {
-            return 0;
-        }
-
-        const std::array<PieceColor, 2>& colors = getLastPlayer().getPieceColors();
+    int GameState::evaluate(const PlayerColor& player, bool gameOver) const {
+        const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
+        const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
+        int opponentScore = 0;
+
+        // An offset to reduce score ossizalition. 
+        // When the own player performed the last move (player != getCurrentPlayer().color) the opponent is lagging one piece behind.
+        // Therefore the turn is adjusted by 1 to give the naturally fewer points of the opponent a higher rating.
+        int normalizationOffset = (player == getCurrentPlayer().color) ? -1 : 1;
 
         for (const PieceColor& color : colors) {
-
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
@@ -406,7 +417,56 @@ namespace Model {
             }
         }
 
-        return score;
+        for (const PieceColor& color : opponentColors) {
+            // Iterate all shapes
+            for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
+
+                // Check if the shape has been deployed
+                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+
+                    // Add the size of the shape to the score
+                    opponentScore += PieceCollection::getPiece(id).size;
+                }
+            }
+
+            // Check if all pieces have been deployed
+            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
+                opponentScore += 15;
+
+                // Check if the last deployed piece is the MONOMINO
+                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
+                    opponentScore += 5;
+                }
+            }
+        }
+
+        if (isGameOver() || gameOver) {
+            if (score > opponentScore) {
+                return Constants::WIN_POINTS;
+            } else if (score < opponentScore) {
+                return Constants::LOSE_POINTS;
+            } else {
+                return 0;
+            }
+        }
+
+        return ((100 - turn) * score) - ((100 + normalizationOffset - turn) * opponentScore);
+    }
+
+    bool GameState::isGameOver() const {
+        if (turn >= 100) {
+            return true;
+        }  
+        
+        if (turn >= Constants::PIECE_SHAPES * 4) {
+            for (int p = 0; p < 4; ++p) {
+                if (pushHistory[p].size() == Constants::PIECE_SHAPES) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {

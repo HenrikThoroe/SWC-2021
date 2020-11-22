@@ -70,7 +70,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state, &moves] {
-                return state.canBeDeployed(moves[0]);
+                return state.canBeDeployed(moves[moves.size() - 1]);
             });
 
             int index = rand() % moves.size();
@@ -90,7 +90,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             for (int x = 0; x < 20; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                state.performMove(moves[0]);
+                state.performMove(moves[moves.size() - 1]);
             }
 
             for (int x = 0; x < 20; ++x) {
@@ -156,7 +156,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state] {
-                return state.evaluate();
+                return state.evaluate(PlayerColor::BLUE);
             });
         }
 

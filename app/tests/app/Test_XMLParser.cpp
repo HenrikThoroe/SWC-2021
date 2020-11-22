@@ -667,7 +667,7 @@ TEST_CASE("Test XMLParser", "[app]") {
             #pragma region InpSkipMove
             inp =   "<room roomId=\"0a1b2c3d-4e5f-6g7h-i8j9-k0l1m2n3o4p5\">"
                         "<data class=\"memento\">"
-                            "<state class=\"state\" currentColorIndex=\"3\" turn=\"7\" round=\"2\" startPiece=\"PENTO_T\">"
+                            "<state class=\"state\" currentColorIndex=\"2\" turn=\"7\" round=\"2\" startPiece=\"PENTO_T\">"
                             "<startTeam class=\"team\">ONE</startTeam>"
                             "<board>"
                                 "<field x=\"0\" y=\"0\" content=\"GREEN\"/>"

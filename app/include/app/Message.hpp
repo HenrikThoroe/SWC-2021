@@ -34,7 +34,7 @@ namespace App {
          * @param lastMove Last move played on the board
          * @param currentTurn Current turn
          */
-        MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, uint8_t currentTurn);
+        MementoMsg(uint8_t startPiece, std::optional<uint32_t> lastMove, uint8_t currentTurn, Model::PieceColor currentColor);
 
 
         /// Index for PieceCollection pointing at the piece that has to be played in the first round
@@ -45,6 +45,8 @@ namespace App {
 
         /// Current turn on the board
         const uint8_t currentTurn;
+
+        const Model::PieceColor currentColor;
     };
 
     struct ResultMsg {

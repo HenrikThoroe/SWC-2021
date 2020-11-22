@@ -16,4 +16,10 @@ namespace Constants {
 
     constexpr int PIECE_SHAPES = 21;
 
+    constexpr int WIN_POINTS = INT_MAX;
+
+    constexpr int LOSE_POINTS = INT_MIN;
+
+    constexpr int64_t SEARCH_TIMEOUT = 1800000000; 
+
 }

@@ -19,6 +19,8 @@ namespace App {
             /// Current turn on the board
             uint8_t turn = 0;
 
+            uint8_t colorIndex = 0;
+
             /// Colors that are still in the game
             std::vector<Model::PieceColor> colorsInGame{};
             
@@ -48,6 +50,13 @@ namespace App {
 
             /// Get a const pointer to a const vector containing all PieceColors that are still in the game
             const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
+
+            /**
+             * @brief Return the current color, which is eligible to perform the next move.
+             * 
+             * @returns Current color
+             */
+            const Model::PieceColor& getCurrentColor() const;
         
         private:
             //? Specific message parsers
@@ -111,11 +120,11 @@ namespace App {
             const char* getColor(const Model::PieceColor& colorId) const;
 
             /**
-             * @brief Calculate current color based on turn
+             * @brief Calculates the name of the current color.
              * 
              * @returns Name of current color
              */
-            const char* getCurrentColor() const;
+            const char* getCurrentColorName() const;
     };
     
 }
