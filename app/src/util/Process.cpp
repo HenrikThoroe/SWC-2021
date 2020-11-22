@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "Process.hpp"
+#include "Table.hpp"
+#include "stringTools.hpp"
 
 namespace Util {
 
@@ -83,10 +85,17 @@ namespace Util {
     }
 
     void Process::printSystemStatus() const {
-        std::cout << "--- System Status ---" << std::endl;
-        std::cout << "RSS:            " << std::to_string(static_cast<double>(rss()) / 1000000) << " MB" << std::endl;
-        std::cout << "Virtual Memory: " << std::to_string(static_cast<double>(virtualMemory()) / 1000000) << " MB" << std::endl;
-        std::cout << "---------------------" << std::endl;
+        Print::Table table = Print::Table(2, 20);
+
+        table.addRow({ "RSS", "Virtual Memory" });
+        table.addRow({
+            Print::Text::formatDouble(static_cast<double>(rss()) / 1000000) + " MB",
+            Print::Text::formatDouble(static_cast<double>(virtualMemory()) / 1000000) + " MB"
+        });
+
+        std::cout << Print::Text::repeat('*', 3) << " System Status " << Print::Text::repeat('*', 82) << '\n' << '\n'; // length: 100
+        std::cout << table;
+        std::cout << '\n' << Print::Text::repeat('*', 100) << std::endl;
     }
 
 }
