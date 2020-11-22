@@ -41,7 +41,7 @@ namespace Logic {
         Util::Print::Table table = Util::Print::Table(8, 25);
         table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio" });
         table.addRow({
-            Util::Print::Text::formatInt(maxDepth),
+            Util::Print::Text::formatInt(maxDepth - 1),
             Util::Print::Text::formatInt(searchedNodes),
             Util::Print::Text::formatTime(elapsed, Util::Print::Text::TimeUnit::NS),
             Util::Print::Text::formatDouble(nodesPerMs),
