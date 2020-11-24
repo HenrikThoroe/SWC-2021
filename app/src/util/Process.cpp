@@ -58,6 +58,8 @@ namespace Util {
                     out[items[0]] = items[1];
                 }
             }
+
+            file.close();
         }
 
         return out;
