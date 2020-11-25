@@ -30,8 +30,7 @@ namespace Logic {
     void Search::log() const {
         const int64_t elapsed = getElpasedTime().count();
         const double nodesPerNs = static_cast<double>(searchedNodes) / static_cast<double>(elapsed);
-        const double nodesPerMs = nodesPerNs * 1000000;
-        const double nodesPerS = nodesPerMs * 1000;
+        const double nodesPerS = nodesPerNs * 1000000000;
         double cutoffRatio = 0;
         double hitRatio = 0;
 
@@ -40,13 +39,12 @@ namespace Logic {
             hitRatio = static_cast<double>(tableHits) / static_cast<double>(searchedNodes);
         }
 
-        Util::Print::Table table = Util::Print::Table(11, 25);
-        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Table Size", "Table Hits", "Hit Ratio" });
+        Util::Print::Table table = Util::Print::Table(10, 25);
+        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Table Size", "Table Hits", "Hit Ratio" });
         table.addRow({
             Util::Print::Text::formatInt(maxDepth - 1),
             Util::Print::Text::formatInt(searchedNodes),
             Util::Print::Text::formatTime(elapsed, Util::Print::Text::TimeUnit::NS),
-            Util::Print::Text::formatDouble(nodesPerMs),
             Util::Print::Text::formatDouble(nodesPerS),
             Util::Print::Text::formatInt(alphaCutoffs),
             Util::Print::Text::formatInt(betaCutoffs),
