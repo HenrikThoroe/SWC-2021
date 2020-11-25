@@ -7,7 +7,7 @@ namespace Logic {
 
     SearchResult::SearchResult(const Model::Move* move, const int score) : move(move), score(score) {}
 
-    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), invalidColors(0) {}
+    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), invalidColors(0), table(), tableHits(0) {}
 
     SearchResult Search::find() {
         reset();
@@ -33,13 +33,15 @@ namespace Logic {
         const double nodesPerMs = nodesPerNs * 1000000;
         const double nodesPerS = nodesPerMs * 1000;
         double cutoffRatio = 0;
+        double hitRatio = 0;
 
         if (searchedNodes > 0) {
             cutoffRatio = static_cast<double>(alphaCutoffs + betaCutoffs) / static_cast<double>(searchedNodes);
+            hitRatio = static_cast<double>(tableHits) / static_cast<double>(searchedNodes);
         }
 
-        Util::Print::Table table = Util::Print::Table(8, 25);
-        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio" });
+        Util::Print::Table table = Util::Print::Table(11, 25);
+        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Millisecond", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Table Size", "Table Hits", "Hit Ratio" });
         table.addRow({
             Util::Print::Text::formatInt(maxDepth - 1),
             Util::Print::Text::formatInt(searchedNodes),
@@ -48,7 +50,10 @@ namespace Logic {
             Util::Print::Text::formatDouble(nodesPerS),
             Util::Print::Text::formatInt(alphaCutoffs),
             Util::Print::Text::formatInt(betaCutoffs),
-            Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%"
+            Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%",
+            Util::Print::Text::formatInt(this->table.size()),
+            Util::Print::Text::formatInt(tableHits),
+            Util::Print::Text::formatDouble(hitRatio * 100, 2) + "%"
         });
 
         std::cout << '\n' << '\n' << Util::Print::Text::repeat('*', 3) << " Search Statistics " << Util::Print::Text::repeat('*', 150) << '\n' << '\n';
@@ -84,6 +89,7 @@ namespace Logic {
         maxDepth = 1;
         selectedMove = nullptr;
         lastScore = 0;
+        tableHits = 0;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
@@ -92,6 +98,50 @@ namespace Logic {
 
     inline bool Search::timedOut() const {
         return getElpasedTime().count() >= Constants::SEARCH_TIMEOUT;
+    }
+
+    bool Search::fetchEntry(int& exact, int& alpha, int& beta, int depth) {
+        if (table.has(state.hash())) {
+            const TTEntry& entry = table.get(state.hash());
+
+            if (entry.depth >= depth && state.hash() == entry.hash) {
+                tableHits += 1;
+                switch (entry.type) {
+                    case TTEntryType::EXACT:
+                        exact = entry.evaluation;
+                        return entry.depth != maxDepth;
+                    case TTEntryType::UPPER_BOUND:
+                        alpha = entry.evaluation;
+
+                        if (alpha >= beta) {
+                            exact = entry.evaluation;
+                            return true;
+                        }
+
+                        return false;
+                    case TTEntryType::LOWER_BOUND:
+                        beta = entry.evaluation;
+
+                        if (alpha >= beta) {
+                            exact = entry.evaluation;
+                            return true;
+                        }
+
+                        return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    void Search::setEntry(int score, int depth, const TTEntryType& type) {
+        if (table.has(state.hash()) && table.get(state.hash()).depth > depth) {
+            return;
+        }
+
+        const TTEntry entry = TTEntry(state.hash(), score, type, depth, nullptr);
+        table.set(entry);
     }
 
     void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
@@ -125,6 +175,13 @@ namespace Logic {
     }
 
     int Search::min(int alpha, int beta, int depth) {
+        int ttValue = 0;
+        bool isExact = fetchEntry(ttValue, alpha, beta, depth);
+
+        if (isExact) {
+            return ttValue;
+        }
+
         if (depth == 0 || state.isGameOver()) {
             return state.evaluate(player);
         }
@@ -168,10 +225,19 @@ namespace Logic {
             invalidColors -= 1;
         }
 
+        setEntry(min, depth, (min <= alpha) ? TTEntryType::UPPER_BOUND : TTEntryType::EXACT);
+
         return min;
     }
 
     int Search::max(int alpha, int beta, int depth) {
+        int ttValue = 0;
+        bool isExact = fetchEntry(ttValue, alpha, beta, depth);
+
+        if (isExact) {
+            return ttValue;
+        }
+
         if (depth == 0 || state.isGameOver()) {
             return state.evaluate(player);
         }
@@ -216,6 +282,8 @@ namespace Logic {
         if (moves.size() <= 1) {
             invalidColors -= 1;
         }
+
+        setEntry(max, depth, (max >= beta) ? TTEntryType::LOWER_BOUND : TTEntryType::EXACT);
 
         return max;
     }

@@ -4,6 +4,7 @@
 
 #include "Move.hpp"
 #include "GameState.hpp"
+#include "TranspositionTable.hpp"
 
 namespace Logic {
 
@@ -31,6 +32,10 @@ namespace Logic {
 
             /// The start time of the most recent search. Call `reset` to initiate.
             std::chrono::high_resolution_clock::time_point startTime;
+
+            TranspositionTable table;
+
+            int tableHits;
 
         protected:
 
@@ -98,6 +103,10 @@ namespace Logic {
             void sortMoves(std::vector<const Model::Move*>& moves) const;
 
             bool timedOut() const;
+
+            bool fetchEntry(int& exact, int& alpha, int& beta, int depth);
+
+            void setEntry(int score, int depth, const TTEntryType& type);
 
         private:
 
