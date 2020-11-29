@@ -442,15 +442,15 @@ namespace Model {
 
         if (isGameOver() || gameOver) {
             if (score > opponentScore) {
-                return Constants::WIN_POINTS;
+                return Constants::WIN_POINTS + score;
             } else if (score < opponentScore) {
-                return Constants::LOSE_POINTS;
+                return Constants::LOSE_POINTS - 10000 + score;
             } else {
                 return 0;
             }
         }
 
-        return ((100 - turn) * score) - ((100 + normalizationOffset - turn) * opponentScore);
+        return ((110 - (100 - turn)) * score) - ((110 - (100 + normalizationOffset - turn)) * opponentScore) + pushHistory.size();
     }
 
     bool GameState::isGameOver() const {
