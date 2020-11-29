@@ -63,8 +63,8 @@ namespace Logic {
             /// The last found score
             int lastScore;
 
-            /// Counter for invalid colors. If >= 4 the game is over
-            uint32_t invalidColors;
+            /// Mask that stores the colors which cannot perform further moves 
+            std::bitset<4> invalidMask;
         
         public:
 
@@ -82,8 +82,8 @@ namespace Logic {
             /// Prints the stats of the most recent search to cout. Should only be used when #DEBUG is set
             void log() const;
 
-            /// Sets the number of colors which are out of game
-            void setInvalidColors(uint32_t count);
+            /// Sets the colors which are out of game
+            void setInvalidColors(const std::vector<Model::PieceColor>* const valid);
 
         protected:
 

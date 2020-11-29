@@ -7,7 +7,7 @@ namespace Logic {
 
     SearchResult::SearchResult(const Model::Move* move, const int score) : move(move), score(score) {}
 
-    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), invalidColors(0), table(), tableHits(0) {}
+    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), table(), tableHits(0), invalidMask() {}
 
     SearchResult Search::find() {
         reset();
@@ -16,15 +16,19 @@ namespace Logic {
         do {
             score = alphaBeta();
             maxDepth += 1;
-        } while (!timedOut() && score != Constants::WIN_POINTS && score != Constants::LOSE_POINTS);
+        } while (!timedOut() && state.getTurn() + (maxDepth - 1) <= 100);
 
         lastScore = score;
 
         return SearchResult(selectedMove, score);
     }
 
-    void Search::setInvalidColors(uint32_t count) {
-        invalidColors = count;
+    void Search::setInvalidColors(const std::vector<Model::PieceColor>* const valid) {
+        invalidMask = 0b1111;
+
+        for (const Model::PieceColor& color : *valid) {
+            invalidMask[static_cast<uint32_t>(color) - 1] = 0;
+        }
     }
 
     void Search::log() const {
@@ -65,9 +69,9 @@ namespace Logic {
 
         std::cout << '\n' << Util::Print::Text::bold("Score: ");
 
-        if (lastScore == Constants::WIN_POINTS) {
+        if (lastScore >= Constants::WIN_POINTS) {
             std::cout << Util::Print::Text::color("WIN", Util::Print::Text::TextColor::GREEN);
-        } else if (lastScore == Constants::LOSE_POINTS) {
+        } else if (lastScore <= Constants::LOSE_POINTS) {
             std::cout << Util::Print::Text::color("LOSE", Util::Print::Text::TextColor::RED);
         } else {
             std::cout << lastScore;
@@ -102,12 +106,12 @@ namespace Logic {
         if (table.has(state.hash())) {
             const TTEntry& entry = table.get(state.hash());
 
-            if (entry.depth >= depth && state.hash() == entry.hash) {
+            if (entry.depth >= depth && state.hash() == entry.hash && entry.turn < 100) {
                 tableHits += 1;
                 switch (entry.type) {
                     case TTEntryType::EXACT:
                         exact = entry.evaluation;
-                        return entry.depth != maxDepth;
+                        return depth != maxDepth;
                     case TTEntryType::UPPER_BOUND:
                         alpha = entry.evaluation;
 
@@ -134,11 +138,11 @@ namespace Logic {
     }
 
     void Search::setEntry(int score, int depth, const TTEntryType& type) {
-        if (table.has(state.hash()) && table.get(state.hash()).depth > depth) {
+        if ((table.has(state.hash()) && table.get(state.hash()).depth > depth) || state.getTurn() >= 100) {
             return;
         }
 
-        const TTEntry entry = TTEntry(state.hash(), score, type, depth, nullptr);
+        const TTEntry entry = TTEntry(state.hash(), score, type, depth, state.getTurn(), selectedMove);
         table.set(entry);
     }
 
@@ -189,11 +193,15 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
+        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
+        bool didBecomeInvalid = moves.size() <= 1 && invalidMask[colorId];
+
         if (moves.size() <= 1) {
-            invalidColors += 1;
+            invalidMask[colorId] = 1;
         }
 
-        if (invalidColors >= 4) {
+        if (invalidMask.count() == 4) {
+            invalidMask[colorId] = 0;
             return state.evaluate(player, true);
         }
 
@@ -219,8 +227,8 @@ namespace Logic {
             }
         }
 
-        if (moves.size() <= 1) {
-            invalidColors -= 1;
+        if (didBecomeInvalid) {
+            invalidMask[colorId] = 0;
         }
 
         setEntry(min, depth, (min <= alpha) ? TTEntryType::UPPER_BOUND : TTEntryType::EXACT);
@@ -245,11 +253,15 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
+        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
+        bool didBecomeInvalid = moves.size() <= 1 && invalidMask[colorId];
+
         if (moves.size() <= 1) {
-            invalidColors += 1;
+            invalidMask[colorId] = 1;
         }
 
-        if (invalidColors >= 4) {
+        if (invalidMask.count() == 4) {
+            invalidMask[colorId] = 0;
             return state.evaluate(player, true);
         }
 
@@ -277,8 +289,8 @@ namespace Logic {
             }
         }
 
-        if (moves.size() <= 1) {
-            invalidColors -= 1;
+        if (didBecomeInvalid) {
+            invalidMask[colorId] = 0;
         }
 
         setEntry(max, depth, (max >= beta) ? TTEntryType::LOWER_BOUND : TTEntryType::EXACT);
