@@ -131,7 +131,21 @@ namespace Model {
                         break;
                 }
 
-                os << static_cast<int>(board.fields[row][col]);
+                uint8_t indicator = 0;
+
+                for (uint8_t c = 0; c < 4; ++c) {
+                    const PieceColor color = static_cast<PieceColor>(c + 1);
+
+                    if (board.canDrop(color, col, row)) {
+                        indicator ^= (1 << c);
+                    }
+                }
+
+                if (board.fields[row][col] != PieceColor::NONE) {
+                    os << static_cast<int>(board.fields[row][col]);
+                } else {
+                    os << std::hex << static_cast<int>(indicator);
+                }
 
                 os << "\033[0m";
 
