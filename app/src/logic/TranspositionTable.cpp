@@ -2,9 +2,10 @@
 
 namespace Logic {
 
-    TTEntry::TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, Model::Move* move) : hash(hash), evaluation(evaluation), type(type), depth(depth), move(move) {}
-    TTEntry::TTEntry(const TTEntry& other) : hash(other.hash), evaluation(other.evaluation), type(other.type), depth(other.depth), move(other.move) {}
-    TTEntry::TTEntry(TTEntry* other) : hash(other->hash), evaluation(other->evaluation), type(other->type), depth(other->depth), move(other->move) {}
+    TTEntry::TTEntry() : hash(0), evaluation(0), type(TTEntryType::EXACT), depth(0), move(nullptr), turn(0) {}
+    TTEntry::TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, uint8_t turn, const Model::Move* move) : hash(hash), evaluation(evaluation), type(type), depth(depth), move(move), turn(turn) {}
+    TTEntry::TTEntry(const TTEntry& other) : hash(other.hash), evaluation(other.evaluation), type(other.type), depth(other.depth), move(other.move), turn(other.turn) {}
+    TTEntry::TTEntry(TTEntry* other) : hash(other->hash), evaluation(other->evaluation), type(other->type), depth(other->depth), move(other->move), turn(other->turn) {}
 
     TTEntry& TTEntry::operator = (const TTEntry& other) {
         this->hash = other.hash;
@@ -12,6 +13,7 @@ namespace Logic {
         this->type = other.type;
         this->depth = other.depth;
         this->move = other.move;
+        this->turn = other.turn;
 
         return *this;
     }
@@ -24,12 +26,12 @@ namespace Logic {
         return hashMap.contains(key);
     }
 
-    const TTEntry& TranspositionTable::get(const uint64_t& key) {
-        return hashMap.at(key);
+    TTEntry& TranspositionTable::get(const uint64_t& key) {
+        return hashMap[key];
     }
 
     void TranspositionTable::set(const TTEntry& entry) {
-        hashMap.insert(std::make_pair(entry.hash, entry));
+        hashMap[entry.hash] = entry;
     }
 
     int TranspositionTable::size() const {

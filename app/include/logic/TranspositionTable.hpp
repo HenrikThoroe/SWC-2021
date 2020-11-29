@@ -14,7 +14,8 @@ namespace Logic {
     };
 
     struct TTEntry {
-        TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, Model::Move* move);
+        TTEntry();
+        TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, uint8_t turn, const Model::Move* move);
         TTEntry(const TTEntry& other);
         TTEntry(TTEntry* other);
 
@@ -24,7 +25,9 @@ namespace Logic {
 
         int depth;
 
-        Model::Move* move;
+        uint8_t turn;
+
+        const Model::Move* move;
 
         TTEntryType type;
 
@@ -40,7 +43,7 @@ namespace Logic {
             TranspositionTable(TranspositionTable& other) = delete;
 
             bool has(const uint64_t& key) const;
-            const TTEntry& get(const uint64_t& key);
+            TTEntry& get(const uint64_t& key);
             void set(const TTEntry& entry);
             int size() const;
     };
