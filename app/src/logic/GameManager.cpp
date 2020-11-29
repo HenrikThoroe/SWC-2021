@@ -49,7 +49,15 @@ namespace Logic {
                 state.update(std::nullopt);
             }
 
-            agent.setInvalidColors(4 - colorsInGame->size());
+            agent.setInvalidColors(this->colorsInGame);
+
+            std::cout << Util::Print::Text::bold("Colors in Game: ");
+
+            for (const Model::PieceColor& color : *colorsInGame) {
+                std::cout << color << " ";
+            }
+
+            std::cout << '\n' << Util::Print::Text::bold("Available Moves: ") << state.getPossibleMoves().size() << std::endl;
         }
     }
 
