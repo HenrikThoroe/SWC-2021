@@ -43,6 +43,12 @@ namespace Model {
             /// Calculates the attach points of the piece.
             void prepareAttachPoints();
 
+            /**
+             * @brief Calculates an unique index for the piece
+             * @param includeColor If false the same pieces with different color have equal indices.
+             */
+            int index(bool includeColor = true) const;
+
             friend std::ostream& operator << (std::ostream& os, const DeployedPiece& piece);
 
         private:
