@@ -5,6 +5,8 @@
 #include "catch.hpp"
 #include "GameState.hpp"
 
+#include "Process.hpp"
+
 using namespace Model;
 
 TEST_CASE("Bench Game State", "[benchmark]") {
@@ -163,5 +165,36 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         for (int x = 0; x < 20; ++x) {
             state.revertLastMove();
         }
+    };
+
+    BENCHMARK_ADVANCED("Memory Cleanup") (Catch::Benchmark::Chronometer meter) {
+        std::vector<const Move*> moves {};
+        int index;
+        const Util::Process p = Util::Process();
+        uint64_t vm = p.virtualMemory();
+
+        // Virtual memory < 1GB
+        while (vm < 1'000'000'000) {
+            for (int x = 0; x < 20; ++x) {
+                moves.clear();
+                state.assignPossibleMoves(moves);
+                if (moves.size() == 0) {
+                    state.performMove(nullptr);
+                } else {
+                    index = rand() % moves.size();
+                    state.performMove(moves[index]);
+                }
+            }
+
+            for (int x = 0; x < 20; ++x) {
+                state.revertLastMove();
+            }
+
+            vm = p.virtualMemory();
+        }
+
+        meter.measure([&state] {
+            state.freeMemory(1);
+        });
     };
 }
