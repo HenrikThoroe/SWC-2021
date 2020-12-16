@@ -19,7 +19,8 @@ namespace App {
             /// Current turn on the board
             uint8_t turn = 0;
 
-            uint8_t colorIndex = 0;
+            /// Current PieceColor on the board
+            Model::PieceColor turnColor = Model::PieceColor::BLUE;
 
             /// Colors that are still in the game
             std::vector<Model::PieceColor> colorsInGame{};

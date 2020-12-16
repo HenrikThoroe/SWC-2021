@@ -192,10 +192,27 @@ namespace App {
 
     inline void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
-        colorIndex = data.attribute("currentColorIndex").as_int();
+
+        switch (turn % 4) {
+            case 0:
+                turnColor  = Model::PieceColor::BLUE;
+                break;
+            case 1:
+                turnColor  = Model::PieceColor::YELLOW;
+                break;
+            case 2:
+                turnColor  = Model::PieceColor::RED;
+                break;
+            case 3:
+                turnColor  = Model::PieceColor::GREEN;
+                break;
+            
+            default:
+                throw std::runtime_error("Could not determine turnColor for turn '" + std::to_string(turn) + "'");
+        }
 
         colorsInGame.clear();
-        for (const pugi::xml_node& color : data.child("orderedColors").children()) {
+        for (const pugi::xml_node& color : data.child("validColors").children()) {
             switch (color.child_value()[0]) {
                 // Blue
                 case 'B':
@@ -292,13 +309,13 @@ namespace App {
                 // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
                 const int index = (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
 
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn, colorsInGame[colorIndex]));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn, turnColor));
             } else {
                 // SkipMove
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, colorsInGame[colorIndex]));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, turnColor));
             }
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn, colorsInGame[colorIndex]));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn, turnColor));
         }
     }
 
@@ -431,11 +448,11 @@ namespace App {
     }
 
     inline const Model::PieceColor& XMLParser::getCurrentColor() const {
-        return colorsInGame[colorIndex];
+        return turnColor;
     }
 
     inline const char* XMLParser::getCurrentColorName() const {
-        return getColor(colorsInGame[colorIndex]);
+        return getColor(turnColor);
     }
 
 }
