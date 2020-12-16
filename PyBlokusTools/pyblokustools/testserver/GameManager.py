@@ -13,34 +13,38 @@ class GameManager():
     """Main GameManager for playing actual games
 
     Arguments:
-        serverClient    {TCPClient}                   -- TCPClient already connected and authenticated
-        serverPort      {int}                         -- Port the clients should connect to
-        clients         {Tuple[str, str]}             -- Paths to the two clients to test
-        clientNames     {Tuple[str, str]}             -- Names for the two clients
-        clientArguments {Tuple[List[str], List[str]]} -- Arguments to start clients with
-        tcpFactory      {Callable[[], TCPClient]}     -- A factory function for a connected TCPClient
+        serverClient      {TCPClient}                   -- TCPClient already connected and authenticated
+        serverPort        {int}                         -- Port the clients should connect to
+        clients           {Tuple[str, str]}             -- Paths to the two clients to test
+        clientNames       {Tuple[str, str]}             -- Names for the two clients
+        clientArguments   {Tuple[List[str], List[str]]} -- Arguments to start clients with
+        clientsCanTimeout {Tuple[bool, bool]}           -- If clients can timeout
+        logger            {Logger}                      -- Logger to save clientLogs to
+        tcpFactory        {Callable[[], TCPClient]}     -- A factory function for a connected TCPClient
     """
     def __init__(
         self,
-        serverClient    : TCPClient,
-        serverPort      : int,
-        clients         : Tuple[str, str],
-        clientNames     : Tuple[str, str],
-        clientArguments : Tuple[List[str], List[str]],
-        logger          : Logger,
-        tcpFactory      : Callable[[], TCPClient],
-        ) -> None:
-        self.serverClient    = serverClient
-        self.serverPort      = str(serverPort)
-        self.clients         = clients
-        self.clientNames     = clientNames
-        self.clientArguments = clientArguments
-        self.logger          = logger
-        self.tcpFactory      = tcpFactory
+        serverClient      : TCPClient,
+        serverPort        : int,
+        clients           : Tuple[str, str],
+        clientNames       : Tuple[str, str],
+        clientArguments   : Tuple[List[str], List[str]],
+        clientsCanTimeout : Tuple[bool, bool],
+        logger            : Logger,
+        tcpFactory        : Callable[[], TCPClient],
+    ) -> None:
+        self.serverClient      = serverClient
+        self.serverPort        = str(serverPort)
+        self.clients           = clients
+        self.clientNames       = clientNames
+        self.clientArguments   = clientArguments
+        self.clientsCanTimeout = [str(x).lower() for x in clientsCanTimeout]
+        self.logger            = logger
+        self.tcpFactory        = tcpFactory
         
-        self._l              = logging.getLogger("TestServer.GameManager")
+        self._l                = logging.getLogger("TestServer.GameManager")
         
-        self.playedGames     = 0 # Number of games already played (to switch client colors)
+        self.playedGames       = 0 # Number of games already played (to switch client colors)
         self.kill: Callable[[], None] = lambda: None
     
     def run(self) -> Optional[ResultMsg]:
@@ -195,12 +199,12 @@ class GameManager():
         """
         messages: List[Message] = []
         
-        client1 = self.clientNames[player1]
-        client2 = self.clientNames[player2]
+        client1, canTimeout1 = self.clientNames[player1], self.clientsCanTimeout[player1]
+        client2, canTimeout2 = self.clientNames[player2], self.clientsCanTimeout[player2]
         
         #? Create new game
         # Request
-        self.serverClient.send(f'<prepare gameType="swc_2021_blokus"><slot displayName="{client1}" canTimeout="true" shouldBePaused="true" /><slot displayName="{client2}" canTimeout="true" shouldBePaused="true" /></prepare>')
+        self.serverClient.send(f'<prepare gameType="swc_2021_blokus" pause="true"><slot displayName="{client1}" canTimeout="{canTimeout1}" /><slot displayName="{client2}" canTimeout="{canTimeout2}" /></prepare>')
         
         # Handling response
         inp = self.serverClient.receive()
