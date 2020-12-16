@@ -30,6 +30,7 @@ class TestServer():
         logEnabled        {bool}                        -- Logging enabled                  (default: True)
         logLevel          {int}                         -- Log level to use                 (default: logging.INFO)
         jsonLogs          {bool}                        -- Special JSONLogs enabled         (default: False)
+        serverUpdate      {bool}                        -- Automatic server update enabled  (default: True)
     """
     def __init__(
         self,
@@ -41,13 +42,15 @@ class TestServer():
         logEnabled        : bool                         = True,
         logLevel          : int                          = logging.INFO,
         jsonLogs          : bool                         = False,
+        serverUpdate      : bool                         = True,
     ) -> None:
-        self.clients          = clients
-        self.clientNames      = clientNames
-        self.clientArguments  = clientArguments
+        self.clients           = clients
+        self.clientNames       = clientNames
+        self.clientArguments   = clientArguments
         self.clientsCanTimeout = clientsCanTimeout
-        self.serverPort       = serverPort
-        self.jsonLogs         = jsonLogs
+        self.serverPort        = serverPort
+        self.jsonLogs          = jsonLogs
+        self.serverUpdate      = serverUpdate
         
         self.config = Config.load()
         
@@ -88,14 +91,14 @@ class TestServer():
 
         Returns:
             str -- Path to server
-        """
+        """   
         def fallback() -> str:
             """Try to fallback to version on disk
 
             Returns:
                 str -- Path to server
             """
-            self._l.warning("Could not fetch newest SWC Server version from Github")
+            if self.serverUpdate: self._l.warning("Could not fetch newest SWC Server version from Github")
             
             if not self.config.usable:
                 self._l.critical("No fallback for SWC Server found, exiting")
@@ -103,6 +106,9 @@ class TestServer():
             
             self._l.info(f"Falling back to server version {self.config.serverVersion} from disk")
             return self.config.serverPath
+        
+        if not self.serverUpdate:
+            return fallback()
         
         self._l.info("Fetching newest SWC Server version from Github...")
         

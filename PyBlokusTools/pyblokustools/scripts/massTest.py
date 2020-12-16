@@ -161,6 +161,12 @@ def massTest() -> None:
         action='store_true',
         help='enable JSON logs for automated analysis',
     )
+    parser.add_argument(
+        '-nu',
+        '--noUpdate',
+        action='store_true',
+        help='do not fetch the newest server version from GitHub',
+    )
     
     args = parser.parse_args()
     
@@ -181,6 +187,7 @@ def massTest() -> None:
         logEnabled        = not args.nolog,
         logLevel          = args.loglevel,
         jsonLogs          = args.jsonlogs,
+        serverUpdate      = not args.noUpdate,
         )
     
     massTests.run(
