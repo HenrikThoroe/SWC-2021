@@ -63,10 +63,19 @@ namespace Logic {
 
     const Model::Move* GameManager::moveRequest() { 
         SearchResult result = agent.find();
+        const Util::Process proc = Util::Process();
+        const double usedMemory = static_cast<double>(proc.virtualMemory()) / 1'000'000;
 
         #ifdef DEBUG
         agent.log();
         #endif
+
+        if (usedMemory > 1200) {
+            const double percentage = (usedMemory - 1200) / 1000; // Ten percent per hundret MB > 1200
+            state.freeMemory(percentage);
+        } else {
+            state.freeMemory(0);
+        }
 
         return result.move;
     }
