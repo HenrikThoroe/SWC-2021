@@ -19,7 +19,7 @@ namespace Logic {
     }
 
     TranspositionTable::TranspositionTable() : hashMap() {
-        hashMap.reserve(3000000); 
+        hashMap.reserve(3'000'000); 
     }
 
     bool TranspositionTable::has(const uint64_t& key) const {
