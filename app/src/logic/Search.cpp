@@ -31,6 +31,10 @@ namespace Logic {
         }
     }
 
+    void Search::clean() {
+        table.freeMemory(state.getTurn());
+    }
+
     void Search::log() const {
         const int64_t elapsed = getElpasedTime().count();
         const double nodesPerNs = static_cast<double>(searchedNodes) / static_cast<double>(elapsed);

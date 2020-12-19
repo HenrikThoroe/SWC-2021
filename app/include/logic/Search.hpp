@@ -85,6 +85,9 @@ namespace Logic {
             /// Sets the colors which are out of game
             void setInvalidColors(const std::vector<Model::PieceColor>* const valid);
 
+            /// Prepares cache memory for reuse.
+            void clean();
+
         protected:
 
             /**
