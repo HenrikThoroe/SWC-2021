@@ -70,8 +70,8 @@ namespace Logic {
         agent.log();
         #endif
 
-        if (usedMemory > 1200) {
-            const double percentage = (usedMemory - 1200) / 10000 * 15; // 15% per 100 MB > 1200 MB => 1400MB used -> 200 > 1200 -> 30% of cache is freed for reuse
+        if (usedMemory > 1100) {
+            const double percentage = (usedMemory - 1100) / 10000 * 15; // 15% per 100 MB > 1100 MB => 1400MB used -> 200 > 1100 -> 30% of cache is freed for reuse
             state.freeMemory(percentage);
         } else {
             state.freeMemory(0);
