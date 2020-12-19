@@ -71,11 +71,13 @@ namespace Logic {
         #endif
 
         if (usedMemory > 1200) {
-            const double percentage = (usedMemory - 1200) / 1000; // Ten percent per hundret MB > 1200
+            const double percentage = (usedMemory - 1200) / 10000 * 15; // 15% per 100 MB > 1200 MB => 1400MB used -> 200 > 1200 -> 30% of cache is freed for reuse
             state.freeMemory(percentage);
         } else {
             state.freeMemory(0);
         }
+
+        agent.clean();
 
         return result.move;
     }
