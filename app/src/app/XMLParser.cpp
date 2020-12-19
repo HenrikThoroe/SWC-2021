@@ -293,7 +293,8 @@ namespace App {
                 }
 
                 //? X, Y
-                pugi::xml_node position = piece.first_child();
+                pugi::xml_node position = piece.child("position");
+
                 uint8_t x = position.attribute("x").as_int();
                 uint8_t y = position.attribute("y").as_int();
 
