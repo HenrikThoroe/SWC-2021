@@ -4,6 +4,7 @@
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
 #include "bitAt.hpp"
+#include "filterMap.hpp"
 
 namespace Model {
 
@@ -349,17 +350,21 @@ namespace Model {
         uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
         std::vector<std::vector<uint64_t>> accessMap {};
 
-        for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
-            if (entry.second.turn < turn) {
-                movesCache.erase(entry.first);
+        const std::function<bool(const uint64_t&, const MoveCacheEntry&)> filter = [this, &accessMap] (const uint64_t& key, const MoveCacheEntry& entry) {
+            if (entry.turn < turn) {
+                return true;
             } else {
-                while (entry.second.accesses >= accessMap.size()) {
+                while (entry.accesses >= accessMap.size()) {
                     accessMap.push_back({});
                 }
                 
-                accessMap.at(entry.second.accesses).push_back(entry.first);
+                accessMap.at(entry.accesses).push_back(key);
             }
-        }
+
+            return false;
+        };
+
+        Util::filterMap(movesCache, filter);
 
         for (uint64_t index = 0; index < accessMap.size(); ++index) {
             for (const uint64_t& key : accessMap.at(index)) {
