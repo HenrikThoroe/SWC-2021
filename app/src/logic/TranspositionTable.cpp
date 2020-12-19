@@ -1,4 +1,5 @@
 #include "TranspositionTable.hpp"
+#include "filterMap.hpp"
 
 namespace Logic {
 
@@ -36,6 +37,14 @@ namespace Logic {
 
     int TranspositionTable::size() const {
         return hashMap.size();
+    }
+
+    void TranspositionTable::freeMemory(int currentTurn) {
+        const std::function<bool(const uint64_t&, const TTEntry&)> filter = [&currentTurn] (const uint64_t& key, const TTEntry& entry) {
+            return entry.turn < currentTurn;
+        };
+
+        Util::filterMap(hashMap, filter);
     }
 
 }
