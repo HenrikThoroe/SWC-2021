@@ -455,7 +455,8 @@ namespace Model {
             }
         }
 
-        return ((110 - (100 - turn)) * score) - ((110 - (100 + normalizationOffset - turn)) * opponentScore) + pushHistory.size();
+        return ((110 - (100 - turn)) * score) - ((110 - (100 + normalizationOffset - turn)) * opponentScore) + 
+            (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
     }
 
     bool GameState::isGameOver() const {
