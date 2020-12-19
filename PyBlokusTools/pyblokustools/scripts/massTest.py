@@ -115,7 +115,7 @@ def massTest() -> None:
         '-c2nt',
         '--client2noTimeout',
         action='store_true',
-        help='disable timeouts for client1',
+        help='disable timeouts for client2',
     )
     parser.add_argument(
         '-p',
