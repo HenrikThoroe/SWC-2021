@@ -80,6 +80,12 @@ namespace Logic {
 
             /// The number of stored entries
             int size() const;
+
+            /**
+             * @brief Erases old entries from the table. The freed space will be reused by upcoming entries.
+             * @param currentTurn The current turn on the game state. Entries older than that will be deleted.
+             */
+            void freeMemory(int currentTurn);
     };
 
 }
