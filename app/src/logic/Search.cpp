@@ -211,6 +211,11 @@ namespace Logic {
 
         sortMoves(moves);
 
+        // Remove skip move from list if other moves are available
+        if (moves.size() > 1 && state.getTurn() > 4) {
+            moves.pop_back();
+        }
+
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = max(alpha, min, depth - 1);
@@ -270,6 +275,11 @@ namespace Logic {
         }
 
         sortMoves(moves);
+
+        // Remove skip move from list if other moves are available
+        if (moves.size() > 1 && state.getTurn() > 4) {
+            moves.pop_back();
+        }
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
