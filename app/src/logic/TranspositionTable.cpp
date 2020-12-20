@@ -66,7 +66,7 @@ namespace Logic {
     }
 
     void TranspositionTable::freeMemory(int currentTurn) {
-        const std::function<bool(const uint64_t&, const TTEntry&)> filter = [&currentTurn] (const uint64_t& key, const TTEntry& entry) {
+        auto filter = [&currentTurn] (const uint64_t& key, const TTEntry& entry) {
             return entry.turn < currentTurn;
         };
 

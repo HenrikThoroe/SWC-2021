@@ -5,8 +5,8 @@
 
 namespace Util {
 
-    template<typename K, typename V>
-    void filterMap(tsl::robin_map<K, V>& map, const std::function<bool(const K&, const V&)>& callback) {
+    template<typename K, typename V, typename C>
+    void filterMap(tsl::robin_map<K, V>& map, const C& callback) {
         auto it = map.begin();
 
         while (it != map.end()) {

@@ -350,7 +350,7 @@ namespace Model {
         uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
         std::vector<std::vector<uint64_t>> accessMap {};
 
-        const std::function<bool(const uint64_t&, const MoveCacheEntry&)> filter = [this, &accessMap] (const uint64_t& key, const MoveCacheEntry& entry) {
+        auto filter = [this, &accessMap] (const uint64_t& key, const MoveCacheEntry& entry) {
             if (entry.turn < turn) {
                 return true;
             } else {
