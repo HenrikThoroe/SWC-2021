@@ -206,7 +206,7 @@ namespace Logic {
         state.assignPossibleMoves(moves);
 
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = moves.size() <= 1 && invalidMask[colorId];
+        bool didBecomeInvalid = moves.size() <= 1 && !invalidMask[colorId];
 
         if (moves.size() <= 1) {
             invalidMask[colorId] = 1;
@@ -271,7 +271,7 @@ namespace Logic {
         state.assignPossibleMoves(moves);
 
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = moves.size() <= 1 && invalidMask[colorId];
+        bool didBecomeInvalid = moves.size() <= 1 && !invalidMask[colorId];
 
         if (moves.size() <= 1) {
             invalidMask[colorId] = 1;
