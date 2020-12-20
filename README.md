@@ -18,7 +18,7 @@ To install all required dependencies and dev-tools in a custom Linux environment
 ./env-setup.sh
 ```
 
-**Note**: A distro which support binutils >= 2.33 and python >= 3.8 is required. For example Ubuntu 20.04 (focal) or Debian 11 (bullseye).
+**Note**: A distro which supports binutils >= 2.33 and python >= 3.8 is required. For example Ubuntu 20.04 (focal) or Debian 11 (bullseye).
 
 
 ## Usage
