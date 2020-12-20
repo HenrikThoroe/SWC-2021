@@ -106,6 +106,18 @@ def massTest() -> None:
         default=[]
         )
     parser.add_argument(
+        '-c1nt',
+        '--client1noTimeout',
+        action='store_true',
+        help='disable timeouts for client1',
+    )
+    parser.add_argument(
+        '-c2nt',
+        '--client2noTimeout',
+        action='store_true',
+        help='disable timeouts for client2',
+    )
+    parser.add_argument(
         '-p',
         '--port',
         action='store',
@@ -149,6 +161,12 @@ def massTest() -> None:
         action='store_true',
         help='enable JSON logs for automated analysis',
     )
+    parser.add_argument(
+        '-nu',
+        '--noUpdate',
+        action='store_true',
+        help='do not fetch the newest server version from GitHub',
+    )
     
     args = parser.parse_args()
     
@@ -161,13 +179,15 @@ def massTest() -> None:
         raise SystemExit()
 
     massTests = TestServer(
-        clients         = (args.client1, args.client2),
-        clientNames     = (args.client1name, args.client2name),
-        clientArguments = (args.client1args, args.client2args),
-        serverPort      = args.port,
-        logEnabled      = not args.nolog,
-        logLevel        = args.loglevel,
-        jsonLogs        = args.jsonlogs,
+        clients           = (args.client1, args.client2),
+        clientNames       = (args.client1name, args.client2name),
+        clientArguments   = (args.client1args, args.client2args),
+        clientsCanTimeout = (not args.client1noTimeout, not args.client2noTimeout),
+        serverPort        = args.port,
+        logEnabled        = not args.nolog,
+        logLevel          = args.loglevel,
+        jsonLogs          = args.jsonlogs,
+        serverUpdate      = not args.noUpdate,
         )
     
     massTests.run(
