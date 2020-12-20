@@ -455,8 +455,16 @@ namespace Model {
             }
         }
 
-        return ((110 - (100 - turn)) * score) - ((110 - (100 + normalizationOffset - turn)) * opponentScore) + 
-            (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
+        // The own score based on the current turn
+        const int roundBasedScore = (110 - (100 - turn)) * score;
+
+        // The opponent score based on the current turn and normalized
+        const int roundBasedOpponentScore = (110 - (100 + normalizationOffset - turn)) * opponentScore;
+
+        /// The more pieces deployed the better
+        const int deployedPieceFactor = (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
+
+        return roundBasedScore - roundBasedOpponentScore + deployedPieceFactor;
     }
 
     bool GameState::isGameOver() const {

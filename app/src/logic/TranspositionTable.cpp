@@ -3,10 +3,36 @@
 
 namespace Logic {
 
-    TTEntry::TTEntry() : hash(0), evaluation(0), type(TTEntryType::EXACT), depth(0), move(nullptr), turn(0) {}
-    TTEntry::TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, uint8_t turn, const Model::Move* move) : hash(hash), evaluation(evaluation), type(type), depth(depth), move(move), turn(turn) {}
-    TTEntry::TTEntry(const TTEntry& other) : hash(other.hash), evaluation(other.evaluation), type(other.type), depth(other.depth), move(other.move), turn(other.turn) {}
-    TTEntry::TTEntry(TTEntry* other) : hash(other->hash), evaluation(other->evaluation), type(other->type), depth(other->depth), move(other->move), turn(other->turn) {}
+    TTEntry::TTEntry() : 
+        hash(0), 
+        evaluation(0), 
+        type(TTEntryType::EXACT), 
+        depth(0), move(nullptr), 
+        turn(0) {}
+
+    TTEntry::TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, uint8_t turn, const Model::Move* move) : 
+        hash(hash), 
+        evaluation(evaluation), 
+        type(type), 
+        depth(depth), 
+        move(move), 
+        turn(turn) {}
+
+    TTEntry::TTEntry(const TTEntry& other) : 
+        hash(other.hash), 
+        evaluation(other.evaluation), 
+        type(other.type), 
+        depth(other.depth), 
+        move(other.move), 
+        turn(other.turn) {}
+
+    TTEntry::TTEntry(TTEntry* other) : 
+        hash(other->hash), 
+        evaluation(other->evaluation),
+        type(other->type), 
+        depth(other->depth), 
+        move(other->move), 
+        turn(other->turn) {}
 
     TTEntry& TTEntry::operator = (const TTEntry& other) {
         this->hash = other.hash;

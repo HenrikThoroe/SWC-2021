@@ -142,7 +142,15 @@ namespace Logic {
     }
 
     void Search::setEntry(int score, int depth, const TTEntryType& type) {
-        if ((table.has(state.hash()) && table.get(state.hash()).depth > depth) || state.getTurn() >= 100) {
+        // Indicates if the current state is already in the table and evaluated up to a higher depth
+        const bool hasBetterEntry = table.has(state.hash()) && table.get(state.hash()).depth > depth;
+
+        // A node at turn >= 100 is always a terminal node. 
+        // But the same state can be a non terminal node at lower depth.
+        // Therefore storing the node with WIN / LOSE points an reading at depth < 100 would lead to wrong evaluation
+        const bool isOverTimeNode = state.getTurn() >= 100;
+
+        if (hasBetterEntry || isOverTimeNode) {
             return;
         }
 
