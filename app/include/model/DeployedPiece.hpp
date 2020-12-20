@@ -44,8 +44,8 @@ namespace Model {
             void prepareAttachPoints();
 
             /**
-             * @brief Calculates an unique index for the piece
-             * @param includeColor If false the same pieces with different color have equal indices.
+             * @brief Calculates a unique index for the piece
+             * @param includeColor If false the same pieces with different colors have equal indices.
              */
             int index(bool includeColor = true) const;
 

@@ -21,9 +21,10 @@ namespace Logic {
 
     /// A data structure to store all required information for an entry of the transposition table
     struct TTEntry {
-        /// Default constructor is required for creating entry in hash map
+        /// Default constructor is required for creating entries in hash map
         TTEntry();
 
+        /// Inits the entry with values for each field
         TTEntry(uint64_t hash, int evaluation, TTEntryType type, int depth, uint8_t turn, const Model::Move* move);
 
         /// Copy constructor to move entries when for example a rehash and bucket rearangement is required
