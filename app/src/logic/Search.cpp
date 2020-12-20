@@ -189,11 +189,11 @@ namespace Logic {
     }
 
     int Search::min(int alpha, int beta, int depth) {
-        int ttValue = 0;
-        bool isExact = fetchEntry(ttValue, alpha, beta, depth);
+        int exact = 0;
+        bool isExact = fetchEntry(exact, alpha, beta, depth);
 
         if (isExact) {
-            return ttValue;
+            return exact;
         }
 
         if (depth == 0 || state.isGameOver()) {
@@ -255,11 +255,11 @@ namespace Logic {
     }
 
     int Search::max(int alpha, int beta, int depth) {
-        int ttValue = 0;
-        bool isExact = fetchEntry(ttValue, alpha, beta, depth);
+        int exact = 0;
+        bool isExact = fetchEntry(exact, alpha, beta, depth);
 
         if (isExact) {
-            return ttValue;
+            return exact;
         }
 
         if (depth == 0 || state.isGameOver()) {
