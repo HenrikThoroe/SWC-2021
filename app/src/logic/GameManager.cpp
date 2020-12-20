@@ -51,6 +51,7 @@ namespace Logic {
 
             agent.setInvalidColors(this->colorsInGame);
 
+            #ifdef DEBUG
             std::cout << Util::Print::Text::bold("Colors in Game: ");
 
             for (const Model::PieceColor& color : *colorsInGame) {
@@ -58,6 +59,7 @@ namespace Logic {
             }
 
             std::cout << '\n' << Util::Print::Text::bold("Available Moves: ") << state.getPossibleMoves().size() << std::endl;
+            #endif
         }
     }
 
