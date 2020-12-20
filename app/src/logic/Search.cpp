@@ -205,10 +205,11 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
+        int movesCount = moves.size();
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = moves.size() <= 1 && !invalidMask[colorId];
+        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
 
-        if (moves.size() <= 1) {
+        if (movesCount <= 1) {
             invalidMask[colorId] = 1;
         }
 
@@ -220,7 +221,7 @@ namespace Logic {
         sortMoves(moves);
 
         // Remove skip move from list if other moves are available
-        if (moves.size() > 1 && state.getTurn() > 4) {
+        if (movesCount > 1 && state.getTurn() > 4) {
             moves.pop_back();
         }
 
@@ -270,10 +271,11 @@ namespace Logic {
 
         state.assignPossibleMoves(moves);
 
+        int movesCount = moves.size();
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = moves.size() <= 1 && !invalidMask[colorId];
+        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
 
-        if (moves.size() <= 1) {
+        if (movesCount <= 1) {
             invalidMask[colorId] = 1;
         }
 
@@ -285,7 +287,7 @@ namespace Logic {
         sortMoves(moves);
 
         // Remove skip move from list if other moves are available
-        if (moves.size() > 1 && state.getTurn() > 4) {
+        if (movesCount > 1 && state.getTurn() > 4) {
             moves.pop_back();
         }
 
