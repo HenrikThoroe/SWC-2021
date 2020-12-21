@@ -164,10 +164,7 @@ namespace Logic {
 
     void Search::insertKiller(const Model::Move* move) {
         const uint8_t turn = state.getTurn();
-
-        if (turn >= 100) {
-            return;
-        }
+        static uint64_t counter = 0;
 
         if (killerTable[turn].size() < 4) {
             killerTable[turn].push_back(move);
@@ -178,7 +175,8 @@ namespace Logic {
                 }
             }
 
-            killerTable[turn][0] = move;
+            killerTable[turn][counter % 4] = move;
+            counter += 1;
         }
     }
 
