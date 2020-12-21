@@ -112,29 +112,33 @@ namespace Logic {
 
             if (entry.depth >= depth && state.hash() == entry.hash && entry.turn < 100) {
                 tableHits += 1;
+
                 switch (entry.type) {
                     case TTEntryType::EXACT:
                         exact = entry.evaluation;
                         return depth != maxDepth;
+
                     case TTEntryType::UPPER_BOUND:
                         alpha = entry.evaluation;
+                        break;
 
-                        if (alpha >= beta) {
-                            exact = entry.evaluation;
-                            return true;
-                        }
-
-                        return false;
                     case TTEntryType::LOWER_BOUND:
                         beta = entry.evaluation;
-
-                        if (alpha >= beta) {
-                            exact = entry.evaluation;
-                            return true;
-                        }
-
-                        return false;
+                        break;
                 }
+
+                if (alpha >= beta) {
+                    if ((maxDepth - depth) % 2 == 0) {
+                        alphaCutoffs += 1;
+                    } else {
+                        betaCutoffs += 1;
+                    }
+
+                    exact = entry.evaluation;
+                    return true;
+                }
+
+                return false;
             }
         }
 
