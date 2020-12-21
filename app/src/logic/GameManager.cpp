@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <optional>
 #include <stdexcept>
+#include <thread>
+#include <mutex>
 
 #include "GameManager.hpp"
 #include "debug.hpp"
@@ -63,7 +65,9 @@ namespace Logic {
         }
     }
 
-    const Model::Move* GameManager::moveRequest() { 
+    const Model::Move* GameManager::moveRequest() {
+        moveRequestGuard.lock();
+
         SearchResult result = agent.find();
         const Util::Process proc = Util::Process();
         const double usedMemory = static_cast<double>(proc.virtualMemory()) / 1'000'000;
@@ -72,14 +76,18 @@ namespace Logic {
         agent.log();
         #endif
 
-        if (usedMemory > 1100) {
-            const double percentage = (usedMemory - 1100) / 10000 * 15; // 15% per 100 MB > 1100 MB => 1400MB used -> 200 > 1100 -> 30% of cache is freed for reuse
-            state.freeMemory(percentage);
-        } else {
-            state.freeMemory(0);
-        }
+        std::thread cleanUpWorker([&usedMemory, this] {
+            if (usedMemory > 1100) {
+                const double percentage = (usedMemory - 1100) / 10000 * 15; // 15% per 100 MB > 1100 MB => 1400MB used -> 300 > 1100 -> 45% of cache is freed for reuse
+                state.freeMemory(percentage);
+            } else {
+                state.freeMemory(0);
+            }
+            agent.clean();
+            moveRequestGuard.unlock();
+        });
 
-        agent.clean();
+        cleanUpWorker.detach();
 
         return result.move;
     }
