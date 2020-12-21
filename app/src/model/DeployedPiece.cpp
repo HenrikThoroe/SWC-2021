@@ -52,6 +52,20 @@ namespace Model {
         return attachPoints;
     }
 
+    int DeployedPiece::index(bool includeColor) const {
+        int idx = 
+            origin.x +
+            origin.y * 20 +
+            static_cast<uint8_t>(rotation) * 400 + 
+            pieceId * 3200;
+
+        if (includeColor) {
+            idx += (static_cast<uint8_t>(color) - 1) * 67200;
+        }
+
+        return idx;
+    }
+
     std::ostream& operator << (std::ostream& os, const DeployedPiece& piece) {
         os << "DeployedPiece {";
         os << " id: " << static_cast<int>(piece.pieceId);

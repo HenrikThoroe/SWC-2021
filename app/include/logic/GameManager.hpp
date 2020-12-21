@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <mutex>
 
 #include "Message.hpp"
 #include "Search.hpp"
@@ -19,6 +20,9 @@ namespace Logic {
             /// Own PlayerColor
             Model::PlayerColor ownColor;
 
+            /// Mutex to prevent data races when freeing memory in background
+            std::mutex moveRequestGuard {};
+            
             Model::GameState state = Model::GameState(-1);
 
             Search agent;

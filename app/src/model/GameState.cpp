@@ -4,6 +4,7 @@
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
 #include "bitAt.hpp"
+#include "filterMap.hpp"
 
 namespace Model {
 
@@ -349,17 +350,21 @@ namespace Model {
         uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
         std::vector<std::vector<uint64_t>> accessMap {};
 
-        for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
-            if (entry.second.turn < turn) {
-                movesCache.erase(entry.first);
+        auto filter = [this, &accessMap] (const uint64_t& key, const MoveCacheEntry& entry) {
+            if (entry.turn < turn) {
+                return true;
             } else {
-                while (entry.second.accesses >= accessMap.size()) {
+                while (entry.accesses >= accessMap.size()) {
                     accessMap.push_back({});
                 }
                 
-                accessMap.at(entry.second.accesses).push_back(entry.first);
+                accessMap.at(entry.accesses).push_back(key);
             }
-        }
+
+            return false;
+        };
+
+        Util::filterMap(movesCache, filter);
 
         for (uint64_t index = 0; index < accessMap.size(); ++index) {
             for (const uint64_t& key : accessMap.at(index)) {
@@ -442,15 +447,24 @@ namespace Model {
 
         if (isGameOver() || gameOver) {
             if (score > opponentScore) {
-                return Constants::WIN_POINTS;
+                return Constants::WIN_POINTS + score;
             } else if (score < opponentScore) {
-                return Constants::LOSE_POINTS;
+                return Constants::LOSE_POINTS - 10000 + score;
             } else {
                 return 0;
             }
         }
 
-        return ((100 - turn) * score) - ((100 + normalizationOffset - turn) * opponentScore);
+        // The own score based on the current turn
+        const int roundBasedScore = (110 - (100 - turn)) * score;
+
+        // The opponent score based on the current turn and normalized
+        const int roundBasedOpponentScore = (110 - (100 + normalizationOffset - turn)) * opponentScore;
+
+        /// The more pieces deployed the better
+        const int deployedPieceFactor = (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
+
+        return roundBasedScore - roundBasedOpponentScore + deployedPieceFactor;
     }
 
     bool GameState::isGameOver() const {

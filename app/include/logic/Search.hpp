@@ -4,6 +4,7 @@
 
 #include "Move.hpp"
 #include "GameState.hpp"
+#include "TranspositionTable.hpp"
 
 namespace Logic {
 
@@ -32,6 +33,12 @@ namespace Logic {
             /// The start time of the most recent search. Call `reset` to initiate.
             std::chrono::high_resolution_clock::time_point startTime;
 
+            /// A table which stores already explored states to speed up searching
+            TranspositionTable table;
+
+            /// A counter for table hits for search statistics
+            int tableHits;
+
         protected:
 
             /// A reference to the used game state
@@ -58,8 +65,8 @@ namespace Logic {
             /// The last found score
             int lastScore;
 
-            /// Counter for invalid colors. If >= 4 the game is over
-            uint32_t invalidColors;
+            /// Mask that stores the colors which cannot perform further moves 
+            std::bitset<4> invalidMask;
         
         public:
 
@@ -77,8 +84,11 @@ namespace Logic {
             /// Prints the stats of the most recent search to cout. Should only be used when #DEBUG is set
             void log() const;
 
-            /// Sets the number of colors which are out of game
-            void setInvalidColors(uint32_t count);
+            /// Sets the colors which are out of game
+            void setInvalidColors(const std::vector<Model::PieceColor>* const valid);
+
+            /// Prepares cache memory for reuse.
+            void clean();
 
         protected:
 
@@ -97,7 +107,26 @@ namespace Logic {
             /// Sort the given moves by principal variation
             void sortMoves(std::vector<const Model::Move*>& moves) const;
 
+            /// Returns `true` if the current session timed out
             bool timedOut() const;
+
+            /**
+             * @brief Reads an entry from the transposition table for the current state
+             * @param exact Will be assigned the exact value of the node if available
+             * @param alpha Will be assigned the upper bound of the node if available
+             * @param beta Will be assigned the lower bound of the node if available
+             * @param depth The current search depth to filter hits with lower depth
+             * @returns `true` if an entry is found
+             */
+            bool fetchEntry(int& exact, int& alpha, int& beta, int depth);
+
+            /**
+             * @brief Writes an entry for the current state to the transposition table
+             * @param score The evaluation of the state
+             * @param depth The depth to which the state was evaluated
+             * @param type The type of the score. LOWER_BOUND if alpha cutoff, UPPER_BOUND if beta cutoff, otherwise EXACT
+             */
+            void setEntry(int score, int depth, const TTEntryType& type);
 
         private:
 
