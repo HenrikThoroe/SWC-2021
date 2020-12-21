@@ -162,10 +162,30 @@ namespace Logic {
         table.set(entry);
     }
 
+    void Search::insertKiller(const Model::Move* move) {
+        const uint8_t turn = state.getTurn();
+
+        if (turn >= 100) {
+            return;
+        }
+
+        if (killerTable[turn].size() < 4) {
+            killerTable[turn].push_back(move);
+        } else {
+            for (const Model::Move* stored : killerTable[turn]) {
+                if (stored == move) {
+                    return;
+                }
+            }
+
+            killerTable[turn][0] = move;
+        }
+    }
+
     void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
         const Model::Move* selectedMove = this->selectedMove;
 
-        auto compareDescending = [&selectedMove] (const Model::Move* lhs, const Model::Move* rhs) {
+        auto compareDescending = [&selectedMove, this] (const Model::Move* lhs, const Model::Move* rhs) {
             if (lhs == nullptr) {
                 return false;
             }
@@ -180,6 +200,16 @@ namespace Logic {
 
             if (rhs == selectedMove) {
                 return false;
+            }
+
+            for (const Model::Move* killer : killerTable[state.getTurn()]) {
+                if (lhs == killer) {
+                    return true;
+                }
+
+                if (rhs == killer) {
+                    return false;
+                }
             }
 
             return lhs->pieceId > rhs->pieceId;
@@ -310,6 +340,7 @@ namespace Logic {
                 }
                 if (max >= beta) {
                     betaCutoffs += 1;
+                    insertKiller(move);
                     break;
                 }
             } else if (score >= Constants::WIN_POINTS && depth == maxDepth && selectedMove == nullptr) {

@@ -39,6 +39,9 @@ namespace Logic {
             /// A counter for table hits for search statistics
             int tableHits;
 
+            /// Table to store killer moves, which caused Beta cutoffs
+            std::array<std::vector<const Model::Move*>, 100> killerTable {};
+
         protected:
 
             /// A reference to the used game state
@@ -127,6 +130,8 @@ namespace Logic {
              * @param type The type of the score. LOWER_BOUND if alpha cutoff, UPPER_BOUND if beta cutoff, otherwise EXACT
              */
             void setEntry(int score, int depth, const TTEntryType& type);
+
+            void insertKiller(const Model::Move* move);
 
         private:
 
