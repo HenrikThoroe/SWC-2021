@@ -131,6 +131,7 @@ namespace Logic {
              */
             void setEntry(int score, int depth, const TTEntryType& type);
 
+            /// Adds the passed move to the killer table 
             void insertKiller(const Model::Move* move);
 
         private:
