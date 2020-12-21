@@ -196,6 +196,8 @@ namespace Logic {
         int exact = 0;
         bool isExact = fetchEntry(exact, alpha, beta, depth);
 
+        searchedNodes += 1;
+
         if (isExact) {
             return exact;
         }
@@ -232,7 +234,6 @@ namespace Logic {
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = max(alpha, min, depth - 1);
-            searchedNodes += 1;
             state.revertLastMove();
 
             if (score < min) {
@@ -261,6 +262,8 @@ namespace Logic {
     int Search::max(int alpha, int beta, int depth) {
         int exact = 0;
         bool isExact = fetchEntry(exact, alpha, beta, depth);
+
+        searchedNodes += 1;
 
         if (isExact) {
             return exact;
@@ -298,7 +301,6 @@ namespace Logic {
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = min(max, beta, depth - 1);
-            searchedNodes += 1;
             state.revertLastMove();
 
             if (score > max) {
@@ -310,6 +312,14 @@ namespace Logic {
                     betaCutoffs += 1;
                     break;
                 }
+            } else if (score >= Constants::WIN_POINTS && depth == maxDepth && selectedMove == nullptr) {
+                // It may occur, that the TT stores an upper bound for the top level state which is >= to the best moves score (when every move leads to a win).
+                // In this case score > max would never become true, so no move gets selected and a skip move is sent.
+                // To prevent this szenario the first detected winning move is assigned to selectedMove when no move was previously selected.
+                // max will be reduced to the newly selected move's score (in fact it probably stays the same, but you never know).
+
+                selectedMove = move;
+                max = score;
             }
 
             if (timedOut()) {
