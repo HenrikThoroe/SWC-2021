@@ -102,7 +102,7 @@ namespace Logic {
         return clock.now() - startTime;
     }
 
-    inline bool Search::timedOut() const {
+    bool Search::timedOut() const {
         return getElpasedTime().count() >= Constants::SEARCH_TIMEOUT;
     }
 
@@ -216,8 +216,8 @@ namespace Logic {
         std::sort(moves.begin(), moves.end(), compareDescending);
     }
 
-    int Search::alphaBeta() {
-        return max(INT_MIN, INT_MAX, maxDepth);
+    int Search::alphaBeta(int alpha, int beta) {
+        return max(alpha, beta, maxDepth);
     }
 
     int Search::min(int alpha, int beta, int depth) {

@@ -99,7 +99,7 @@ namespace Logic {
              * Default search algorithm
              * @return The score of the best move
              */
-            int alphaBeta();
+            int alphaBeta(int alpha = INT_MIN, int beta = INT_MAX);
 
             /// Resets internal state to meassure performance and other data
             void reset();
