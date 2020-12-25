@@ -16,7 +16,7 @@ namespace Logic {
         do {
             score = alphaBeta();
             maxDepth += 1;
-        } while (!timedOut() && state.getTurn() + (maxDepth - 1) <= 100);
+        } while (!timedOut() && state.getTurn() + (maxDepth - 1) < 100);
 
         lastScore = score;
 
@@ -119,21 +119,16 @@ namespace Logic {
                         return depth != maxDepth;
 
                     case TTEntryType::UPPER_BOUND:
-                        alpha = entry.evaluation;
+                        alpha = std::min(entry.evaluation, alpha);
                         break;
 
                     case TTEntryType::LOWER_BOUND:
-                        beta = entry.evaluation;
+                        beta = std::max(entry.evaluation, beta);
                         break;
                 }
 
                 if (alpha >= beta) {
-                    if ((maxDepth - depth) % 2 == 0) {
-                        alphaCutoffs += 1;
-                    } else {
-                        betaCutoffs += 1;
-                    }
-
+                    betaCutoffs += 1;
                     exact = entry.evaluation;
                     return true;
                 }
@@ -255,7 +250,7 @@ namespace Logic {
         sortMoves(moves);
 
         // Remove skip move from list if other moves are available
-        if (movesCount > 1 && state.getTurn() > 4) {
+        if (movesCount > 1 && state.getTurn() > 3) {
             moves.pop_back();
         }
 
@@ -282,7 +277,13 @@ namespace Logic {
             invalidMask[colorId] = 0;
         }
 
-        setEntry(min, depth, (min <= alpha) ? TTEntryType::UPPER_BOUND : TTEntryType::EXACT);
+        if (min <= alpha) {
+            setEntry(min, depth, TTEntryType::UPPER_BOUND);
+        } else if (min >= beta) {
+            setEntry(min, depth, TTEntryType::LOWER_BOUND);
+        } else {
+            setEntry(min, depth, TTEntryType::EXACT);
+        }
 
         return min;
     }
@@ -322,7 +323,7 @@ namespace Logic {
         sortMoves(moves);
 
         // Remove skip move from list if other moves are available
-        if (movesCount > 1 && state.getTurn() > 4) {
+        if (movesCount > 1 && state.getTurn() > 3) {
             moves.pop_back();
         }
 
@@ -341,26 +342,33 @@ namespace Logic {
                     insertKiller(move);
                     break;
                 }
-            } else if (score >= Constants::WIN_POINTS && depth == maxDepth && selectedMove == nullptr) {
-                // It may occur, that the TT stores an upper bound for the top level state which is >= to the best moves score (when every move leads to a win).
-                // In this case score > max would never become true, so no move gets selected and a skip move is sent.
-                // To prevent this szenario the first detected winning move is assigned to selectedMove when no move was previously selected.
-                // max will be reduced to the newly selected move's score (in fact it probably stays the same, but you never know).
-
-                selectedMove = move;
-                max = score;
-            }
+            } 
 
             if (timedOut()) {
                 break;
             }
         }
 
+        #ifdef DEBUG
+        if (max == alpha && depth == maxDepth) {
+            assert(selectedMove != nullptr);
+        }
+        #endif
+
         if (didBecomeInvalid) {
             invalidMask[colorId] = 0;
         }
 
-        setEntry(max, depth, (max >= beta) ? TTEntryType::LOWER_BOUND : TTEntryType::EXACT);
+        if (max <= alpha) {
+            /// No move was found which is better than alpha. No reason to perform it.
+            setEntry(max, depth, TTEntryType::UPPER_BOUND);
+        } else if (max >= beta) {
+            // Only a move which is better than beta was found. Therefore the opponent will not allow this move
+            setEntry(max, depth, TTEntryType::LOWER_BOUND);
+        } else {
+            // An exact move was found. 
+            setEntry(max, depth, TTEntryType::EXACT);
+        }
 
         return max;
     }
