@@ -137,6 +137,28 @@ namespace Logic {
         private:
 
             /**
+             * @brief Prepares a search iteration by fetching alpha, beta or the exact score from the transposition table and handles terminal nodes
+             * @param alpha A refernce to alpha which could be changed if a value is available in the transposition table
+             * @param beta A refernce to beta which could be changed if a value is available in the transposition table
+             * @param depth The current search depth required to terminate search if neccessary
+             * @param moves A refernce to a moves vector where all available moves will be assigned and sorted
+             * @param nodeValue The exact value of the node if it is a terminal node or the search depth reaches zero
+             * @param didInvalidate A boolean value required for `finishSearch` which indicates if the current color invalidates at the present state
+             * @returns True if the search should be terminated at this node
+             */
+            bool prepareSearch(int& alpha, int& beta, int depth, std::vector<const Model::Move*>& moves, int& nodeValue, bool& didInvalidate);
+
+            /**
+             * @brief Performs required tasks when a search iteration has been finished
+             * @param alpha The new alpha value 
+             * @param beta The new beta value
+             * @param score The score of the searched node
+             * @param depth The depth of the searched node 
+             * @param didInvalidate A flag to decide whether the current color is valid again or not
+             */
+            void finishSearch(int alpha, int beta, int score, int depth, bool didInvalidate);
+
+            /**
              * Finds and returns the best possible move on the current game state for the opponent, which is the worst move for `player`
              * @returns The score of the evaluated state
              */

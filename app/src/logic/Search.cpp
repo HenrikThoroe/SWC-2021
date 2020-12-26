@@ -215,28 +215,27 @@ namespace Logic {
         return max(alpha, beta, maxDepth);
     }
 
-    int Search::min(int alpha, int beta, int depth) {
+    bool Search::prepareSearch(int& alpha, int& beta, int depth, std::vector<const Model::Move*>& moves, int& nodeValue, bool& didInvalidate) {
         int exact = 0;
         bool isExact = fetchEntry(exact, alpha, beta, depth);
 
         searchedNodes += 1;
 
         if (isExact) {
-            return exact;
+            nodeValue = exact;
+            return true;
         }
 
         if (depth == 0 || state.isGameOver()) {
-            return state.evaluate(player);
+            nodeValue = state.evaluate(player);
+            return true;
         }
-
-        int min = beta;
-        std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
 
         int movesCount = moves.size();
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
+        didInvalidate = movesCount <= 1 && !invalidMask[colorId];
 
         if (movesCount <= 1) {
             invalidMask[colorId] = 1;
@@ -244,7 +243,8 @@ namespace Logic {
 
         if (invalidMask.count() == 4) {
             invalidMask[colorId] = 0;
-            return state.evaluate(player, true);
+            nodeValue = state.evaluate(player, true);
+            return true;
         }
 
         sortMoves(moves);
@@ -253,6 +253,41 @@ namespace Logic {
         if (movesCount > 1 && state.getTurn() > 3) {
             moves.pop_back();
         }
+
+        return false;
+    }
+
+    void Search::finishSearch(int alpha, int beta, int score, int depth, bool didInvalidate) {
+        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
+
+        if (didInvalidate) {
+            invalidMask[colorId] = 0;
+        }
+
+        if (score <= alpha) {
+            // No move was found which is better than alpha. No reason to perform it.
+            setEntry(score, depth, TTEntryType::UPPER_BOUND);
+        } else if (score >= beta) {
+            // Only a move which is better than beta was found. Therefore the opponent will not allow this move
+            setEntry(score, depth, TTEntryType::LOWER_BOUND);
+        } else {
+            // An exact move was found. 
+            setEntry(score, depth, TTEntryType::EXACT);
+        }
+    }
+
+    int Search::min(int alpha, int beta, int depth) {
+        int exact = 0;
+        std::vector<const Model::Move*> moves;
+        bool didBecomeInvalid;
+
+        bool shouldReturn = prepareSearch(alpha, beta, depth, moves, exact, didBecomeInvalid);
+
+        if (shouldReturn) {
+            return exact;
+        }
+
+        int min = beta;
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
@@ -273,59 +308,23 @@ namespace Logic {
             }
         }
 
-        if (didBecomeInvalid) {
-            invalidMask[colorId] = 0;
-        }
-
-        if (min <= alpha) {
-            setEntry(min, depth, TTEntryType::UPPER_BOUND);
-        } else if (min >= beta) {
-            setEntry(min, depth, TTEntryType::LOWER_BOUND);
-        } else {
-            setEntry(min, depth, TTEntryType::EXACT);
-        }
+        finishSearch(alpha, beta, min, depth, didBecomeInvalid);
 
         return min;
     }
 
     int Search::max(int alpha, int beta, int depth) {
         int exact = 0;
-        bool isExact = fetchEntry(exact, alpha, beta, depth);
+        std::vector<const Model::Move*> moves;
+        bool didBecomeInvalid;
 
-        searchedNodes += 1;
+        bool shouldReturn = prepareSearch(alpha, beta, depth, moves, exact, didBecomeInvalid);
 
-        if (isExact) {
+        if (shouldReturn) {
             return exact;
         }
 
-        if (depth == 0 || state.isGameOver()) {
-            return state.evaluate(player);
-        }
-
         int max = alpha;
-        std::vector<const Model::Move*> moves;
-
-        state.assignPossibleMoves(moves);
-
-        int movesCount = moves.size();
-        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
-
-        if (movesCount <= 1) {
-            invalidMask[colorId] = 1;
-        }
-
-        if (invalidMask.count() == 4) {
-            invalidMask[colorId] = 0;
-            return state.evaluate(player, true);
-        }
-
-        sortMoves(moves);
-
-        // Remove skip move from list if other moves are available
-        if (movesCount > 1 && state.getTurn() > 3) {
-            moves.pop_back();
-        }
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
@@ -355,20 +354,7 @@ namespace Logic {
         }
         #endif
 
-        if (didBecomeInvalid) {
-            invalidMask[colorId] = 0;
-        }
-
-        if (max <= alpha) {
-            /// No move was found which is better than alpha. No reason to perform it.
-            setEntry(max, depth, TTEntryType::UPPER_BOUND);
-        } else if (max >= beta) {
-            // Only a move which is better than beta was found. Therefore the opponent will not allow this move
-            setEntry(max, depth, TTEntryType::LOWER_BOUND);
-        } else {
-            // An exact move was found. 
-            setEntry(max, depth, TTEntryType::EXACT);
-        }
+        finishSearch(alpha, beta, max, depth, didBecomeInvalid);
 
         return max;
     }
