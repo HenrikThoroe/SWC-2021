@@ -41,14 +41,19 @@ namespace Logic {
         const double nodesPerS = nodesPerNs * 1000000000;
         double cutoffRatio = 0;
         double hitRatio = 0;
+        double branchingFactor = 0;
+
+        if (expandedNodes != 0) {
+            branchingFactor = static_cast<double>(searchedChildren) / static_cast<double>(expandedNodes);
+        }
 
         if (searchedNodes > 0) {
             cutoffRatio = static_cast<double>(alphaCutoffs + betaCutoffs) / static_cast<double>(searchedNodes);
             hitRatio = static_cast<double>(tableHits) / static_cast<double>(searchedNodes);
         }
 
-        Util::Print::Table table = Util::Print::Table(10, 25);
-        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Table Size", "Table Hits", "Hit Ratio" });
+        Util::Print::Table table = Util::Print::Table(11, 21);
+        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Branching", "Table Size", "Table Hits", "Hit Ratio" });
         table.addRow({
             Util::Print::Text::formatInt(maxDepth - 1),
             Util::Print::Text::formatInt(searchedNodes),
@@ -57,6 +62,7 @@ namespace Logic {
             Util::Print::Text::formatInt(alphaCutoffs),
             Util::Print::Text::formatInt(betaCutoffs),
             Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%",
+            Util::Print::Text::formatDouble(branchingFactor),
             Util::Print::Text::formatInt(this->table.size()),
             Util::Print::Text::formatInt(tableHits),
             Util::Print::Text::formatDouble(hitRatio * 100, 2) + "%"
@@ -96,6 +102,8 @@ namespace Logic {
         selectedMove = nullptr;
         lastScore = 0;
         tableHits = 0;
+        expandedNodes = 0;
+        searchedChildren = 0;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
@@ -254,6 +262,8 @@ namespace Logic {
             moves.pop_back();
         }
 
+        expandedNodes += 1;
+
         return false;
     }
 
@@ -293,6 +303,7 @@ namespace Logic {
             state.performMove(move);
             int score = max(alpha, min, depth - 1);
             state.revertLastMove();
+            searchedChildren += 1;
 
             if (score < min) {
                 min = score;
@@ -330,6 +341,7 @@ namespace Logic {
             state.performMove(move);
             int score = min(max, beta, depth - 1);
             state.revertLastMove();
+            searchedChildren += 1;
 
             if (score > max) {
                 max = score;

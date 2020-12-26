@@ -68,6 +68,12 @@ namespace Logic {
             /// The last found score
             int lastScore;
 
+            /// Number of nodes whose children were searched
+            int expandedNodes;
+
+            /// Number of searched child-nodes
+            int searchedChildren;
+
             /// Mask that stores the colors which cannot perform further moves 
             std::bitset<4> invalidMask;
         
