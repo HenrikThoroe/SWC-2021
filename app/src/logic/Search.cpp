@@ -227,7 +227,7 @@ namespace Logic {
         }
 
         if (depth == 0 || state.isGameOver()) {
-            nodeValue = state.evaluate(player);
+            nodeValue = state.evaluate(player, &invalidMask);
             return true;
         }
 
@@ -242,8 +242,8 @@ namespace Logic {
         }
 
         if (invalidMask.count() == 4) {
+            nodeValue = state.evaluate(player, &invalidMask);
             invalidMask[colorId] = 0;
-            nodeValue = state.evaluate(player, true);
             return true;
         }
 

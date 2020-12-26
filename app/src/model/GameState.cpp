@@ -388,16 +388,12 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate(const PlayerColor& player, bool gameOver) const {
+    int GameState::evaluate(const PlayerColor& player, const std::bitset<4>* invalidColors) const {
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
         const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         int score = 0;
         int opponentScore = 0;
-
-        // An offset to reduce score ossizalition. 
-        // When the own player performed the last move (player != getCurrentPlayer().color) the opponent is lagging one piece behind.
-        // Therefore the turn is adjusted by 1 to give the naturally fewer points of the opponent a higher rating.
-        int normalizationOffset = (player == getCurrentPlayer().color) ? -1 : 1;
+        bool noColorsLeft = invalidColors != nullptr && invalidColors->count() == 4;
 
         for (const PieceColor& color : colors) {
             // Iterate all shapes
@@ -445,7 +441,7 @@ namespace Model {
             }
         }
 
-        if (isGameOver() || gameOver) {
+        if (isGameOver() || noColorsLeft) {
             if (score > opponentScore) {
                 return Constants::WIN_POINTS + score;
             } else if (score < opponentScore) {
@@ -455,16 +451,32 @@ namespace Model {
             }
         }
 
-        // The own score based on the current turn
-        const int roundBasedScore = (110 - (100 - turn)) * score;
+        // The own score 
+        const int weightedScore = score * 30;
 
-        // The opponent score based on the current turn and normalized
-        const int roundBasedOpponentScore = (110 - (100 + normalizationOffset - turn)) * opponentScore;
+        // The opponent score 
+        const int weightedOpponentScore = opponentScore * 30;
 
         /// The more pieces deployed the better
-        const int deployedPieceFactor = (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
+        const int deployedPieceFactor = pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size();
 
-        return roundBasedScore - roundBasedOpponentScore + deployedPieceFactor;
+        // If a color from the opponent is invalid add 100 points
+        int colorBonus = 0;
+
+        // If a color from the own player is invalid subtract 100 points
+        int opponentColorBonus = 0;
+
+        if (invalidColors != nullptr) {
+            colorBonus += (*invalidColors)[static_cast<int>(opponentColors[0]) - 1];
+            colorBonus += (*invalidColors)[static_cast<int>(opponentColors[1]) - 1];
+            opponentColorBonus += (*invalidColors)[static_cast<int>(colors[0]) - 1];
+            opponentColorBonus += (*invalidColors)[static_cast<int>(colors[1]) - 1];
+
+            colorBonus *= 100;
+            opponentColorBonus *= 100;
+        }
+
+        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor;
     }
 
     bool GameState::isGameOver() const {

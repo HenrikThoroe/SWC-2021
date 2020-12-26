@@ -120,9 +120,9 @@ namespace Model {
             /**
              * @brief Evaluates the current state for the assigned player.
              * @param player The player whose score should be calculated
-             * @param gameOver A flag which tells the function if the node is a terminal node
+             * @param invalidColors A pointer to a bitset which tells the function if any color is invalid
              */
-            int evaluate(const PlayerColor& player, bool gameOver = false) const;
+            int evaluate(const PlayerColor& player, const std::bitset<4>* invalidColors = nullptr) const;
 
             /// Returns whether performing a move on the current state would be illegal.
             bool isGameOver() const;
