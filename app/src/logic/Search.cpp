@@ -114,12 +114,14 @@ namespace Logic {
         return getElpasedTime().count() >= Constants::SEARCH_TIMEOUT;
     }
 
-    bool Search::fetchEntry(int& exact, int& alpha, int& beta, int depth) {
+    bool Search::fetchEntry(int& exact, int& alpha, int& beta, const Model::Move*& bestMove, int depth) {
         if (table.has(state.hash())) {
             const TTEntry& entry = table.get(state.hash());
 
             if (entry.depth >= depth && state.hash() == entry.hash && entry.turn < 100) {
                 tableHits += 1;
+
+                bestMove = entry.move;
 
                 switch (entry.type) {
                     case TTEntryType::EXACT:
@@ -148,7 +150,7 @@ namespace Logic {
         return false;
     }
 
-    void Search::setEntry(int score, int depth, const TTEntryType& type) {
+    void Search::setEntry(int score, int depth, const TTEntryType& type, const Model::Move* bestMove) {
         // Indicates if the current state is already in the table and evaluated up to a higher depth
         const bool hasBetterEntry = table.has(state.hash()) && table.get(state.hash()).depth > depth;
 
@@ -161,7 +163,7 @@ namespace Logic {
             return;
         }
 
-        const TTEntry entry = TTEntry(state.hash(), score, type, depth, state.getTurn(), selectedMove);
+        const TTEntry entry = TTEntry(state.hash(), score, type, depth, state.getTurn(), bestMove);
         table.set(entry);
     }
 
@@ -183,10 +185,8 @@ namespace Logic {
         }
     }
 
-    void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
-        const Model::Move* selectedMove = this->selectedMove;
-
-        auto compareDescending = [&selectedMove, this] (const Model::Move* lhs, const Model::Move* rhs) {
+    void Search::sortMoves(std::vector<const Model::Move*>& moves, const Model::Move* hashMove) const {
+        auto compareDescending = [&hashMove, this] (const Model::Move* lhs, const Model::Move* rhs) {
             if (lhs == nullptr) {
                 return false;
             }
@@ -195,11 +195,11 @@ namespace Logic {
                 return true;
             }
 
-            if (lhs == selectedMove) {
+            if (lhs == hashMove) {
                 return true;
             }
 
-            if (rhs == selectedMove) {
+            if (rhs == hashMove) {
                 return false;
             }
 
@@ -225,7 +225,8 @@ namespace Logic {
 
     bool Search::prepareSearch(int& alpha, int& beta, int depth, std::vector<const Model::Move*>& moves, int& nodeValue, bool& didInvalidate) {
         int exact = 0;
-        bool isExact = fetchEntry(exact, alpha, beta, depth);
+        const Model::Move* bestMove = nullptr;
+        bool isExact = fetchEntry(exact, alpha, beta, bestMove, depth);
 
         searchedNodes += 1;
 
@@ -255,7 +256,7 @@ namespace Logic {
             return true;
         }
 
-        sortMoves(moves);
+        sortMoves(moves, bestMove);
 
         // Remove skip move from list if other moves are available
         if (movesCount > 1 && state.getTurn() > 3) {
@@ -267,7 +268,7 @@ namespace Logic {
         return false;
     }
 
-    void Search::finishSearch(int alpha, int beta, int score, int depth, bool didInvalidate) {
+    void Search::finishSearch(int alpha, int beta, int score, int depth, const Model::Move* bestMove, bool didInvalidate) {
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
 
         if (didInvalidate) {
@@ -276,13 +277,13 @@ namespace Logic {
 
         if (score <= alpha) {
             // No move was found which is better than alpha. No reason to perform it.
-            setEntry(score, depth, TTEntryType::UPPER_BOUND);
+            setEntry(score, depth, TTEntryType::UPPER_BOUND, bestMove);
         } else if (score >= beta) {
             // Only a move which is better than beta was found. Therefore the opponent will not allow this move
-            setEntry(score, depth, TTEntryType::LOWER_BOUND);
+            setEntry(score, depth, TTEntryType::LOWER_BOUND, bestMove);
         } else {
             // An exact move was found. 
-            setEntry(score, depth, TTEntryType::EXACT);
+            setEntry(score, depth, TTEntryType::EXACT, bestMove);
         }
     }
 
@@ -298,6 +299,7 @@ namespace Logic {
         }
 
         int min = beta;
+        const Model::Move* selected = nullptr;
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
@@ -312,6 +314,8 @@ namespace Logic {
                     alphaCutoffs += 1;
                     break;
                 }
+
+                selected = move;
             }
 
             if (timedOut()) {
@@ -319,7 +323,7 @@ namespace Logic {
             }
         }
 
-        finishSearch(alpha, beta, min, depth, didBecomeInvalid);
+        finishSearch(alpha, beta, min, depth, selected, didBecomeInvalid);
 
         return min;
     }
@@ -336,6 +340,7 @@ namespace Logic {
         }
 
         int max = alpha;
+        const Model::Move* selected = nullptr;
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
@@ -345,6 +350,7 @@ namespace Logic {
 
             if (score > max) {
                 max = score;
+                selected = move;
                 if (depth == maxDepth) {
                     selectedMove = move;
                 }
@@ -366,7 +372,7 @@ namespace Logic {
         }
         #endif
 
-        finishSearch(alpha, beta, max, depth, didBecomeInvalid);
+        finishSearch(alpha, beta, max, depth, selected, didBecomeInvalid);
 
         return max;
     }

@@ -114,7 +114,7 @@ namespace Logic {
             std::chrono::high_resolution_clock::duration getElpasedTime() const;
 
             /// Sort the given moves by principal variation
-            void sortMoves(std::vector<const Model::Move*>& moves) const;
+            void sortMoves(std::vector<const Model::Move*>& moves, const Model::Move* hashMove) const;
 
             /// Returns `true` if the current session timed out
             bool timedOut() const;
@@ -124,18 +124,20 @@ namespace Logic {
              * @param exact Will be assigned the exact value of the node if available
              * @param alpha Will be assigned the upper bound of the node if available
              * @param beta Will be assigned the lower bound of the node if available
+             * @param bestMove The best move found at this node or nullptr if none was found
              * @param depth The current search depth to filter hits with lower depth
              * @returns `true` if an entry is found
              */
-            bool fetchEntry(int& exact, int& alpha, int& beta, int depth);
+            bool fetchEntry(int& exact, int& alpha, int& beta, const Model::Move*& bestMove, int depth);
 
             /**
              * @brief Writes an entry for the current state to the transposition table
              * @param score The evaluation of the state
              * @param depth The depth to which the state was evaluated
              * @param type The type of the score. LOWER_BOUND if alpha cutoff, UPPER_BOUND if beta cutoff, otherwise EXACT
+             * @param bestMove The best move found at this node or nullptr if none was found
              */
-            void setEntry(int score, int depth, const TTEntryType& type);
+            void setEntry(int score, int depth, const TTEntryType& type, const Model::Move* bestMove);
 
             /// Adds the passed move to the killer table 
             void insertKiller(const Model::Move* move);
@@ -162,7 +164,7 @@ namespace Logic {
              * @param depth The depth of the searched node 
              * @param didInvalidate A flag to decide whether the current color is valid again or not
              */
-            void finishSearch(int alpha, int beta, int score, int depth, bool didInvalidate);
+            void finishSearch(int alpha, int beta, int score, int depth, const Model::Move* bestMove, bool didInvalidate);
 
             /**
              * Finds and returns the best possible move on the current game state for the opponent, which is the worst move for `player`
