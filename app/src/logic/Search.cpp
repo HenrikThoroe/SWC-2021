@@ -246,7 +246,7 @@ namespace Logic {
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
         didInvalidate = movesCount <= 1 && !invalidMask[colorId];
 
-        if (movesCount <= 1) {
+        if (didInvalidate) {
             invalidMask[colorId] = 1;
         }
 
