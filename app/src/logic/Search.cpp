@@ -16,7 +16,7 @@ namespace Logic {
         do {
             score = alphaBeta();
             maxDepth += 1;
-        } while (!timedOut() && state.getTurn() + (maxDepth - 1) <= 100);
+        } while (!timedOut() && state.getTurn() + (maxDepth - 1) < 100);
 
         lastScore = score;
 
@@ -41,14 +41,19 @@ namespace Logic {
         const double nodesPerS = nodesPerNs * 1000000000;
         double cutoffRatio = 0;
         double hitRatio = 0;
+        double branchingFactor = 0;
+
+        if (expandedNodes != 0) {
+            branchingFactor = static_cast<double>(searchedChildren) / static_cast<double>(expandedNodes);
+        }
 
         if (searchedNodes > 0) {
             cutoffRatio = static_cast<double>(alphaCutoffs + betaCutoffs) / static_cast<double>(searchedNodes);
             hitRatio = static_cast<double>(tableHits) / static_cast<double>(searchedNodes);
         }
 
-        Util::Print::Table table = Util::Print::Table(10, 25);
-        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Table Size", "Table Hits", "Hit Ratio" });
+        Util::Print::Table table = Util::Print::Table(11, 21);
+        table.addRow({ "Depth", "Searched Nodes", "Elpased Time", "Nodes per Second", "Alpha Cutoffs", "Beta Cutoffs", "Cutoff Ratio", "Branching", "Table Size", "Table Hits", "Hit Ratio" });
         table.addRow({
             Util::Print::Text::formatInt(maxDepth - 1),
             Util::Print::Text::formatInt(searchedNodes),
@@ -57,6 +62,7 @@ namespace Logic {
             Util::Print::Text::formatInt(alphaCutoffs),
             Util::Print::Text::formatInt(betaCutoffs),
             Util::Print::Text::formatDouble(cutoffRatio * 100, 2) + "%",
+            Util::Print::Text::formatDouble(branchingFactor),
             Util::Print::Text::formatInt(this->table.size()),
             Util::Print::Text::formatInt(tableHits),
             Util::Print::Text::formatDouble(hitRatio * 100, 2) + "%"
@@ -96,22 +102,26 @@ namespace Logic {
         selectedMove = nullptr;
         lastScore = 0;
         tableHits = 0;
+        expandedNodes = 0;
+        searchedChildren = 0;
     }
 
     std::chrono::high_resolution_clock::duration Search::getElpasedTime() const {
         return clock.now() - startTime;
     }
 
-    inline bool Search::timedOut() const {
+    bool Search::timedOut() const {
         return getElpasedTime().count() >= Constants::SEARCH_TIMEOUT;
     }
 
-    bool Search::fetchEntry(int& exact, int& alpha, int& beta, int depth) {
+    bool Search::fetchEntry(int& exact, int& alpha, int& beta, const Model::Move*& bestMove, int depth) {
         if (table.has(state.hash())) {
             const TTEntry& entry = table.get(state.hash());
 
             if (entry.depth >= depth && state.hash() == entry.hash && entry.turn < 100) {
                 tableHits += 1;
+
+                bestMove = entry.move;
 
                 switch (entry.type) {
                     case TTEntryType::EXACT:
@@ -119,21 +129,16 @@ namespace Logic {
                         return depth != maxDepth;
 
                     case TTEntryType::UPPER_BOUND:
-                        alpha = entry.evaluation;
+                        alpha = std::min(entry.evaluation, alpha);
                         break;
 
                     case TTEntryType::LOWER_BOUND:
-                        beta = entry.evaluation;
+                        beta = std::max(entry.evaluation, beta);
                         break;
                 }
 
                 if (alpha >= beta) {
-                    if ((maxDepth - depth) % 2 == 0) {
-                        alphaCutoffs += 1;
-                    } else {
-                        betaCutoffs += 1;
-                    }
-
+                    betaCutoffs += 1;
                     exact = entry.evaluation;
                     return true;
                 }
@@ -145,7 +150,7 @@ namespace Logic {
         return false;
     }
 
-    void Search::setEntry(int score, int depth, const TTEntryType& type) {
+    void Search::setEntry(int score, int depth, const TTEntryType& type, const Model::Move* bestMove) {
         // Indicates if the current state is already in the table and evaluated up to a higher depth
         const bool hasBetterEntry = table.has(state.hash()) && table.get(state.hash()).depth > depth;
 
@@ -158,7 +163,7 @@ namespace Logic {
             return;
         }
 
-        const TTEntry entry = TTEntry(state.hash(), score, type, depth, state.getTurn(), selectedMove);
+        const TTEntry entry = TTEntry(state.hash(), score, type, depth, state.getTurn(), bestMove);
         table.set(entry);
     }
 
@@ -180,10 +185,8 @@ namespace Logic {
         }
     }
 
-    void Search::sortMoves(std::vector<const Model::Move*>& moves) const {
-        const Model::Move* selectedMove = this->selectedMove;
-
-        auto compareDescending = [&selectedMove, this] (const Model::Move* lhs, const Model::Move* rhs) {
+    void Search::sortMoves(std::vector<const Model::Move*>& moves, const Model::Move* hashMove) const {
+        auto compareDescending = [&hashMove, this] (const Model::Move* lhs, const Model::Move* rhs) {
             if (lhs == nullptr) {
                 return false;
             }
@@ -192,11 +195,11 @@ namespace Logic {
                 return true;
             }
 
-            if (lhs == selectedMove) {
+            if (lhs == hashMove) {
                 return true;
             }
 
-            if (rhs == selectedMove) {
+            if (rhs == hashMove) {
                 return false;
             }
 
@@ -216,53 +219,93 @@ namespace Logic {
         std::sort(moves.begin(), moves.end(), compareDescending);
     }
 
-    int Search::alphaBeta() {
-        return max(INT_MIN, INT_MAX, maxDepth);
+    int Search::alphaBeta(int alpha, int beta) {
+        return max(alpha, beta, maxDepth);
     }
 
-    int Search::min(int alpha, int beta, int depth) {
+    bool Search::prepareSearch(int& alpha, int& beta, int depth, std::vector<const Model::Move*>& moves, int& nodeValue, bool& didInvalidate) {
         int exact = 0;
-        bool isExact = fetchEntry(exact, alpha, beta, depth);
+        const Model::Move* bestMove = nullptr;
+        bool isExact = fetchEntry(exact, alpha, beta, bestMove, depth);
 
         searchedNodes += 1;
 
         if (isExact) {
-            return exact;
+            nodeValue = exact;
+            return true;
         }
 
         if (depth == 0 || state.isGameOver()) {
-            return state.evaluate(player);
+            nodeValue = state.evaluate(player, &invalidMask);
+            return true;
         }
-
-        int min = beta;
-        std::vector<const Model::Move*> moves;
 
         state.assignPossibleMoves(moves);
 
         int movesCount = moves.size();
         size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
+        didInvalidate = movesCount <= 1 && !invalidMask[colorId];
 
-        if (movesCount <= 1) {
+        if (didInvalidate) {
             invalidMask[colorId] = 1;
         }
 
         if (invalidMask.count() == 4) {
+            nodeValue = state.evaluate(player, &invalidMask);
             invalidMask[colorId] = 0;
-            return state.evaluate(player, true);
+            return true;
         }
 
-        sortMoves(moves);
+        sortMoves(moves, bestMove);
 
         // Remove skip move from list if other moves are available
-        if (movesCount > 1 && state.getTurn() > 4) {
+        if (movesCount > 1 && state.getTurn() > 3) {
             moves.pop_back();
         }
+
+        expandedNodes += 1;
+
+        return false;
+    }
+
+    void Search::finishSearch(int alpha, int beta, int score, int depth, const Model::Move* bestMove, bool didInvalidate) {
+        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
+
+        if (didInvalidate) {
+            invalidMask[colorId] = 0;
+        }
+
+        if (score <= alpha) {
+            // No move was found which is better than alpha. No reason to perform it.
+            setEntry(score, depth, TTEntryType::UPPER_BOUND, bestMove);
+        } else if (score >= beta) {
+            // Only a move which is better than beta was found. Therefore the opponent will not allow this move
+            setEntry(score, depth, TTEntryType::LOWER_BOUND, bestMove);
+        } else {
+            // An exact move was found. 
+            setEntry(score, depth, TTEntryType::EXACT, bestMove);
+        }
+    }
+
+    int Search::min(int alpha, int beta, int depth) {
+        int exact = 0;
+        std::vector<const Model::Move*> moves;
+        bool didBecomeInvalid;
+
+        bool shouldReturn = prepareSearch(alpha, beta, depth, moves, exact, didBecomeInvalid);
+
+        if (shouldReturn) {
+            return exact;
+        }
+
+        int min = beta;
+        const Model::Move* selected = nullptr;
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = max(alpha, min, depth - 1);
             state.revertLastMove();
+            searchedChildren += 1;
 
             if (score < min) {
                 min = score;
@@ -271,6 +314,8 @@ namespace Logic {
                     alphaCutoffs += 1;
                     break;
                 }
+
+                selected = move;
             }
 
             if (timedOut()) {
@@ -278,61 +323,34 @@ namespace Logic {
             }
         }
 
-        if (didBecomeInvalid) {
-            invalidMask[colorId] = 0;
-        }
-
-        setEntry(min, depth, (min <= alpha) ? TTEntryType::UPPER_BOUND : TTEntryType::EXACT);
+        finishSearch(alpha, beta, min, depth, selected, didBecomeInvalid);
 
         return min;
     }
 
     int Search::max(int alpha, int beta, int depth) {
         int exact = 0;
-        bool isExact = fetchEntry(exact, alpha, beta, depth);
+        std::vector<const Model::Move*> moves;
+        bool didBecomeInvalid;
 
-        searchedNodes += 1;
+        bool shouldReturn = prepareSearch(alpha, beta, depth, moves, exact, didBecomeInvalid);
 
-        if (isExact) {
+        if (shouldReturn) {
             return exact;
         }
 
-        if (depth == 0 || state.isGameOver()) {
-            return state.evaluate(player);
-        }
-
         int max = alpha;
-        std::vector<const Model::Move*> moves;
-
-        state.assignPossibleMoves(moves);
-
-        int movesCount = moves.size();
-        size_t colorId = static_cast<uint32_t>(state.getCurrentPieceColor()) - 1;
-        bool didBecomeInvalid = movesCount <= 1 && !invalidMask[colorId];
-
-        if (movesCount <= 1) {
-            invalidMask[colorId] = 1;
-        }
-
-        if (invalidMask.count() == 4) {
-            invalidMask[colorId] = 0;
-            return state.evaluate(player, true);
-        }
-
-        sortMoves(moves);
-
-        // Remove skip move from list if other moves are available
-        if (movesCount > 1 && state.getTurn() > 4) {
-            moves.pop_back();
-        }
+        const Model::Move* selected = nullptr;
 
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = min(max, beta, depth - 1);
             state.revertLastMove();
+            searchedChildren += 1;
 
             if (score > max) {
                 max = score;
+                selected = move;
                 if (depth == maxDepth) {
                     selectedMove = move;
                 }
@@ -341,26 +359,22 @@ namespace Logic {
                     insertKiller(move);
                     break;
                 }
-            } else if (score >= Constants::WIN_POINTS && depth == maxDepth && selectedMove == nullptr) {
-                // It may occur, that the TT stores an upper bound for the top level state which is >= to the best moves score (when every move leads to a win).
-                // In this case score > max would never become true, so no move gets selected and a skip move is sent.
-                // To prevent this szenario the first detected winning move is assigned to selectedMove when no move was previously selected.
-                // max will be reduced to the newly selected move's score (in fact it probably stays the same, but you never know).
-
-                selectedMove = move;
-                max = score;
-            }
+            } 
 
             if (timedOut()) {
                 break;
             }
         }
 
-        if (didBecomeInvalid) {
-            invalidMask[colorId] = 0;
+        #ifdef DEBUG
+        // Check if search failed because alpha is equal to the maximum score at root level.
+        // Should not happen since the transposition table bug was fixed
+        if (max == alpha && depth == maxDepth) {
+            assert(selectedMove != nullptr);
         }
+        #endif
 
-        setEntry(max, depth, (max >= beta) ? TTEntryType::LOWER_BOUND : TTEntryType::EXACT);
+        finishSearch(alpha, beta, max, depth, selected, didBecomeInvalid);
 
         return max;
     }

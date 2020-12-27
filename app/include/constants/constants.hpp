@@ -22,4 +22,7 @@ namespace Constants {
 
     constexpr int64_t SEARCH_TIMEOUT = 1800000000; 
 
+    /// The maximum score of each player. 1 Mono + 1 Duo + 2 Trio + 5 Tetro + 12 Pento + 20 Extra
+    constexpr int MAX_COLOR_POINTS = 1 + 2 + 2 * 3 + 5 * 4 + 12 * 5 + 20; 
+
 }

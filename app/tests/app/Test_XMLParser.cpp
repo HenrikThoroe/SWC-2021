@@ -833,10 +833,10 @@ TEST_CASE("Test XMLParser", "[app]") {
 
     SECTION("Can parse WelcomeMessage") {
         inp =   "<room roomId=\"0a1b2c3d-4e5f-6g7h-i8j9-k0l1m2n3o4p5\">"
-                    "<data class=\"welcomeMessage\" color=\"one\"/>"
+                    "<data class=\"welcomeMessage\" color=\"ONE\"/>"
                 "</room>"
                 "<room roomId=\"0a1b2c3d-4e5f-6g7h-i8j9-k0l1m2n3o4p5\">"
-                    "<data class=\"welcomeMessage\" color=\"two\"/>"
+                    "<data class=\"welcomeMessage\" color=\"TWO\"/>"
                 "</room>";
         parser.splitAndParseMessages(inp, result);
 

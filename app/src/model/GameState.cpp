@@ -388,64 +388,71 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate(const PlayerColor& player, bool gameOver) const {
+    int GameState::evaluate(const PlayerColor& player, const std::bitset<4>* invalidColors) const {
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
         const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
-        int score = 0;
-        int opponentScore = 0;
-
-        // An offset to reduce score ossizalition. 
-        // When the own player performed the last move (player != getCurrentPlayer().color) the opponent is lagging one piece behind.
-        // Therefore the turn is adjusted by 1 to give the naturally fewer points of the opponent a higher rating.
-        int normalizationOffset = (player == getCurrentPlayer().color) ? -1 : 1;
+        std::array<int, 4> colorScores { 0, 0, 0, 0 };
+        bool noColorsLeft = invalidColors != nullptr && invalidColors->count() == 4;
 
         for (const PieceColor& color : colors) {
+            uint8_t colorId = static_cast<uint8_t>(color) - 1;
+
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
                 // Check if the shape has been deployed
-                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+                if (availablePieces[colorId][id] == 0) {
 
                     // Add the size of the shape to the score
-                    score += PieceCollection::getPiece(id).size;
+                    colorScores[colorId] += PieceCollection::getPiece(id).size;
                 }
             }
 
             // Check if all pieces have been deployed
-            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
-                score += 15;
+            if (pushHistory[colorId].size() == Constants::PIECE_SHAPES) {
+                colorScores[colorId] += 15;
 
                 // Check if the last deployed piece is the MONOMINO
-                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
-                    score += 5;
+                if (pushHistory[colorId].top() == 0) {
+                    colorScores[colorId] += 5;
                 }
             }
         }
 
         for (const PieceColor& color : opponentColors) {
+            uint8_t colorId = static_cast<uint8_t>(color) - 1;
+
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
                 // Check if the shape has been deployed
-                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+                if (availablePieces[colorId][id] == 0) {
 
                     // Add the size of the shape to the score
-                    opponentScore += PieceCollection::getPiece(id).size;
+                    colorScores[colorId] += PieceCollection::getPiece(id).size;
                 }
             }
 
             // Check if all pieces have been deployed
-            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
-                opponentScore += 15;
+            if (pushHistory[colorId].size() == Constants::PIECE_SHAPES) {
+                colorScores[colorId] += 15;
 
                 // Check if the last deployed piece is the MONOMINO
-                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
-                    opponentScore += 5;
+                if (pushHistory[colorId].top() == 0) {
+                    colorScores[colorId] += 5;
                 }
             }
         }
 
-        if (isGameOver() || gameOver) {
+        int score = 
+            colorScores[static_cast<uint8_t>(colors[0]) - 1] + 
+            colorScores[static_cast<uint8_t>(colors[1]) - 1];
+
+        int opponentScore = 
+            colorScores[static_cast<uint8_t>(opponentColors[0]) - 1] + 
+            colorScores[static_cast<uint8_t>(opponentColors[1]) - 1];;
+
+        if (isGameOver() || noColorsLeft) {
             if (score > opponentScore) {
                 return Constants::WIN_POINTS + score;
             } else if (score < opponentScore) {
@@ -455,16 +462,43 @@ namespace Model {
             }
         }
 
-        // The own score based on the current turn
-        const int roundBasedScore = (110 - (100 - turn)) * score;
+        // The own score 
+        const int weightedScore = score * 30;
 
-        // The opponent score based on the current turn and normalized
-        const int roundBasedOpponentScore = (110 - (100 + normalizationOffset - turn)) * opponentScore;
+        // The opponent score 
+        const int weightedOpponentScore = opponentScore * 30;
 
         /// The more pieces deployed the better
-        const int deployedPieceFactor = (pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size()) * 20;
+        const int deployedPieceFactor = pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size();
 
-        return roundBasedScore - roundBasedOpponentScore + deployedPieceFactor;
+        // If a color from the opponent is invalid add 100 points
+        int colorBonus = 0;
+
+        // If a color from the own player is invalid subtract 100 points
+        int opponentColorBonus = 0;
+
+        if (invalidColors != nullptr) {
+            // Remaining points for each color
+            std::array<int, 4> remainders {
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(opponentColors[0]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(opponentColors[1]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(colors[0]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(colors[1]) - 1]
+            };
+
+            // 1 if color is invalid (=> qualified for counting) otherwise 0
+            std::array<int, 4> qualifiers {
+                (*invalidColors)[static_cast<int>(opponentColors[0]) - 1],
+                (*invalidColors)[static_cast<int>(opponentColors[1]) - 1],
+                (*invalidColors)[static_cast<int>(colors[0]) - 1],
+                (*invalidColors)[static_cast<int>(colors[1]) - 1]
+            };
+
+            colorBonus = qualifiers[0] * remainders[0] + qualifiers[1] * remainders[1];
+            opponentColorBonus = qualifiers[2] * remainders[2] + qualifiers[3] * remainders[3];
+        }
+
+        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor;
     }
 
     bool GameState::isGameOver() const {
