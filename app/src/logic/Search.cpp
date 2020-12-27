@@ -367,6 +367,8 @@ namespace Logic {
         }
 
         #ifdef DEBUG
+        // Check if search failed because alpha is equal to the maximum score at root level.
+        // Should not happen since the transposition table bug was fixed
         if (max == alpha && depth == maxDepth) {
             assert(selectedMove != nullptr);
         }
