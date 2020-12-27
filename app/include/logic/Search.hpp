@@ -121,6 +121,7 @@ namespace Logic {
 
             /**
              * @brief Reads an entry from the transposition table for the current state
+             * 
              * @param exact Will be assigned the exact value of the node if available
              * @param alpha Will be assigned the upper bound of the node if available
              * @param beta Will be assigned the lower bound of the node if available
@@ -132,6 +133,7 @@ namespace Logic {
 
             /**
              * @brief Writes an entry for the current state to the transposition table
+             * 
              * @param score The evaluation of the state
              * @param depth The depth to which the state was evaluated
              * @param type The type of the score. LOWER_BOUND if alpha cutoff, UPPER_BOUND if beta cutoff, otherwise EXACT
@@ -146,6 +148,7 @@ namespace Logic {
 
             /**
              * @brief Prepares a search iteration by fetching alpha, beta or the exact score from the transposition table and handles terminal nodes
+             * 
              * @param alpha A refernce to alpha which could be changed if a value is available in the transposition table
              * @param beta A refernce to beta which could be changed if a value is available in the transposition table
              * @param depth The current search depth required to terminate search if neccessary
@@ -158,6 +161,7 @@ namespace Logic {
 
             /**
              * @brief Performs required tasks when a search iteration has been finished
+             * 
              * @param alpha The new alpha value 
              * @param beta The new beta value
              * @param score The score of the searched node
