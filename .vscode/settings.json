@@ -116,6 +116,8 @@
         "shared_mutex": "cpp",
         "unordered_set": "cpp",
         "valarray": "cpp",
-        "*.impl": "cpp"
+        "*.impl": "cpp",
+        "*.tcc": "cpp",
+        "cinttypes": "cpp"
     }
 }
