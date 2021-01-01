@@ -1,27 +1,32 @@
 #include <stdexcept>
 #include <string>
+#include <iostream>
+#include "xsimd.hpp"
 
 #include "Neuron.hpp"
+#include "randomVector.hpp"
 
 namespace ML {
 
-    Neuron::Neuron(std::vector<float> weights, ActivationFunction::Type activation) : weights(weights), activation(activation) {}
+    Neuron::Neuron(const std::vector<float>& weights, ActivationFunction::Type activation) : weights(weights), activation(activation) {}
 
-    Neuron::Neuron(uint16_t size, ActivationFunction::Type activation) : weights({}), activation(activation) {
-        for (int i = 0; i < size; ++i) {
-            weights.push_back(static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
-        }
-    }
+    Neuron::Neuron(uint16_t size, ActivationFunction::Type activation) : Neuron(Util::randomVector(size), activation) {}
 
-    float Neuron::fire(const std::vector<float>& input) const {
-        if (input.size() != weights.size() - 1) {
+    float Neuron::fire(const FloatBatch& input) const {
+        #ifdef DEBUG
+        if (input.size() != weights.size()) {
             throw std::runtime_error("Input size does not match weights [" + std::to_string(weights.size()) + ":" + std::to_string(input.size()) + "]");
         }
+        #endif
 
-        float value = weights[0];
+        float value = 0;
 
-        for (int index = 0; index < input.size(); ++index) {
-            value += input[index] * weights[index + 1];
+        for (size_t i = 0; i < weights.batches.size(); ++i) {
+            value += xsimd::hadd(weights.batches[i] * input.batches[i]);
+        }
+
+        for (size_t i = 0; i < weights.remainders.size(); ++i) {
+            value += weights.remainders[i] * input.remainders[i];
         }
 
         switch (activation) {
