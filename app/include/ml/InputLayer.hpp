@@ -8,7 +8,7 @@ namespace ML {
         public:
             InputLayer(int inputSize, int outputSize, ActivationFunction::Type activation);
             
-            const std::vector<float>& update(float input, int index);
+            std::vector<float>& update(float input, int index);
     };
 
 }

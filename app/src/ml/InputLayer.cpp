@@ -4,7 +4,7 @@ namespace ML {
 
     InputLayer::InputLayer(int inputSize, int outputSize, ActivationFunction::Type activation) : Layer(inputSize, outputSize, activation) {}
 
-    const std::vector<float>& InputLayer::update(float input, int index) {
+    std::vector<float>& InputLayer::update(float input, int index) {
         int avxRange = inputSize - (inputSize % float_batch::size);
         bool isRemaining = index >= avxRange;
         int idx = isRemaining ? index - avxRange : index / float_batch::size;
