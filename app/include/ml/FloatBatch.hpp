@@ -9,6 +9,8 @@ namespace ML {
 
     struct FloatBatch {
         FloatBatch(const std::vector<float>& data);
+        FloatBatch(const FloatBatch& copy);
+        FloatBatch(const FloatBatch* copy);
 
         std::vector<float_batch> batches;
         std::vector<float> remainders;
