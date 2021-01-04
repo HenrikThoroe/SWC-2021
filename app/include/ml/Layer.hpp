@@ -4,20 +4,31 @@
 #include <inttypes.h>
 
 #include "ActivationFunction.hpp"
-#include "Neuron.hpp"
+#include "FloatBatch.hpp"
 
 namespace ML {
 
     class Layer {
-        private:
-            std::vector<Neuron> neurons;
+        protected:
+            std::vector<FloatBatch> neurons;
+
+            ActivationFunction::Type activation;
+
+            std::vector<float> output {};
+
+            std::vector<float> dotProducts {};
+
+            std::vector<float> lastInput {};
+
+            int inputSize;
 
         public:
-            Layer(std::vector<Neuron> neurons);
 
-            Layer(uint16_t inputSize, uint16_t outputSize, ActivationFunction::Type activation);
+            Layer(int inputSize, int outputSize, ActivationFunction::Type activation);
 
-            std::vector<float> feed(const std::vector<float>& input) const;
+            const std::vector<float>& feed(const std::vector<float>& input);
+
+            const std::vector<float>& update(float input, int index);
 
             int size() const;
     };
