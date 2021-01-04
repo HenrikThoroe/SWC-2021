@@ -4,9 +4,7 @@
 
 namespace ML {
 
-    DNN::DNN(std::vector<Layer> layers) : layers(layers) {}
-
-    DNN::DNN(std::vector<uint16_t> dimensions, std::vector<ActivationFunction::Type> layerTypes) {
+    DNN::DNN(std::vector<int> dimensions, std::vector<ActivationFunction::Type> layerTypes, bool biased) : useBias(biased) {
         if (dimensions.size() != layerTypes.size() + 1) {
             throw std::runtime_error("Dimensions has to be equal to layerTypes + 1");
         }
@@ -15,19 +13,25 @@ namespace ML {
             throw std::runtime_error("Dimensions has to contain at least two values (input & output layer)");
         }
 
+        int bias = useBias ? 1 : 0;
+
         for (int i = 1; i < dimensions.size(); ++i) {
-            layers.emplace_back(dimensions[i - 1], dimensions[i], layerTypes[i - 1]);
+            layers.emplace_back(dimensions[i - 1] + bias, dimensions[i], layerTypes[i - 1]);
         }
     }
 
-    std::vector<float> DNN::predict(const std::vector<float>& input) const {
-        std::vector<float> res = input;
+    const std::vector<float>& DNN::predict(std::vector<float> input) {
+        std::vector<float>& lastOutput = input;
 
-        for (const Layer& layer : layers) {
-            res = layer.feed(res);
+        for (Layer& layer : layers) {
+            if (useBias && lastOutput.size() == layer.weightsPerNeuron() - 1) {
+                lastOutput.push_back(1);
+            }
+
+            lastOutput = layer.feed(lastOutput);
         }
 
-        return res;
+        return lastOutput;
     }
 
 }
