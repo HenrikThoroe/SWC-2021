@@ -18,7 +18,7 @@ namespace ML {
         }
     }
 
-    const std::vector<float>& Layer::feed(const std::vector<float>& input) {
+    std::vector<float>& Layer::feed(const std::vector<float>& input) {
         FloatBatch in = FloatBatch(input);
 
         std::copy(input.begin(), input.end(), lastInput.begin());
@@ -62,6 +62,10 @@ namespace ML {
 
     int Layer::size() const {
         return neurons.size();
+    }
+
+    int Layer::weightsPerNeuron() const {
+        return inputSize;
     }
 
 }

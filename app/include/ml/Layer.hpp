@@ -26,11 +26,11 @@ namespace ML {
 
             Layer(int inputSize, int outputSize, ActivationFunction::Type activation);
 
-            const std::vector<float>& feed(const std::vector<float>& input);
-
-            const std::vector<float>& update(float input, int index);
+            std::vector<float>& feed(const std::vector<float>& input);
 
             int size() const;
+
+            int weightsPerNeuron() const;
     };
 
 }
