@@ -4,7 +4,7 @@
 
 namespace ML {
 
-    DNN::DNN(std::vector<int> dimensions, std::vector<ActivationFunction::Type> layerTypes, bool biased) : useBias(biased) {
+    DNN::DNN(std::vector<int> dimensions, std::vector<ActivationFunction::Type> layerTypes, bool biased) : lastLayerOutput({}), useBias(biased), inputLayer(dimensions[0] + static_cast<int>(biased), dimensions[1], layerTypes[0]) {
         if (dimensions.size() != layerTypes.size() + 1) {
             throw std::runtime_error("Dimensions has to be equal to layerTypes + 1");
         }
@@ -14,24 +14,57 @@ namespace ML {
         }
 
         int bias = useBias ? 1 : 0;
+        layers.push_back(&inputLayer);
 
-        for (int i = 1; i < dimensions.size(); ++i) {
-            layers.emplace_back(dimensions[i - 1] + bias, dimensions[i], layerTypes[i - 1]);
+        for (int i = 2; i < dimensions.size(); ++i) {
+            hiddenLayers.emplace_back(dimensions[i - 1] + bias, dimensions[i], layerTypes[i - 1]);
+            layers.push_back(&hiddenLayers[i - 2]);
         }
     }
 
     const std::vector<float>& DNN::predict(std::vector<float> input) {
-        std::vector<float>& lastOutput = input;
+        insertBias(inputLayer, input);
+        lastLayerOutput = inputLayer.feed(input);
+        propagateHiddenLayers();
+        return lastLayerOutput;
+    }
 
-        for (Layer& layer : layers) {
-            if (useBias && lastOutput.size() == layer.weightsPerNeuron() - 1) {
-                lastOutput.push_back(1);
+    const std::vector<float>& DNN::update(std::vector<float> input) {
+        insertBias(inputLayer, input);
+
+        bool hadUpdate = false;
+
+        for (int idx = 0; idx < input.size(); ++idx) {
+            if (inputLayer.requiresUpdate(input[idx], idx)) {
+                lastLayerOutput = inputLayer.update(input[idx], idx);
+                hadUpdate = true;
             }
-
-            lastOutput = layer.feed(lastOutput);
         }
 
-        return lastOutput;
+        if (!hadUpdate) {
+            return lastLayerOutput;
+        }
+
+        propagateHiddenLayers();
+
+        return lastLayerOutput;
+    }
+
+    void DNN::insertBias(const Layer& layer, std::vector<float>& input) {
+        if (useBias && input.size() == layer.weightsPerNeuron() - 1) {
+            input.push_back(1);
+        }
+    }
+
+    void DNN::propagateHiddenLayers() {
+        for (Layer& layer : hiddenLayers) {
+            insertBias(layer, lastLayerOutput);
+            lastLayerOutput = layer.feed(lastLayerOutput);
+        }
+    }
+
+    int DNN::size() const {
+        return layers.size();
     }
 
 }
