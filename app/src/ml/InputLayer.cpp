@@ -44,4 +44,8 @@ namespace ML {
         return output;
     }
 
+    bool InputLayer::requiresUpdate(float value, int index) const {
+        return lastInput[index] != value;
+    }
+
 }
