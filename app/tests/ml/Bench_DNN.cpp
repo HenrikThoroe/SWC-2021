@@ -12,7 +12,7 @@ using namespace ML;
 TEST_CASE("Bench DNN", "[benchmark][ml][net]") {
     DNN net_4x2x1 = DNN({ 4, 2, 1 }, { ActivationFunction::Type::LEAKY_RELU, ActivationFunction::Type::SIGMOID }, true);
     DNN net_400x200x1 = DNN({ 400, 200, 1 }, { ActivationFunction::Type::LEAKY_RELU, ActivationFunction::Type::SIGMOID }, true);
-    DNN net_88x44x1 = DNN({ 88, 44, 22, 1 }, { ActivationFunction::Type::LINEAR, ActivationFunction::Type::LEAKY_RELU, ActivationFunction::Type::SIGMOID }, true);
+    DNN net_88x44x1 = DNN({ 88, 44, 22, 1 }, { ActivationFunction::Type::LEAKY_RELU, ActivationFunction::Type::LEAKY_RELU, ActivationFunction::Type::SIGMOID }, true);
 
     std::vector<float> input_4 = Util::randomVector(4);
     std::vector<float> input_400 = Util::randomVector(400);
@@ -28,5 +28,33 @@ TEST_CASE("Bench DNN", "[benchmark][ml][net]") {
 
     BENCHMARK("[88, 44, 22, 1]") {
         return net_88x44x1.predict(input_88);
+    };
+
+    BENCHMARK("[400, 200, 1] Update x1") {
+        input_400[4] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        return net_400x200x1.update(input_400);
+    };
+
+    BENCHMARK("[88, 44, 22, 1] Update x1") {
+        input_88[4] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        return net_88x44x1.update(input_88);
+    };
+
+    BENCHMARK("[400, 200, 1] Update x5") {
+        input_400[4] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_400[8] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_400[11] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_400[14] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_400[390] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        return net_400x200x1.update(input_400);
+    };
+
+    BENCHMARK("[88, 44, 22, 1] Update x5") {
+        input_88[4] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_88[8] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_88[11] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_88[14] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        input_88[80] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        return net_88x44x1.update(input_88);
     };
 }
