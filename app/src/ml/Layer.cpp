@@ -7,6 +7,25 @@
 
 namespace ML {
 
+    Layer::Layer(std::vector<std::vector<float>> weights, ActivationFunction::Type activation) : output({}), lastInput({}), dotProducts({}), activation(activation), neurons({}) {
+        neurons.reserve(weights.size());
+        output.resize(weights.size());
+        dotProducts.resize(weights.size());
+
+        int weightsCount = -1;
+        for (const std::vector<float>& neuronWeights : weights) {
+            if (neuronWeights.size() != weightsCount && weightsCount != -1) {
+                throw std::runtime_error("Not all neurons are of the same size");
+            }
+
+            weightsCount = neuronWeights.size();
+            neurons.emplace_back(neuronWeights);
+        }
+
+        lastInput.resize(weightsCount);
+        inputSize = weightsCount;
+    }
+
     Layer::Layer(int inputSize, int outputSize, ActivationFunction::Type activation) : output({}), lastInput({}), dotProducts({}), inputSize(inputSize), activation(activation), neurons({}) {
         neurons.reserve(outputSize);
         output.resize(outputSize);

@@ -31,6 +31,9 @@ namespace ML {
 
         public:
 
+            /// Creates a layer with the given weights for each neuron and shared activation function
+            Layer(std::vector<std::vector<float>> weights, ActivationFunction::Type activation);
+
             /// Creates a new randomly initialized object with the given dimension and metadata
             Layer(int inputSize, int outputSize, ActivationFunction::Type activation);
 

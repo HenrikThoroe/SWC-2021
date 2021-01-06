@@ -28,6 +28,9 @@ namespace ML {
             
         public:
 
+            /// Creates a deep neural network from the given weights and activation functions
+            DNN(std::vector<std::vector<std::vector<float>>> weights, std::vector<ActivationFunction::Type> layerTypes, bool biased);
+
             /// Creates a DNN with random weights and given dimensions and metadata
             DNN(std::vector<int> dimensions, std::vector<ActivationFunction::Type> layerTypes, bool biased);
 

@@ -7,6 +7,9 @@ namespace ML {
     /// A variation of a `Layer` which can be efficently updated
     class InputLayer : public Layer {
         public:
+            /// Creates a layer with the given weights for each neuron and shared activation function
+            InputLayer(std::vector<std::vector<float>> weights, ActivationFunction::Type activation);
+
             /// Creates a new randomly initialized object with the given dimension and metadata 
             InputLayer(int inputSize, int outputSize, ActivationFunction::Type activation);
             

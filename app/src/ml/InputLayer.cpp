@@ -2,6 +2,8 @@
 
 namespace ML {
 
+    InputLayer::InputLayer(std::vector<std::vector<float>> weights, ActivationFunction::Type activation) : Layer(weights, activation) {}
+
     InputLayer::InputLayer(int inputSize, int outputSize, ActivationFunction::Type activation) : Layer(inputSize, outputSize, activation) {}
 
     std::vector<float>& InputLayer::update(float input, int index) {

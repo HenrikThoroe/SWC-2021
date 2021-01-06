@@ -4,6 +4,23 @@
 
 namespace ML {
 
+    DNN::DNN(std::vector<std::vector<std::vector<float>>> weights, std::vector<ActivationFunction::Type> layerTypes, bool biased)  : lastLayerOutput({}), useBias(biased), inputLayer(weights[0], layerTypes[0]) {
+        if (weights.size() < 1) {
+            throw std::runtime_error("At least one layer is required to create a neural network");
+        }
+
+        if (weights.size() != layerTypes.size()) {
+            throw std::runtime_error("Each layer requires an activation function");
+        }
+
+        layers.push_back(&inputLayer);
+
+        for (int i = 1; i < weights.size(); ++i) {
+            hiddenLayers.emplace_back(weights[i], layerTypes[i]);
+            layers.push_back(&hiddenLayers[i - 1]);
+        }
+    }
+
     DNN::DNN(std::vector<int> dimensions, std::vector<ActivationFunction::Type> layerTypes, bool biased) : lastLayerOutput({}), useBias(biased), inputLayer(dimensions[0] + static_cast<int>(biased), dimensions[1], layerTypes[0]) {
         if (dimensions.size() != layerTypes.size() + 1) {
             throw std::runtime_error("Dimensions has to be equal to layerTypes + 1");
