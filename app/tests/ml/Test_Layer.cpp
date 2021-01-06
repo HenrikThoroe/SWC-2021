@@ -67,4 +67,12 @@ TEST_CASE("Test Layer", "[ml]") {
             }
         }
     }
+
+    SECTION("Can be Constructed From Weights") {
+        Layer layer = Layer({ { 0.5, 0.4 }, { 0.2, 0.3 } }, ActivationFunction::Type::LINEAR);
+        std::vector<float> res = layer.feed({ 0.1, 1 });
+
+        REQUIRE(Util::compareFloat(res[0], 0.5 * 0.1 + 0.4 * 1));
+        REQUIRE(Util::compareFloat(res[1], 0.2 * 0.1 + 0.3 * 1));
+    }  
 }

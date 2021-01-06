@@ -84,4 +84,26 @@ TEST_CASE("Test DNN", "[ml]") {
             }
         }
     }
+
+    SECTION("Can be Constructed From Weights") {
+        DNN net = DNN({ { { 0.5, 0.4 }, { 0.2, 0.3 } }, { { 0.7, 0.8 } } }, { ActivationFunction::Type::LINEAR, ActivationFunction::Type::LINEAR }, false);
+        std::vector<float> res = net.predict({ 2, 1 });
+        constexpr float expected = (0.5 * 2 + 0.4 * 1) * 0.7 + (0.2 * 2 + 0.3 * 1) * 0.8;
+
+        REQUIRE(res.size() == 1);
+        INFO(res[0]);
+        INFO(expected);
+        REQUIRE(Util::compareFloat(res[0], expected));
+    }
+
+    SECTION("Can be Constructed From Weights (+ Bias)") {
+        DNN net = DNN({ { { 0.5, 0.4, 0.3 }, { 0.2, 0.3, 0.6 } }, { { 0.7, 0.8, 0.9 } } }, { ActivationFunction::Type::LINEAR, ActivationFunction::Type::LINEAR }, true);
+        std::vector<float> res = net.predict({ 2, 1 });
+        constexpr float expected = (0.5 * 2 + 0.4 * 1 + 0.3 * 1) * 0.7 + (0.2 * 2 + 0.3 * 1 + 0.6 * 1) * 0.8 + 0.9 * 1;
+
+        REQUIRE(res.size() == 1);
+        INFO(res[0]);
+        INFO(expected);
+        REQUIRE(Util::compareFloat(res[0], expected));
+    }
 }
