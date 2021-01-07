@@ -14,11 +14,17 @@ namespace ML::ActivationFunction {
         LINEAR, 
 
         /// Binary step function. [0 + 1]
-        BINARY
+        BINARY,
+
+        /// Tangens Hyperbolicus function. [-1, 1]
+        TANH
     };
 
     /// Returns the computational expensive sigmoid value of x
     float sigmoid(float x);
+
+    /// Returns the tangens hyperbolicus value of x
+    float tanh(float x);
 
     /// Returns the leaky ReLU value of x
     float leakyReLU(float x);

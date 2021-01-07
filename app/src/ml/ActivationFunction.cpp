@@ -28,4 +28,8 @@ namespace ML::ActivationFunction {
         }
     }
 
+    float tanh(float x) {
+        return tanhf(x);
+    }
+
 }

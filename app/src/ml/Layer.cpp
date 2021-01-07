@@ -71,6 +71,10 @@ namespace ML {
                     output[i] = ActivationFunction::binary(dotProducts[i]);
                     break;
 
+                case ActivationFunction::Type::TANH:
+                    output[i] = ActivationFunction::tanh(dotProducts[i]);
+                    break;
+
                 default:
                     throw std::runtime_error("Unknown Activation Function " + std::to_string(static_cast<int>(activation)));
             }

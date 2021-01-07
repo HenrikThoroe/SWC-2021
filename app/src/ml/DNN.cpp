@@ -115,7 +115,11 @@ namespace ML {
                     activations.push_back(ActivationFunction::Type::SIGMOID);
                 } else if (activation == "binary") {
                     activations.push_back(ActivationFunction::Type::BINARY);
-                } 
+                } else if (activation == "tanh") {
+                    activations.push_back(ActivationFunction::Type::TANH);
+                } else {
+                    throw std::runtime_error("Unknown activation function: " + activation);
+                }
             }
         }
 
