@@ -106,4 +106,59 @@ TEST_CASE("Test DNN", "[ml]") {
         INFO(expected);
         REQUIRE(Util::compareFloat(res[0], expected));
     }
+
+    SECTION("Can be Created from JSON") {
+        std::string json {};
+        #pragma region networkJSON
+        json = 
+            "{"
+            "   \"version\": \"1.0.0\","
+            "   \"bias\": true,"
+            "   \"inputSize\": 2,"
+            "   \"schema\": ["
+            "       {"
+            "           \"neurons\": 2,"
+            "           \"activation\": \"leakyReLU\""
+            "       },"
+            "       {"
+            "           \"neurons\": 1,"
+            "           \"activation\": \"sigmoid\""
+            "       }"
+            "   ],"
+            "   \"biases\": ["
+            "       ["
+            "           4.1,"
+            "           4.2"
+            "       ],"
+            "       ["
+            "           4.3"
+            "       ]"
+            "   ],"
+            "   \"weights\": ["
+            "       ["
+            "           ["
+            "               1.1,"
+            "               1.2"
+            "           ],"
+            "           ["
+            "               2.1,"
+            "               2.2"
+            "           ]"
+            "       ],"
+            "       ["
+            "           ["
+            "               3.1,"
+            "               3.2"
+            "           ]"
+            "       ]"
+            "   ]"
+            "}";
+        #pragma endregion
+
+        std::unique_ptr<DNN> net = DNN::fromJSON(json);
+
+        REQUIRE(net->size() == 2);
+        REQUIRE_NOTHROW(net->predict({ 1, 1 }));
+        REQUIRE(net->predict({ 1, 1 }).size() == 1);
+    }
 }

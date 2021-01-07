@@ -1,6 +1,8 @@
 #pragma once 
 
 #include <vector>
+#include <string>
+#include <memory>
 
 #include "Layer.hpp"
 #include "InputLayer.hpp"
@@ -48,6 +50,9 @@ namespace ML {
 
             /// Updates the network partially with the new input. If equal to the last one nothing will be computed. 
             const std::vector<float>& update(std::vector<float> input);
+
+            /// Load a network from a JSON formatted input string
+            static std::unique_ptr<DNN> fromJSON(const std::string& raw);
 
         private:
 
