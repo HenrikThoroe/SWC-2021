@@ -3,6 +3,7 @@
 
 #include "randomVector.hpp"
 #include "compareFloat.hpp"
+#include "loadAsset.hpp"
 
 using namespace ML;
 
@@ -160,5 +161,16 @@ TEST_CASE("Test DNN", "[ml]") {
         REQUIRE(net->size() == 2);
         REQUIRE_NOTHROW(net->predict({ 1, 1 }));
         REQUIRE(net->predict({ 1, 1 }).size() == 1);
+    }
+
+    SECTION("Can Load XOR") {
+        std::unique_ptr<DNN> xorNet = DNN::fromJSON(Util::loadAsset(Util::Asset::XOR_NETWORK));
+
+        REQUIRE(xorNet->size() == 2);
+        REQUIRE(xorNet->predict({ 0, 1 }).size() == 1);
+        REQUIRE(xorNet->predict({ 0, 1 })[0] > 0.9);
+        REQUIRE(xorNet->predict({ 1, 1 })[0] < 0.1);
+        REQUIRE(xorNet->predict({ 0, 0 })[0] < 0.1);
+        REQUIRE(xorNet->predict({ 1, 0 })[0] > 0.9);
     }
 }
