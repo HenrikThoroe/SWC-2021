@@ -4,7 +4,12 @@
 #include <vector>
 #include <any>
 #include <boost/program_options.hpp>
+#include <filesystem>
+#include <iostream>
+#include <fstream> 
 
+#include "GameState.hpp"
+#include "DNN.hpp"
 #include "EventLoop.hpp"
 #include "debug.hpp"
 
@@ -22,20 +27,42 @@ namespace App {
         // Reservation code to redeem with gameserver ("" -> None)
         std::string reservation;
 
+        // Used evaluation function. Can point to a static DNN, a JSON which contains a DNN or classic to use no machine learning
+        std::string evaluation;
+
         //? Parse arguments
         options_description optionsDesribtion("C++ client");
         optionsDesribtion.add_options()
             ("host,h", value<std::string>()->default_value("localhost"), "Host")
             ("port,p", value<uint16_t>()->default_value(13050), "Port")
             ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
+            ("eval,e", value<std::string>()->default_value("classic"), "Evaluation")
         ;
 
-        variables_map varibaleMap;
-        store(parse_command_line(argc, argv, optionsDesribtion), varibaleMap);
+        variables_map variableMap;
+        store(parse_command_line(argc, argv, optionsDesribtion), variableMap);
 
-        hostname    = varibaleMap["host"].as<std::string>();
-        port        = varibaleMap["port"].as<uint16_t>();
-        reservation = varibaleMap["reservation"].as<std::string>();
+        hostname    = variableMap["host"].as<std::string>();
+        port        = variableMap["port"].as<uint16_t>();
+        reservation = variableMap["reservation"].as<std::string>();
+        evaluation  = variableMap["eval"].as<std::string>();
+
+        if (std::filesystem::is_regular_file(evaluation) && std::filesystem::exists(evaluation) && std::filesystem::path(evaluation).extension() == ".json") {
+            std::ifstream file(evaluation);
+            std::stringstream stream {};
+            std::string line;
+            
+            if (file.is_open()) {
+                while (std::getline(file, line)) {
+                    stream << line;
+                }
+
+                file.close();
+                Model::GameState::registerNetwork(ML::DNN::fromJSON(stream.str()));
+            }
+        } else if (evaluation != "classic") {
+            std::cerr << "Unknown evaluation function: " << evaluation << std::endl;
+        }
 
         //? Connect to gameserver
         if (reservation != "") {
