@@ -224,6 +224,9 @@ class Compiler():
         clashes: Dict[str, List[str]] = {} # base->clashingHeaderFiles
         
         for header in fileList:
+            if header.endswith(".json.hpp"):
+                continue
+            
             #? Check same name
             base = os.path.basename(header)
             if base not in baseNames:
