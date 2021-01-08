@@ -4,6 +4,7 @@
 #include <stack>
 #include <bitset>
 #include <optional>
+#include <memory>
 #include "robin_map.hpp"
 
 #include "Board.hpp"
@@ -11,6 +12,7 @@
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
 #include "constants.hpp"
+#include "DNN.hpp"
 
 namespace Model {
 
@@ -57,6 +59,12 @@ namespace Model {
 
             /// The current hash value of the game state.
             uint64_t hashValue = 0;
+
+            /// A neuronal network to evaluate the state
+            static std::unique_ptr<ML::DNN> evalNetwork;
+
+            /// Flag to decide whether to use a neuronal network for state evaluation
+            static bool useNetwork;
 
             /// Calculates a unique index for the piece to access it in `allPieces` 
             int createIndex(const DeployedPiece* piece, bool includeColor = true) const;
@@ -128,6 +136,9 @@ namespace Model {
             bool isGameOver() const;
 
             void freeMemory(float percent = 0.5);
+
+            /// Register a neuronal network for static evaluation
+            static void registerNetwork(std::unique_ptr<ML::DNN> network);
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };

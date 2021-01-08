@@ -8,6 +8,10 @@
 
 namespace Model {
 
+    std::unique_ptr<ML::DNN> GameState::evalNetwork {};
+
+    bool GameState::useNetwork = false;
+
     GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
@@ -515,6 +519,11 @@ namespace Model {
         }
 
         return false;
+    }
+
+    void GameState::registerNetwork(std::unique_ptr<ML::DNN> network) {
+        GameState::evalNetwork = std::move(network);
+        GameState::useNetwork = true;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {
