@@ -12,7 +12,7 @@ namespace Model {
 
     bool GameState::useNetwork = false;
 
-    uint8_t networkBoundary = 0;
+    uint8_t GameState::networkBoundary = 0;
 
     GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
