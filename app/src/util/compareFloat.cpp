@@ -4,8 +4,16 @@
 
 namespace Util {
 
-    bool compareFloat(float a, float b, int precision) {
-        return static_cast<int64_t>(a * powf(10, precision)) == static_cast<int64_t>(b * powf(10, precision));
+    bool compareFloat(float a, float b, float epsilon) {
+        if (a == b) {
+            return true;
+        }
+
+        if (fabsf(a - b) < std::numeric_limits<float>::epsilon()) {
+            return true;
+        }
+
+        return fabs(a - b) < epsilon;
     }
 
 }
