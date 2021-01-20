@@ -27,6 +27,9 @@ namespace ML {
 
             /// The output of the last executed layer
             std::vector<float> lastLayerOutput;
+
+            /// Flag which is false as soon as the first prediction was made
+            bool firstRun = true;
             
         public:
 

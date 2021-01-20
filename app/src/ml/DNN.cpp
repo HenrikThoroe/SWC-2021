@@ -43,6 +43,7 @@ namespace ML {
     }
 
     const std::vector<float>& DNN::predict(std::vector<float> input) {
+        firstRun = false;
         insertBias(inputLayer, input);
         lastLayerOutput = inputLayer.feed(input);
         propagateHiddenLayers();
@@ -50,6 +51,10 @@ namespace ML {
     }
 
     const std::vector<float>& DNN::update(std::vector<float> input) {
+        if (firstRun) {
+            return predict(input);
+        }
+
         insertBias(inputLayer, input);
 
         bool hadUpdate = false;
