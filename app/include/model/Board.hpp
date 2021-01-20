@@ -48,6 +48,8 @@ namespace Model {
             /// Forces the specified position to be a drop zone for the passed color.
             void makeDropPosition(const Util::Position& position, const PieceColor& color);
 
+            const std::vector<float>& getSerializedFields() const;
+
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 
             const PieceColor& operator [] (const Util::Position& position) const;
@@ -55,6 +57,8 @@ namespace Model {
         private:
             /// A 20x20 array which stores the piece color for each position of the board.
             FieldSet fields {};
+
+            std::vector<float> serialized {};
 
             /// An array which stores four representations of the board. 
             /// Each field of the board is described by an uint8_t value which indicates the number of possible attach points.

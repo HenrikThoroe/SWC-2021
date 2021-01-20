@@ -4,7 +4,7 @@
 using namespace Model;
 using namespace Util;
 
-TEST_CASE("Test Board", "[model]") {
+TEST_CASE("Test Board", "[model][board]") {
     auto board = Board();
     auto piece1 = DeployedPiece(0, Position(0,0), Rotation::ZERO, PieceColor::BLUE);
     auto piece2 = DeployedPiece(18, Position(10,12), Rotation::ZERO_FLIPPED, PieceColor::YELLOW);
@@ -32,6 +32,35 @@ TEST_CASE("Test Board", "[model]") {
         REQUIRE(board.at(10, 14) == PieceColor::YELLOW);
         REQUIRE(board.at(10, 15) == PieceColor::YELLOW);
         REQUIRE(board.at(11, 13) == PieceColor::YELLOW);
+    }
+
+    SECTION("Can Serialize Fields") {
+        const std::vector<float>& fields = board.getSerializedFields();
+        int zeros = 0;
+
+        REQUIRE(fields.size() == 400);
+
+        REQUIRE(fields[0 + 0 * 20] == static_cast<float>(PieceColor::BLUE));
+        REQUIRE(fields[19 + 0 * 20] == static_cast<float>(PieceColor::BLUE));
+        REQUIRE(fields[10 + 12 * 20] == static_cast<float>(PieceColor::YELLOW));
+        REQUIRE(fields[10 + 13 * 20] == static_cast<float>(PieceColor::YELLOW));
+        REQUIRE(fields[10 + 14 * 20] == static_cast<float>(PieceColor::YELLOW));
+        REQUIRE(fields[10 + 15 * 20] == static_cast<float>(PieceColor::YELLOW));
+        REQUIRE(fields[11 + 13 * 20] == static_cast<float>(PieceColor::YELLOW));
+
+        for (size_t i = 0; i < fields.size(); ++i) {
+            if (fields[i] == 0) {
+                zeros += 1;
+            }
+        }
+
+        REQUIRE(zeros == 400 - 7);
+
+        board.removePiece(piece1);
+
+        REQUIRE(fields[0 + 0 * 20] == static_cast<float>(PieceColor::NONE));
+
+        board.dropPiece(piece1);
     }
 
     SECTION("Has Valid Drop Positions") {

@@ -8,7 +8,7 @@
 using namespace Model;
 using namespace Util;
 
-TEST_CASE("Bench Board", "[benchmark]") {
+TEST_CASE("Bench Board", "[benchmark][board]") {
     auto board = Board();
     auto piece1 = DeployedPiece(0, Position(0,0), Rotation::ZERO, PieceColor::BLUE);
     auto piece2 = DeployedPiece(20, Position(10,12), Rotation::PI, PieceColor::YELLOW);
@@ -16,7 +16,7 @@ TEST_CASE("Bench Board", "[benchmark]") {
 
     BENCHMARK_ADVANCED("Drop Piece") (Catch::Benchmark::Chronometer meter) {
         meter.measure([&board, &piece2] {
-            board.dropPiece(piece2);
+            return board.dropPiece(piece2);
         });
 
         board.removePiece(piece2);
@@ -26,8 +26,22 @@ TEST_CASE("Bench Board", "[benchmark]") {
         board.dropPiece(piece2);
 
         meter.measure([&board, &piece2] {
-            board.removePiece(piece2);
+            return board.removePiece(piece2);
         });
+    };
+
+    BENCHMARK_ADVANCED("Serialize Board") (Catch::Benchmark::Chronometer meter) {
+        board.dropPiece(piece1);
+        board.dropPiece(piece2);
+        board.dropPiece(piece3);
+
+        meter.measure([&board] {
+            return board.getSerializedFields();
+        });
+
+        board.removePiece(piece1);
+        board.removePiece(piece2);
+        board.removePiece(piece3);
     };
 
     BENCHMARK_ADVANCED("Get Drop Positions") (Catch::Benchmark::Chronometer meter) {

@@ -4,13 +4,21 @@
 
 namespace Model {
 
-    Board::Board() {}
+    Board::Board() {
+        serialized.resize(400);
+        std::fill(serialized.begin(), serialized.end(), 0);
+    }
+
+    const std::vector<float>& Board::getSerializedFields() const {
+        return serialized;
+    }
 
     void Board::dropPiece(const DeployedPiece& piece) {
         const uint8_t colorIndex = static_cast<uint8_t>(piece.color) - 1;
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = piece.color;
+            serialized[pos.x + 20 * pos.y] = static_cast<float>(piece.color);
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
@@ -27,6 +35,7 @@ namespace Model {
 
         for (const Util::Position& pos : piece.getOccupiedPositions()) {
             fields[pos.y][pos.x] = PieceColor::NONE;
+            serialized[pos.x + 20 * pos.y] = 0;
         }
 
         for (const Util::Position& pos : piece.getAttachPoints()) {
