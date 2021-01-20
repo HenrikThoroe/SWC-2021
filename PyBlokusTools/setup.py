@@ -28,6 +28,7 @@ setuptools.setup(
             'blokustest = pyblokustools.scripts.runTests:runTests',
             'blokusbench = pyblokustools.scripts.runBenchmarks:runBenchmarks',
             'blokusprod = pyblokustools.scripts.compileProduction:compileProduction',
+            'blokusbuild = pyblokustools.scripts.compileCustom:compileCustom',
             'blokusdebug = pyblokustools.scripts.compileDebug:compileDebug',
             'blokusdoc = pyblokustools.scripts.makeDocumentation:makeDocumentation',
             'blokusrun = pyblokustools.scripts.runPreProduction:runPreProduction',

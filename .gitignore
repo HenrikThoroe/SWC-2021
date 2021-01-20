@@ -240,6 +240,7 @@ $RECYCLE.BIN/
 # Scripts
 .pybt-cache
 compilerOutput.txt
+.pybt-cache-temp-*
 
 # Documentation
 docs/
