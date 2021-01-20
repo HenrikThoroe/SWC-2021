@@ -30,6 +30,9 @@ namespace App {
         // Used evaluation function. Can point to a static DNN, a JSON which contains a DNN or classic to use no machine learning
         std::string evaluation;
 
+        /// Last turn where the neuronal network is used for evaluation
+        uint8_t networkBoundary;
+
         //? Parse arguments
         options_description optionsDesribtion("C++ client");
         optionsDesribtion.add_options()
@@ -37,15 +40,17 @@ namespace App {
             ("port,p", value<uint16_t>()->default_value(13050), "Port")
             ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
             ("eval,e", value<std::string>()->default_value("classic"), "Evaluation")
+            ("networkBoundary,n", value<uint8_t>()->default_value(20), "Last turn where the neuronal network is used for evaluation")
         ;
 
         variables_map variableMap;
         store(parse_command_line(argc, argv, optionsDesribtion), variableMap);
 
-        hostname    = variableMap["host"].as<std::string>();
-        port        = variableMap["port"].as<uint16_t>();
-        reservation = variableMap["reservation"].as<std::string>();
-        evaluation  = variableMap["eval"].as<std::string>();
+        hostname        = variableMap["host"].as<std::string>();
+        port            = variableMap["port"].as<uint16_t>();
+        reservation     = variableMap["reservation"].as<std::string>();
+        evaluation      = variableMap["eval"].as<std::string>();
+        networkBoundary = variableMap["networkBoundary"].as<uint8_t>();
 
         if (std::filesystem::is_regular_file(evaluation) && std::filesystem::exists(evaluation) && std::filesystem::path(evaluation).extension() == ".json") {
             std::ifstream file(evaluation);
@@ -58,7 +63,7 @@ namespace App {
                 }
 
                 file.close();
-                Model::GameState::registerNetwork(ML::DNN::fromJSON(stream.str()));
+                Model::GameState::registerNetwork(ML::DNN::fromJSON(stream.str()), networkBoundary);
             }
         } else if (evaluation != "classic") {
             std::cerr << "Unknown evaluation function: " << evaluation << std::endl;
