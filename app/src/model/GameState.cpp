@@ -12,6 +12,8 @@ namespace Model {
 
     bool GameState::useNetwork = false;
 
+    uint8_t networkBoundary = 0;
+
     GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
@@ -393,10 +395,17 @@ namespace Model {
     }
 
     int GameState::evaluate(const PlayerColor& player, const std::bitset<4>* invalidColors) const {
+        bool noColorsLeft = invalidColors != nullptr && invalidColors->count() == 4;
+        bool gameOver = noColorsLeft || isGameOver();
+        
+        if (!gameOver && GameState::useNetwork && getTurn() <= GameState::networkBoundary) {
+            float prediction = GameState::evalNetwork->update(board.getSerializedFields())[0];
+            return static_cast<int>(prediction * 1'000'000);
+        }
+
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
         const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
         std::array<int, 4> colorScores { 0, 0, 0, 0 };
-        bool noColorsLeft = invalidColors != nullptr && invalidColors->count() == 4;
 
         for (const PieceColor& color : colors) {
             uint8_t colorId = static_cast<uint8_t>(color) - 1;
@@ -456,7 +465,7 @@ namespace Model {
             colorScores[static_cast<uint8_t>(opponentColors[0]) - 1] + 
             colorScores[static_cast<uint8_t>(opponentColors[1]) - 1];;
 
-        if (isGameOver() || noColorsLeft) {
+        if (gameOver) {
             if (score > opponentScore) {
                 return Constants::WIN_POINTS + score;
             } else if (score < opponentScore) {
@@ -521,9 +530,10 @@ namespace Model {
         return false;
     }
 
-    void GameState::registerNetwork(std::unique_ptr<ML::DNN> network) {
+    void GameState::registerNetwork(std::unique_ptr<ML::DNN> network, uint8_t boundary) {
         GameState::evalNetwork = std::move(network);
         GameState::useNetwork = true;
+        GameState::networkBoundary = boundary;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {

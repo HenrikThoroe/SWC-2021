@@ -66,6 +66,9 @@ namespace Model {
             /// Flag to decide whether to use a neuronal network for state evaluation
             static bool useNetwork;
 
+            /// Last turn where the neuronal network is used for evaluation
+            static uint8_t networkBoundary;
+
             /// Calculates a unique index for the piece to access it in `allPieces` 
             int createIndex(const DeployedPiece* piece, bool includeColor = true) const;
 
@@ -138,7 +141,7 @@ namespace Model {
             void freeMemory(float percent = 0.5);
 
             /// Register a neuronal network for static evaluation
-            static void registerNetwork(std::unique_ptr<ML::DNN> network);
+            static void registerNetwork(std::unique_ptr<ML::DNN> network, uint8_t boundary);
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };
