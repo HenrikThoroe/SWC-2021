@@ -6,6 +6,8 @@ from pathlib import Path
 import subprocess
 import json
 import re
+import uuid
+import shutil
 
 from .version import VERSION
 from .settings import Settings
@@ -300,18 +302,8 @@ class Compiler():
         extraExcludes : List[str]             = [],
         sources_incRe : str                   = r'.',
         headers_incRe : str                   = r'.',
+        ignoreCache   : bool                  = False
     ) -> bool:
-        #? Init cache
-        cache_dir = os.path.join(CWD, Settings.WORK_DIRECTORY)
-        cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
-        
-        cache = None
-        try:
-            with open(cache_file, 'r') as file:
-                cache = CompileCache.loads(file.read())
-        except:
-            cache = CompileCache()
-        
         #? Make shared compilation args
         comp_args = [
             *extraFlags,
@@ -381,49 +373,67 @@ class Compiler():
             
             print(colorT("Header errors found (Dumped into compilerLog)", Colors.RED))
             return False
+
+        #? Init cache
+        temp_cache_dir_name = '.pybt-cache-temp-' + str(uuid.uuid4())
+        cache_dir = os.path.join(CWD, temp_cache_dir_name) if ignoreCache else os.path.join(CWD, Settings.WORK_DIRECTORY)
+        cache_file = os.path.join(cache_dir, Settings.CACHE_FILE)
         
+        cache = None
+        try:
+            with open(cache_file, 'r') as file:
+                cache = CompileCache.loads(file.read())
+        except:
+            cache = CompileCache()
+    
         # Determine which files need to be compiled
         to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash)
         
         #? Shared variables
         compiled_out_dir = os.path.join(cache_dir, 'compiled')
         
-        #? Compilation and linking
-        with open(Settings.COMPILER_OUTPUT, "ab") as compilerOutputFile:
-            compilerOutputFile.truncate(0) # Empty file for this compiler iteration
-            
-            #* Compiler
-            if to_compile:
-                print(colorT("Compiling...", Colors.BLUE))
-                compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, comp_args)
-            
-                #? Dump cache      
-                with open(cache_file, 'w') as cacheFile:
-                    cacheFile.write(cache.dumps())
-            
-                if not compiled_all_success and not forceLink:
-                    print(colorT("Compilation finished with errors", Colors.RED))
-                    return False
-                print(colorT("Compilation finished successfully", Colors.GREEN))
-            else:
-                print(colorT("Using cached object files...", Colors.GREEN))
+        try: 
+            #? Compilation and linking
+            with open(Settings.COMPILER_OUTPUT, "ab") as compilerOutputFile:
+                compilerOutputFile.truncate(0) # Empty file for this compiler iteration
+                
+                #* Compiler
+                if to_compile:
+                    print(colorT("Compiling...", Colors.BLUE))
+                    compiled_all_success = Compiler._compile(compilerOutputFile, cache, debug, compiled_out_dir, to_compile, header_files, comp_args)
+                
+                    #? Dump cache      
+                    with open(cache_file, 'w') as cacheFile:
+                        cacheFile.write(cache.dumps())
+                
+                    if not compiled_all_success and not forceLink:
+                        print(colorT("Compilation finished with errors", Colors.RED))
+                        return False
+                    print(colorT("Compilation finished successfully", Colors.GREEN))
+                else:
+                    print(colorT("Using cached object files...", Colors.GREEN))
 
-            #* Linker
-            if cache.needsNewLinking(source_files, outputFile) or makeAll:
-                print(colorT("Linking...", Colors.BLUE))
-                linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile, extraFlags)
+                #* Linker
+                if cache.needsNewLinking(source_files, outputFile) or makeAll:
+                    print(colorT("Linking...", Colors.BLUE))
+                    linked_all_success = Compiler._link(compilerOutputFile, debug, source_files, compiled_out_dir, outputFile, extraFlags)
+                    
+                    if not linked_all_success:
+                        print(colorT("Linking finished with errors", Colors.RED))
+                        return False
+                    print(colorT("Linking finished successfully", Colors.GREEN))
+                    
+                    cache.commitPendingLinkage(outputFile)
+                    #? Dump cache      
+                    with open(cache_file, 'w') as cacheFile:
+                        cacheFile.write(cache.dumps())
                 
-                if not linked_all_success:
-                    print(colorT("Linking finished with errors", Colors.RED))
-                    return False
-                print(colorT("Linking finished successfully", Colors.GREEN))
-                
-                cache.commitPendingLinkage(outputFile)
-                #? Dump cache      
-                with open(cache_file, 'w') as cacheFile:
-                    cacheFile.write(cache.dumps())
-            
-            return True
+                return True
+
+        finally:
+            if ignoreCache:
+                shutil.rmtree(cache_dir)
+
 
     @staticmethod
     def _compile(
