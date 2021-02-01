@@ -5,7 +5,7 @@
 #include <any>
 #include <boost/program_options.hpp>
 
-// #define CPPHTTPLIB_OPENSSL_SUPPORT // Enables SSL (https) support
+#define CPPHTTPLIB_OPENSSL_SUPPORT // Enables SSL (https) support
 #include "httplib.hpp"
 #include "json.hpp"
 
