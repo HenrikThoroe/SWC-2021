@@ -29,7 +29,7 @@ class Settings():
     LINK_SHARED_FLAGS : List[str] = [*list(filter(lambda opt: opt not in ['-c'], COMP_SHARED_FLAGS))]
     LINK_PROD_FLAGS   : List[str] = [*COMP_PROD_FLAGS, '-fuse-linker-plugin']
     LINK_DEBUG_FALGS  : List[str] = [*COMP_DEBUG_FALGS]
-    LINK_LAST_FLAGS   : List[str] = ['-lpthread', '-lboost_system', '-lboost_program_options', '-lboost_thread']
+    LINK_LAST_FLAGS   : List[str] = ['-lpthread', '-lboost_system', '-lboost_program_options', '-lboost_thread', '-lssl', '-lcrypto']
     
     @staticmethod
     def compileSettings() -> None:
