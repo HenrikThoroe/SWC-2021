@@ -40,7 +40,7 @@ namespace App {
             ("port,p", value<uint16_t>()->default_value(13050), "Port")
             ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
             ("eval,e", value<std::string>()->default_value("classic"), "Evaluation")
-            ("networkBoundary,n", value<uint8_t>()->default_value(20), "Last turn where the neuronal network is used for evaluation")
+            ("networkBoundary,n", value<uint8_t>()->default_value(30), "Last turn where the neuronal network is used for evaluation")
         ;
 
         variables_map variableMap;
