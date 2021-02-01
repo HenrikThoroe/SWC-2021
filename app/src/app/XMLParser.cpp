@@ -1,6 +1,7 @@
 #include <array>
 #include <stdexcept>
 #include <cstring>
+#include <sstream>
 
 #include "XMLParser.hpp"
 #include "XMLStringWriter.hpp"
@@ -94,6 +95,82 @@ namespace App {
         if (protocolEnd) {
             result.emplace_back(MsgType::PROTOCOLEND, nullptr);
         }
+    }
+
+    void XMLParser::splitAndParseReplay(const std::string& input, std::vector<Message>& result) {
+        //? Split replay string by newline
+        std::stringstream ss{input};
+
+        uint8_t turn = 0;
+
+        // Turn -> Color
+        auto denormalizeColor = [](uint8_t color) -> uint8_t {
+            switch (color) {                
+                // Blue
+                case 0:
+                    return 2;
+                
+                // Yellow
+                case 1:
+                    return 4;
+
+                // Red
+                case 2:
+                    return 1;
+
+                // Green
+                case 3:
+                    return 3;
+                
+                default:
+                    throw std::runtime_error("Could not denormalize color '" + std::to_string(color) + "'");
+            }
+        };
+
+        // Get next turns color
+        auto getNextTurnColor = [&turn, &denormalizeColor]() -> Model::PieceColor {
+            return static_cast<Model::PieceColor>(denormalizeColor(turn % 4));
+        };
+
+        for (std::string line; std::getline(ss, line, '\n');) {
+            if (line.rfind("startPiece:", 0) == 0) {
+                //? Start piece
+                result.emplace_back(
+                    MsgType::GAMESTATE,
+                    MementoMsg(
+                        getPieceId(line.substr(11, std::string::npos).c_str()),
+                        std::nullopt,
+                        turn,
+                        getNextTurnColor()
+                    )
+                );
+            } else {
+                //? Normal move
+
+                // Wrap xml compliant messages for easier parsing
+                line.insert(0, "<A>");
+                line.append("</A>");
+
+
+                pugi::xml_document xmlDoc;
+                xmlDoc.load_string(input.data());
+
+                pugi::xml_node move = xmlDoc.first_child();
+                pugi::xml_node piece = move.first_child();
+                if (move.attribute("class").value()[15] == 'k') {
+                    //* Skip move
+                    result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, getNextTurnColor()));
+                } else {
+                    //* Set move
+                    result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, computeMoveIndex(piece), turn, getNextTurnColor()));
+                }
+            }
+
+            turn += 1;
+        }
+
+        // Remove last msg as the server will send it when we join
+        result.pop_back();
     }
 
     std::string XMLParser::makeMoveMessage(const Model::Move* move) const {
@@ -244,73 +321,7 @@ namespace App {
             //* Not first move -> LastMove
             if (piece.name()[0] == 'p') {
                 // SetMove
-
-                //? Rotation
-                const char* pieceRotation = piece.attribute("rotation").value();
-                uint8_t rotation;
-                if (!strcmp(pieceRotation, "NONE")) {
-                    rotation = 0;
-                } else if (!strcmp(pieceRotation, "RIGHT")) {
-                    rotation = 1;
-                } else if (!strcmp(pieceRotation, "MIRROR")) {
-                    rotation = 2;
-                } else if (!strcmp(pieceRotation, "LEFT")) {
-                    rotation = 3;
-                }
-
-                if (piece.attribute("isFlipped").as_bool()) {
-                    rotation += 4;
-                }
-
-                //? PieceID
-                uint8_t pieceId = getPieceId(piece.attribute("kind").value());
-
-                //? Color
-                uint8_t color;
-                switch (piece.attribute("color").value()[0]) {
-                    // Red
-                    case 'R':
-                        color = 0;
-                        break;
-                    
-                    // Blue
-                    case 'B':
-                        color = 1;
-                        break;
-
-                    // Green
-                    case 'G':
-                        color = 2;
-                        break;
-
-                    // Yellow
-                    case 'Y':
-                        color = 3;
-                        break;
-                    
-                    default:
-                        throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
-                }
-
-                //? X, Y
-                pugi::xml_node position = piece.child("position");
-
-                uint8_t x = position.attribute("x").as_int();
-                uint8_t y = position.attribute("y").as_int();
-
-                //? Origin
-                int8_t minX = 127;
-                int8_t minY = 127;
-                for (const Util::Vector2D& piece : std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
-                    if (piece.x < minX) minX = piece.x;
-                    if (piece.y < minY) minY = piece.y;
-                }
-
-                //? Calculate index
-                // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
-                const int index = (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
-
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn, turnColor));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, computeMoveIndex(piece), turn, turnColor));
             } else {
                 // SkipMove
                 result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, turnColor));
@@ -379,6 +390,73 @@ namespace App {
         data.print(xmlStringWriter, " ", pugi::format_default);
 
         result.emplace_back(MsgType::EXCEPT, xmlStringWriter.result);
+    }
+
+    inline const int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
+        //? Rotation
+        const char* pieceRotation = piece.attribute("rotation").value();
+        uint8_t rotation;
+        if (!strcmp(pieceRotation, "NONE")) {
+            rotation = 0;
+        } else if (!strcmp(pieceRotation, "RIGHT")) {
+            rotation = 1;
+        } else if (!strcmp(pieceRotation, "MIRROR")) {
+            rotation = 2;
+        } else if (!strcmp(pieceRotation, "LEFT")) {
+            rotation = 3;
+        }
+
+        if (piece.attribute("isFlipped").as_bool()) {
+            rotation += 4;
+        }
+
+        //? PieceID
+        uint8_t pieceId = getPieceId(piece.attribute("kind").value());
+
+        //? Color
+        uint8_t color;
+        switch (piece.attribute("color").value()[0]) {
+            // Red
+            case 'R':
+                color = 0;
+                break;
+            
+            // Blue
+            case 'B':
+                color = 1;
+                break;
+
+            // Green
+            case 'G':
+                color = 2;
+                break;
+
+            // Yellow
+            case 'Y':
+                color = 3;
+                break;
+            
+            default:
+                throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
+        }
+
+        //? X, Y
+        pugi::xml_node position = piece.child("position");
+
+        uint8_t x = position.attribute("x").as_int();
+        uint8_t y = position.attribute("y").as_int();
+
+        //? Origin
+        int8_t minX = 127;
+        int8_t minY = 127;
+        for (const Util::Vector2D& piece : std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
+            if (piece.x < minX) minX = piece.x;
+            if (piece.y < minY) minY = piece.y;
+        }
+
+        //? Calculate index
+        // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
+        return (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
     }
 
     inline uint8_t XMLParser::getPieceId(const char* pieceName) const {

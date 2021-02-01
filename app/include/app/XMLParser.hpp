@@ -41,6 +41,14 @@ namespace App {
             void splitAndParseMessages(std::string& input, std::vector<Message>& result);
 
             /**
+             * @brief Split a replay string into separate parsed messages
+             * 
+             * @param input Input string as received from swc-blokus.net
+             * @param result Vector to save parsed messages in
+             */
+            void splitAndParseReplay(const std::string& input, std::vector<Message>& result);
+
+            /**
              * @brief Convert a move into its xml representation to send to server
              * 
              * @param move Move object to convert
@@ -102,6 +110,15 @@ namespace App {
             void parseError(const pugi::xml_node& node, std::vector<Message>& result) const;
 
             //* Helpers
+            /**
+             * @brief Compute the move index for a specific SetMove xml node
+             * 
+             * @param piece XML node of SetMove
+             * 
+             * @returns Move index corresponding to XML node
+             */
+            const int computeMoveIndex(const pugi::xml_node piece) const;
+
             /**
              * @brief Translate name of piece to its id
              * 

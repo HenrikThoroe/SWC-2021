@@ -25,6 +25,10 @@ namespace App {
         xmlParser.splitAndParseMessages(msg, result);
     }
 
+    void MessageBroker::parseReplay(std::string& msg, std::vector<Message>& result) {
+        xmlParser.splitAndParseReplay(msg, result);
+    }
+
     void MessageBroker::dispatch(const std::string& msg) { 
         tcpClient.send(msg);
     }

@@ -56,6 +56,16 @@ namespace App {
             void parse(std::string& msg, std::vector<Message>& result);
 
             /**
+             * @brief Parse a replay string to a Message struct
+             * 
+             * @param msg MultiReplayMsg string to parse
+             * @param result Vector to store parsed messages in
+             * 
+             * @returns Void -> Stores parsed messages in 'result' param
+             */
+            void parseReplay(std::string& msg, std::vector<Message>& result);
+
+            /**
              * @brief Dispatch a Message to the gameserver
              * 
              * @param msg Message to send
