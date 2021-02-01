@@ -5,10 +5,15 @@
 #include <any>
 #include <boost/program_options.hpp>
 
+// #define CPPHTTPLIB_OPENSSL_SUPPORT // Enables SSL (https) support
+#include "httplib.hpp"
+#include "json.hpp"
+
 #include "EventLoop.hpp"
 #include "debug.hpp"
 
 using namespace boost::program_options;
+using JSON = nlohmann::json;
 
 namespace App {
 
@@ -22,12 +27,16 @@ namespace App {
         // Reservation code to redeem with gameserver ("" -> None)
         std::string reservation;
 
+        // Replay reservation to redeem with swc-blokus.net ("" -> None)
+        std::string replay;
+
         //? Parse arguments
         options_description optionsDesribtion("C++ client");
         optionsDesribtion.add_options()
             ("host,h", value<std::string>()->default_value("localhost"), "Host")
             ("port,p", value<uint16_t>()->default_value(13050), "Port")
             ("reservation,r", value<std::string>()->default_value(""), "ReservationCode")
+            ("replay", value<std::string>()->default_value(""), "ReplayReservation")
         ;
 
         variables_map varibaleMap;
@@ -36,6 +45,45 @@ namespace App {
         hostname    = varibaleMap["host"].as<std::string>();
         port        = varibaleMap["port"].as<uint16_t>();
         reservation = varibaleMap["reservation"].as<std::string>();
+        replay      = varibaleMap["replay"].as<std::string>();
+
+        //? Redeem a replay reservation if given
+        if (replay != "") {
+            if (replay.length() != 36) throw std::runtime_error("ReplayReservation has to be 36 characters long");
+
+            // Prepare endpoint
+            replay.insert(36, "/");
+            replay.insert(0, "/api/v1/replay/reservation/");
+            
+            // Make request
+            httplib::Client httpClient("http://swc-blokus.net");
+
+            httplib::Result res = httpClient.Get(replay.c_str());
+
+            // Check success
+            if (res->status != 200) {
+                throw std::runtime_error("ReplayReservation is invalid");
+            }
+            
+
+            // Parse JSON and apply new values
+            JSON json = JSON::parse(res->body);
+            std::string raw_replay;
+
+            hostname    = "swc-blokus.net";
+            port        = json["port"].get<uint16_t>();
+            reservation = json["reservation"].get<std::string>();
+            raw_replay  = json["replay"].get<std::string>();
+
+            // Load replay
+            std::vector<Message> messages;
+            messages.reserve(101); // Maximum amount of messages is 101
+
+            messageBroker.parseReplay(raw_replay, messages);
+            for (Message& pMsg : messages) {
+                actOnMessage(pMsg);
+            }
+        }
 
         //? Connect to gameserver
         if (reservation != "") {
