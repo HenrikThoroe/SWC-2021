@@ -69,7 +69,10 @@ class TCPClient():
             
             #? Read if no full message was received yet
             try:
-                self._buffer += self._socket.recv(4096)
+                if (rec := self._socket.recv(4096)) != b'':
+                    self._buffer += rec
+                else:
+                    raise IOError("Lost connection to server")
             except socket.timeout:
                 return False # We return on timeout to avoid deadlock due to non working clients
             
