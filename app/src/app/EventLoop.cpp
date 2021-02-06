@@ -63,6 +63,7 @@ namespace App {
                 }
 
                 file.close();
+                std::cout << "Using neural network from '" << evaluation << "'" << std::endl;
                 Model::GameState::registerNetwork(ML::DNN::fromJSON(stream.str()), networkBoundary);
             }
         } else if (evaluation != "classic") {
