@@ -155,13 +155,20 @@ class Logger(logging.Handler):
     
     @logger_enabled
     def logServer(self, log: BufferedReader) -> None:
-        """Copy current server log to specific folder
+        """Copy current server log to specific folder and main log
         
         Arguments:
             log    {BufferedReader} -- Stdout attribute of proccess
         """
+        filtered_log = filterAnsi(log.read() or b'')
+        
+        #* Specific game
         with open(f'{self._folder}/server.txt', 'ab') as file:
-            file.write(filterAnsi(log.read() or b''))
+            file.write(filtered_log)
+        
+        #* Main log
+        with open(f'{self._dirName}/server.txt', 'ab') as file:
+            file.write(filtered_log)
     
     @logger_enabled
     def logFile(self, message: str) -> None:

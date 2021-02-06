@@ -13,7 +13,7 @@ class Config():
         serverHash    {str} -- Hash of current Server zip as from the Github API (default: "")
     """
     def __init__(self, serverPath: str = "", serverVersion: str = "", serverHash: str = "", **kwargs) -> None:
-        self.serverPath    = serverPath or Path(f'{os.path.dirname(os.path.realpath(__file__))}/swcServer/start.sh').resolve().as_posix()
+        self.serverPath    = serverPath or Path(f'{os.path.dirname(os.path.realpath(__file__))}/data/server.zip').resolve().as_posix()
         self.serverVersion = serverVersion
         self.serverHash    = serverHash
         
@@ -28,7 +28,7 @@ class Config():
         """
         ownDir = os.path.dirname(os.path.realpath(__file__))
         
-        path = Path(f'{ownDir}/config.json')
+        path = Path(f'{ownDir}/data/config.json')
         if path.is_file():
             try:
                 with open(path.resolve(), 'r') as file:
@@ -44,7 +44,7 @@ class Config():
         """
         ownDir = os.path.dirname(os.path.realpath(__file__))
         
-        path = Path(f'{ownDir}/config.json')
+        path = Path(f'{ownDir}/data/config.json')
         
         with open(path.resolve(), 'w') as file:
             dump(self.__dict__, file)
