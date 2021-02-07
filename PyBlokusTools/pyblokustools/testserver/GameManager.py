@@ -115,8 +115,8 @@ class GameManager():
                             client2.wait()
                         
                         # Save client logs
-                        self.logger.logClient(0, client1.stdout)
-                        self.logger.logClient(1, client2.stdout)
+                        self.logger.logClient(player1, client1.stdout)
+                        self.logger.logClient(player2, client2.stdout)
                         
                         # Swap player scores as we swaped their reservations (normalise)
                         if player1 != 0:
