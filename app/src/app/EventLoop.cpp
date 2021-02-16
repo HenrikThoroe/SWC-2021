@@ -56,7 +56,7 @@ namespace App {
             replay.insert(0, "/api/v1/replay/reservation/");
             
             // Make request
-            httplib::Client httpClient("http://swc-blokus.net");
+            httplib::Client httpClient("https://swc-blokus.net");
 
             httplib::Result res = httpClient.Get(replay.c_str());
 
