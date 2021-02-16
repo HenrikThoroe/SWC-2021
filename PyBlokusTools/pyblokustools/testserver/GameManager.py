@@ -81,15 +81,18 @@ class GameManager():
         
         self.kill = kill
         
-        sleep(0.5) # See Bugreport on Discord -> Server is overwhelmed lmao
-        self.serverClient.send(f'<pause roomId="{self._roomId}" pause="false" />') # Start game
+        #? These are commented out as per 
+        # sleep(0.5) # See Bugreport on Discord -> Server is overwhelmed lmao
+        # self.serverClient.send(f'<pause roomId="{self._roomId}" pause="false" />') # Start game
         
-        timer = int(time())
+        started = False
+        timer   = int(time())
         # Handle server messages
         while True:
             messages: List[Message] = []
             if inp := self.serverClient.receive():
-                timer = False # Deactivate redeemed reservations test
+                started = True # Deactivate redeemed reservations test
+                timer   = int(time()) # Reset timer to detect timeouts
                 XMLParser.splitAndParseMessages(inp, messages)
                 
                 for msg in messages:
@@ -112,8 +115,8 @@ class GameManager():
                             client2.wait()
                         
                         # Save client logs
-                        self.logger.logClient(0, client1.stdout)
-                        self.logger.logClient(1, client2.stdout)
+                        self.logger.logClient(player1, client1.stdout)
+                        self.logger.logClient(player2, client2.stdout)
                         
                         # Swap player scores as we swaped their reservations (normalise)
                         if player1 != 0:
@@ -147,7 +150,7 @@ class GameManager():
 
                 messages.clear()
             else:
-                if timer and (time() - timer) > 25:
+                if not started and (time() - timer) > 25:
                     #? Game didnt start? -> Try out both gameCodes to see which client failed to connect
                     rTCPClient1, rTCPClient2 = self.tcpFactory(), self.tcpFactory()
                     
@@ -173,6 +176,8 @@ class GameManager():
                         self._l.error(f"Client '{self.clientNames[player2]}' did not redeem its reservation")
                     
                     return None
+                elif (time() - timer) > 60:
+                    raise RuntimeWarning("Did not recieve any message from the server for 60sec")
     
     def _resetState(self) -> None:
         """Reset own state before running new game
@@ -204,7 +209,7 @@ class GameManager():
         
         #? Create new game
         # Request
-        self.serverClient.send(f'<prepare gameType="swc_2021_blokus" pause="true"><slot displayName="{client1}" canTimeout="{canTimeout1}" /><slot displayName="{client2}" canTimeout="{canTimeout2}" /></prepare>')
+        self.serverClient.send(f'<prepare gameType="swc_2021_blokus" pause="false"><slot displayName="{client1}" canTimeout="{canTimeout1}" /><slot displayName="{client2}" canTimeout="{canTimeout2}" /></prepare>')
         
         # Handling response
         inp = self.serverClient.receive()

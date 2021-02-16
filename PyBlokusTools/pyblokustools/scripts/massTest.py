@@ -10,8 +10,6 @@ from pyblokustools.helpers.platform import assertPlatform
 from pyblokustools.version import VERSION
 
 def massTest() -> None:
-    assertPlatform()
-    
     def parseOn_args(value: str) -> List[str]:
         return value.split()
     

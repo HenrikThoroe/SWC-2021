@@ -2,10 +2,12 @@ from typing import Optional, Callable, Tuple, List
 
 import os
 import atexit
-import tempfile
-import zipfile
 import logging
 import signal
+from pathlib import Path
+from shutil import copy2
+from zipfile import ZipFile
+from tempfile import TemporaryDirectory
 from time import sleep, time
 from functools import wraps
 from datetime import timedelta
@@ -67,6 +69,7 @@ class TestServer():
         self.serverPath = self._fetchServer()
         
         self.serverProc: Popen
+        self.tmpDir = TemporaryDirectory(prefix=f"blokusmass_")
         self.client, tcpFactory = self._startServer()
         
         self.manager = GameManager(
@@ -135,18 +138,15 @@ class TestServer():
                     url = asset['browser_download_url']
                     
                     try:
-                        with tempfile.TemporaryFile() as file:
+                        os.makedirs(os.path.dirname(self.config.serverPath), exist_ok=True)
+                        with open(self.config.serverPath, 'wb') as file:
                             file.write(get(url, allow_redirects=True).content)
-                            file.seek(0)
                             
-                            with zipfile.ZipFile(file, 'r') as serverZip:
-                                serverZip.extractall(os.path.dirname(self.config.serverPath))
-                            
-                            self.config.serverHash    = asset['node_id']
-                            self.config.serverVersion = tag_name 
-                            
-                            self._l.info(f"Using freshly downloaded server version {tag_name}")
-                            return self.config.serverPath
+                        self.config.serverHash    = asset['node_id']
+                        self.config.serverVersion = tag_name 
+                        
+                        self._l.info(f"Using freshly downloaded server version {tag_name}")
+                        return self.config.serverPath
                     except:
                         self._l.warning(f"Could not download server verion {tag_name}")
                         return fallback()
@@ -164,22 +164,35 @@ class TestServer():
             TCPClient               -- Connected and authenticated client
             Callable[[], TCPClient] -- Factory function to create new connected TCPClients
         """
+        # Copy backend to tmpDir and extract its contents
+        with ZipFile(copy2(self.config.serverPath, self.tmpDir.name), 'r') as serverZip:
+            serverZip.extractall(self.tmpDir.name)
+        
         self.serverProc = Popen(
-            ['sh', self.config.serverPath, '-p', str(self.serverPort)],
+            [
+                'bash',
+               Path(f"{self.tmpDir.name}/start.sh").resolve().as_posix(),
+                '-p',
+                str(self.serverPort),
+            ],
             stdout     = PIPE,
             stderr     = STDOUT,
-            cwd        = os.path.dirname(self.config.serverPath),
+            cwd        = self.tmpDir.name,
             preexec_fn = os.setsid,
             )
         
-        def killSWCServer() -> None:
+        def cleanup() -> None:
             """Called before termination of TestServer to make sure the SWC server is shut down
             """
+            #* Kill SWC-Server
             os.killpg(os.getpgid(self.serverProc.pid), signal.SIGTERM)
             self.serverProc.kill()
             self.serverProc.wait()
+            
+            #* Clean up tmpDir
+            self.tmpDir.cleanup()
         
-        atexit.register(killSWCServer)
+        atexit.register(cleanup)
         
         os.set_blocking(self.serverProc.stdout.fileno(), False) # type: ignore
         
