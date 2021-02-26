@@ -10,6 +10,7 @@
 #include "json.hpp"
 
 #include "EventLoop.hpp"
+#include "constants.hpp"
 #include "debug.hpp"
 
 using namespace boost::program_options;
@@ -53,10 +54,10 @@ namespace App {
 
             // Prepare endpoint
             replay.insert(36, "/");
-            replay.insert(0, "/api/v1/replay/reservation/");
+            replay.insert(0, Constants::REPLAY_RESERVATION_PATH);
             
             // Make request
-            httplib::Client httpClient("https://swc-blokus.net");
+            httplib::Client httpClient(Constants::REPLAY_SERVER_PATH);
 
             httplib::Result res = httpClient.Get(replay.c_str());
 
@@ -70,7 +71,7 @@ namespace App {
             JSON json = JSON::parse(res->body);
             std::string raw_replay;
 
-            hostname    = "swc-blokus.net";
+            hostname    = std::string(Constants::REPLAY_HOSTNAME);
             port        = json["port"].get<uint16_t>();
             reservation = json["reservation"].get<std::string>();
             raw_replay  = json["replay"].get<std::string>();
