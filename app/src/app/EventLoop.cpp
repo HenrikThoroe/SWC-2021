@@ -81,7 +81,7 @@ namespace App {
             messages.reserve(101); // Maximum amount of messages is 101
 
             messageBroker.parseReplay(raw_replay, messages);
-            for (Message& pMsg : messages) {
+            for (const Message& pMsg : messages) {
                 actOnMessage(pMsg);
             }
         }
@@ -111,7 +111,7 @@ namespace App {
                 for (std::string& msg : *msgQueue) {
                     messageBroker.parse(msg, messages);
 
-                    for (Message& pMsg : messages) {
+                    for (const Message& pMsg : messages) {
                         gameOver = actOnMessage(pMsg);
 
                         if (gameOver) {
