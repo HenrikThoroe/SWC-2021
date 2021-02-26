@@ -25,7 +25,7 @@ namespace App {
         xmlParser.splitAndParseMessages(msg, result);
     }
 
-    void MessageBroker::parseReplay(std::string& msg, std::vector<Message>& result) {
+    void MessageBroker::parseReplay(const std::string& msg, std::vector<Message>& result) {
         xmlParser.splitAndParseReplay(msg, result);
     }
 

@@ -63,7 +63,7 @@ namespace App {
              * 
              * @returns Void -> Stores parsed messages in 'result' param
              */
-            void parseReplay(std::string& msg, std::vector<Message>& result);
+            void parseReplay(const std::string& msg, std::vector<Message>& result);
 
             /**
              * @brief Dispatch a Message to the gameserver
