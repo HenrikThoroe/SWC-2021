@@ -146,14 +146,9 @@ namespace App {
                 );
             } else {
                 //? Normal move
-
-                // Wrap xml compliant messages for easier parsing
-                line.insert(0, "<A>");
-                line.append("</A>");
-
-
+                
                 pugi::xml_document xmlDoc;
-                xmlDoc.load_string(input.data());
+                xmlDoc.load_string(line.data());
 
                 pugi::xml_node move = xmlDoc.first_child();
                 pugi::xml_node piece = move.first_child();
