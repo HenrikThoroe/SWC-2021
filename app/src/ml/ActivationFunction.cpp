@@ -8,6 +8,10 @@ namespace ML::ActivationFunction {
         return 1 / (1 + expf(-x));
     }
 
+    float stretchedSigmoid(float x) {
+        return 2'000 * (1 / (1 + expf(-x / 1'000))) - 1'000;
+    }
+
     float leakyReLU(float x) {
         if (x > 0) {
             return x;

@@ -17,7 +17,10 @@ namespace ML::ActivationFunction {
         BINARY,
 
         /// Tangens Hyperbolicus function. [-1, 1]
-        TANH
+        TANH,
+
+        /// Sigmoid transformed to have an upper bound of 1'000 and a lower bound of -1'000
+        STRETCHED_SIGMOID
     };
 
     /// Returns the computational expensive sigmoid value of x
@@ -34,5 +37,8 @@ namespace ML::ActivationFunction {
 
     /// Return 0 if x <= 0 otherwise 1
     float binary(float x);
+
+    /// Returns the computational expensive sigmoid value of x
+    float stretchedSigmoid(float x);
 
 }

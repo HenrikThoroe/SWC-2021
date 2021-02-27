@@ -122,6 +122,8 @@ namespace ML {
                     activations.push_back(ActivationFunction::Type::BINARY);
                 } else if (activation == "tanh") {
                     activations.push_back(ActivationFunction::Type::TANH);
+                } else if (activation == "strSig") {
+                    activations.push_back(ActivationFunction::Type::STRETCHED_SIGMOID);
                 } else {
                     throw std::runtime_error("Unknown activation function: " + activation);
                 }

@@ -75,6 +75,10 @@ namespace ML {
                     output[i] = ActivationFunction::tanh(dotProducts[i]);
                     break;
 
+                case ActivationFunction::Type::STRETCHED_SIGMOID:
+                    output[i] = ActivationFunction::stretchedSigmoid(dotProducts[i]);
+                    break;
+
                 default:
                     throw std::runtime_error("Unknown Activation Function " + std::to_string(static_cast<int>(activation)));
             }
