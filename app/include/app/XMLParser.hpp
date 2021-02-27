@@ -117,7 +117,7 @@ namespace App {
              * 
              * @returns Move index corresponding to XML node
              */
-            const int computeMoveIndex(const pugi::xml_node piece) const;
+            int computeMoveIndex(const pugi::xml_node piece) const;
 
             /**
              * @brief Translate name of piece to its id

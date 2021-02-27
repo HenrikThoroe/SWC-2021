@@ -146,7 +146,7 @@ namespace App {
                 );
             } else {
                 //? Normal move
-                
+
                 pugi::xml_document xmlDoc;
                 xmlDoc.load_string(line.data());
 
@@ -387,7 +387,7 @@ namespace App {
         result.emplace_back(MsgType::EXCEPT, xmlStringWriter.result);
     }
 
-    inline const int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
+    inline int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
         //? Rotation
         const char* pieceRotation = piece.attribute("rotation").value();
         uint8_t rotation;
