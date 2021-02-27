@@ -400,7 +400,7 @@ namespace Model {
         
         if (!gameOver && GameState::useNetwork && getTurn() <= GameState::networkBoundary) {
             float prediction = GameState::evalNetwork->update(board.getSerializedFields())[0];
-            return static_cast<int>(prediction * 1'000'000);
+            return static_cast<int>(prediction * 1'000.0f);
         }
 
         const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
