@@ -50,7 +50,9 @@ namespace App {
 
         //? Redeem a replay reservation if given
         if (replay != "") {
-            if (replay.length() != 36) throw std::runtime_error("ReplayReservation has to be 36 characters long");
+            if (replay.length() != 36) {
+                throw std::runtime_error("ReplayReservation has to be 36 characters long");
+            }
 
             // Prepare endpoint
             replay.insert(36, "/");
