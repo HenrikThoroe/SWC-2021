@@ -142,7 +142,7 @@ namespace Model {
         return true;
     }
 
-    inline int GameState::createIndex(const DeployedPiece* piece, bool includeColor) const {
+    int GameState::createIndex(const DeployedPiece* piece, bool includeColor) const {
         int idx = 
             piece->origin.x +
             piece->origin.y * 20 +

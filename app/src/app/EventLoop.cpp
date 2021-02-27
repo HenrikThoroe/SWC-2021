@@ -145,7 +145,7 @@ namespace App {
         messageBroker.sendJoinReservedRequest(reservation);
     }
 
-    inline bool EventLoop::actOnMessage(const Message& msg) {
+    bool EventLoop::actOnMessage(const Message& msg) {
         switch (msg.type) {
             case MsgType::JOINED:
                 std::cout << "\033[1;37mJoined Room '\033[1;36m" + std::any_cast<std::string>(msg.payload) + "\033[1;37m'\033[0m" << std::endl;
@@ -216,7 +216,7 @@ namespace App {
         return false;
     }
 
-    inline void EventLoop::runTask() const {
+    void EventLoop::runTask() const {
         if (!backgroundQueue.empty()) {
             switch (backgroundQueue.front().run(messageReceivedFlag)) {
                 case TaskStatus::DONE:

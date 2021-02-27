@@ -262,7 +262,7 @@ namespace App {
 
     //? Specific message parsers
 
-    inline void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
+    void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
 
         switch (turn % 4) {
@@ -326,7 +326,7 @@ namespace App {
         }
     }
 
-    inline void XMLParser::parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
         pugi::xml_node score1 = data.first_child().next_sibling();
         pugi::xml_node score2 = score1.next_sibling();
 
@@ -370,24 +370,24 @@ namespace App {
         );
     }
 
-    inline void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
         // Checks the first character of the color attribute on the data node in the welcome message to determine own PlayerColor
         result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'O' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
     }
     
-    inline void XMLParser::parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
+    void XMLParser::parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
         strcpy(roomId, node.attribute("roomId").value());
         result.emplace_back(MsgType::JOINED, std::string(roomId));
     }
 
-    inline void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
         Util::XMLStringWriter xmlStringWriter;
         data.print(xmlStringWriter, " ", pugi::format_default);
 
         result.emplace_back(MsgType::EXCEPT, xmlStringWriter.result);
     }
 
-    inline int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
+    int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
         //? Rotation
         const char* pieceRotation = piece.attribute("rotation").value();
         uint8_t rotation;
@@ -454,7 +454,7 @@ namespace App {
         return (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
     }
 
-    inline uint8_t XMLParser::getPieceId(const char* pieceName) const {
+    uint8_t XMLParser::getPieceId(const char* pieceName) const {
         if (!strcmp(pieceName, "MONO")) {
             return 0;
         } else if (!strcmp(pieceName, "DOMINO")) {
@@ -502,7 +502,7 @@ namespace App {
         throw std::runtime_error("Piece of type '" + std::string(pieceName) + "' not found");
     }
 
-    inline const char* XMLParser::getColor(const Model::PieceColor& colorId) const {
+    const char* XMLParser::getColor(const Model::PieceColor& colorId) const {
         switch (colorId) {
             case Model::PieceColor::RED:
                 return "RED";
@@ -521,11 +521,11 @@ namespace App {
         }
     }
 
-    inline const Model::PieceColor& XMLParser::getCurrentColor() const {
+    const Model::PieceColor& XMLParser::getCurrentColor() const {
         return turnColor;
     }
 
-    inline const char* XMLParser::getCurrentColorName() const {
+    const char* XMLParser::getCurrentColorName() const {
         return getColor(turnColor);
     }
 
