@@ -92,4 +92,7 @@ namespace Logic {
         return result.move;
     }
 
+    const Model::GameState& GameManager::getManagedState() const {
+        return state;
+    }
 }

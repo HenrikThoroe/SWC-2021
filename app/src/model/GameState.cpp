@@ -517,6 +517,10 @@ namespace Model {
         return false;
     }
 
+    const Board& GameState::getBoard() const {
+        return board;
+    }
+
     std::ostream& operator << (std::ostream& os, const GameState& state) {
         os << "Turn: " << static_cast<int>(state.turn) << std::endl;
         os << "Player: " << state.getCurrentPlayer().color << std::endl;
