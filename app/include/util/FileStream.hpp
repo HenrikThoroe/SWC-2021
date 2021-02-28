@@ -56,18 +56,18 @@ namespace Util::Log {
     };
 
     /// A FileStream writing to the default log file
-    FileStream out(OutputFile::DEFAULT);
+    inline FileStream out(OutputFile::DEFAULT);
 
     /**
      * @brief A FileStream writing to the "sent" log file
      * @note The stream should be only fed with XML strings sent to the server.
      */
-    FileStream sent(OutputFile::SENT);
+    inline FileStream sent(OutputFile::SENT);
 
     /**
      * @brief A FileStream writing to the "received" log file
      * @note The stream should be only fed with XML strings received from the server.
      */
-    FileStream received(OutputFile::RECEIVED);
+    inline FileStream received(OutputFile::RECEIVED);
 
 }
