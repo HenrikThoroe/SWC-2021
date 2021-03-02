@@ -1,0 +1,8 @@
+FROM ubuntu:20.04
+
+RUN apt update && \
+    apt install -y libboost-program-options1.71.0 && \ 
+    apt install -y libboost-atomic1.71.0 && \ 
+    apt install -y libboost-system1.71.0
+
+ENTRYPOINT [ "/bin/bash" ]
