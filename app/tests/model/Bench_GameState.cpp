@@ -96,53 +96,62 @@ TEST_CASE("Bench Game State", "[benchmark]") {
     };
 
     BENCHMARK("Full Run Static") {
-        std::stack<const Move*> performedMoves;
         std::vector<const Move*> moves {};
 
-        for (int i = 0; i < 100; ++i) {       
-            for (int x = 0; x < 50; ++x) {
+        const auto bench = [&state, &moves](int depth)->void {
+            auto bench_imp = [&state, &moves](int depth, auto& bench_ref) mutable {
+                if (depth == 0) {
+                    return;
+                }
+
                 moves.clear();
                 state.assignPossibleMoves(moves);
                 
-                if (moves.size() == 0) {
-                    state.performMove(nullptr);
-                    performedMoves.push(nullptr);
-                } else {
-                    state.performMove(moves[0]);
-                    performedMoves.push(moves[0]);
+                const Move* move = nullptr;
+                if (moves.size() > 0) {
+                    move = moves[0];
                 }
-            }
 
-            for (int x = 0; x < 50; ++x) {
-                state.revertMove(performedMoves.top());
-                performedMoves.pop();
-            }
+                state.performMove(move);
+                bench_ref(depth - 1, bench_ref);
+                state.revertMove(move);
+            };
+            return bench_imp(depth, bench_imp);
+        };
+
+        for (int i = 0; i < 100; ++i) {       
+            bench(50);
         }
     };
 
     BENCHMARK("Full Run Dynamic") {
-        std::stack<const Move*> performedMoves;
         std::vector<const Move*> moves {};
         int index;
 
-        for (int i = 0; i < 100; ++i) {       
-            for (int x = 0; x < 50; ++x) {
+        const auto bench = [&state, &moves, &index](int depth)->void {
+            auto bench_imp = [&state, &moves, &index](int depth, auto& bench_ref) mutable {
+                if (depth == 0) {
+                    return;
+                }
+
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                if (moves.size() == 0) {
-                    state.performMove(nullptr);
-                    performedMoves.push(nullptr);
-                } else {
+                
+                const Move* move = nullptr;
+                if (moves.size() > 0) {
                     index = rand() % moves.size();
-                    state.performMove(moves[index]);
-                    performedMoves.push(moves[index]);
+                    move = moves[index];
                 }
-            }
 
-            for (int x = 0; x < 50; ++x) {
-                state.revertMove(performedMoves.top());
-                performedMoves.pop();
-            }
+                state.performMove(move);
+                bench_ref(depth - 1, bench_ref);
+                state.revertMove(move);
+            };
+            return bench_imp(depth, bench_imp);
+        };
+
+        for (int i = 0; i < 100; ++i) {       
+            bench(50);
         }
     };
 
