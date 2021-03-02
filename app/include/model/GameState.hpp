@@ -30,9 +30,6 @@ namespace Model {
             /// Collection of all available players.
             const std::array<Player, 2> players;
 
-            /// A stack (first-in last-out) which tracks the performed moves.
-            std::stack<std::optional<DeployedPiece>> performedMoves {};
-
             /// A cache to improve move calculation speed.
             tsl::robin_map<uint64_t, MoveCacheEntry> movesCache;
 
@@ -103,7 +100,7 @@ namespace Model {
             void performMove(const Move* move);
 
             /// Reverts the last performed move.
-            void revertLastMove();
+            void revertMove(const Move* move);
 
             /// Checks whether the specified piece can be bedployed on the board.
             bool canBeDeployed(const DeployedPiece& piece);

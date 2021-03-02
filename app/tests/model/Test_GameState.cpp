@@ -40,7 +40,7 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.getTurn() == 4);
 
         for (int i = 0; i < 4; ++i) {
-            state.revertLastMove();
+            state.revertMove(nullptr);
         }
     }
 
@@ -69,7 +69,7 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.getLastPieceColor() == PieceColor::GREEN);
 
         for (int i = 0; i < 4; ++i) {
-            state.revertLastMove();
+            state.revertMove(nullptr);
         }
     }
 
@@ -88,7 +88,7 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.getCurrentPieceColor() == PieceColor::YELLOW);
     }
 
-    state.revertLastMove();
+    state.revertMove(&m1);
 
     uint64_t initialHash = state.hash();
     state.performMove(nullptr);
@@ -100,7 +100,7 @@ TEST_CASE("Test Game State", "[model]") {
         REQUIRE(state.hash() == initialHash);
     }
 
-    state.revertLastMove();
+    state.revertMove(nullptr);
 
     SECTION("Can Revert Move") {
         REQUIRE(state.getTurn() == 0);
@@ -110,6 +110,7 @@ TEST_CASE("Test Game State", "[model]") {
 
     SECTION("Can Create and Revert Hashes") {
         std::stack<uint64_t> hashes {};
+        std::stack<const Move*> performedMoves;
 
         for (int x = 0; x < 30; ++x) {
             std::vector<const Move*> moves = state.getPossibleMoves();
@@ -121,18 +122,21 @@ TEST_CASE("Test Game State", "[model]") {
             int index = rand() % moves.size();
 
             state.performMove(moves[index]);
+            performedMoves.push(moves[index]);
             hashes.push(state.hash());
         }
 
         for (int x = 0; x < 30; ++x) {
             REQUIRE(hashes.top() == state.hash());
             hashes.pop();
-            state.revertLastMove();
+            state.revertMove(performedMoves.top());
+            performedMoves.pop();
         }
     }
 
     SECTION("Has no Collisions") {
         std::unordered_map<uint64_t, std::bitset<808>> map {};
+        std::stack<const Move*> performedMoves;
 
         for (int it = 0; it < 10000; ++it) {
             for (int x = 0; x < 25; ++x) {
@@ -150,6 +154,7 @@ TEST_CASE("Test Game State", "[model]") {
                 }
 
                 state.performMove(moves[index]);
+                performedMoves.push(moves[index]);
                 
                 if (map.find(state.hash()) == map.end()) {
                     map[state.hash()] = state.uniqueHash();
@@ -163,7 +168,8 @@ TEST_CASE("Test Game State", "[model]") {
             }
 
             for (int x = 0; x < 25; ++x) {
-                state.revertLastMove();
+                state.revertMove(performedMoves.top());
+                performedMoves.pop();
             }
         }
     }
@@ -171,24 +177,28 @@ TEST_CASE("Test Game State", "[model]") {
     SECTION("Can Free Memory") {
         const Process p = Process();
         GameState state = GameState(20);
+        std::stack<const Move*> performedMoves;
         std::vector<const Move*> moves {};
         int index;
         const uint64_t acceptance = 500'000; // Accept an unaccuracy of 500KB
-        const auto fillMemory = [&state, &moves, &index] {
+        const auto fillMemory = [&state, &performedMoves, &moves, &index] {
             for (int i = 0; i < 10000; ++i) {       
                 for (int x = 0; x < 20; ++x) {
                     moves.clear();
                     state.assignPossibleMoves(moves);
                     if (moves.size() == 0) {
                         state.performMove(nullptr);
+                        performedMoves.push(nullptr);
                     } else {
                         index = rand() % moves.size();
                         state.performMove(moves[index]);
+                        performedMoves.push(moves[index]);
                     }
                 }
 
                 for (int x = 0; x < 20; ++x) {
-                    state.revertLastMove();
+                    state.revertMove(performedMoves.top());
+                    performedMoves.pop();
                 }
             }
         };

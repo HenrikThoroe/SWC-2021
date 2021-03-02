@@ -304,7 +304,7 @@ namespace Logic {
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = max(alpha, min, depth - 1);
-            state.revertLastMove();
+            state.revertMove(move);
             searchedChildren += 1;
 
             if (score < min) {
@@ -345,7 +345,7 @@ namespace Logic {
         for (const Model::Move* move : moves) {
             state.performMove(move);
             int score = min(max, beta, depth - 1);
-            state.revertLastMove();
+            state.revertMove(move);
             searchedChildren += 1;
 
             if (score > max) {

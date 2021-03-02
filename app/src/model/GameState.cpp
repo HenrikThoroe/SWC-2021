@@ -89,25 +89,19 @@ namespace Model {
             availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] -= 1;
             board.dropPiece(move);
             hashValue ^= hashpool[createIndex(move)];
-            performedMoves.push(*move);
-        } else {
-            performedMoves.push(std::nullopt);
         }
 
         turn += 1;
     }
 
-    void GameState::revertLastMove() {
-        std::optional<DeployedPiece>& piece = performedMoves.top();
-
-        if (piece.has_value()) {
-            pushHistory[static_cast<uint8_t>(piece.value().color) - 1].pop();
-            availablePieces[static_cast<uint8_t>(piece.value().color) - 1][piece.value().pieceId] += 1;
-            board.removePiece(piece.value());
-            hashValue ^= hashpool[createIndex(&piece.value())];
+    void GameState::revertMove(const Move* move) {
+        if (move != nullptr) {
+            pushHistory[static_cast<uint8_t>(move->color) - 1].pop();
+            availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] += 1;
+            board.removePiece(move);
+            hashValue ^= hashpool[createIndex(move)];
         }
         
-        performedMoves.pop();
         turn -= 1;
     }
 
