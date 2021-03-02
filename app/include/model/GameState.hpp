@@ -129,7 +129,7 @@ namespace Model {
 
             void freeMemory(float percent = 0.5);
 
-            /// Get a const refference to the incapsulated Board
+            /// Get a const reference to the encapsulated Board
             const Board& getBoard() const;
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);

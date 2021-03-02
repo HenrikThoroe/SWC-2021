@@ -65,7 +65,7 @@ namespace Logic {
             void handleResults(const App::ResultMsg& message) const;
 
             /**
-             * @brief Get a const refference to the incapsulated GameState
+             * @brief Get a const reference to the encapsulated GameState
              * 
              * @returns Managed GameState
              */
