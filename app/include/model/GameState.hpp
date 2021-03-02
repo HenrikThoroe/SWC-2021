@@ -99,7 +99,7 @@ namespace Model {
             /// Performs the given move on the board. If nullptr is passed, the move will be skipped according to the official game rules.
             void performMove(const Move* move);
 
-            /// Reverts the last performed move.
+            /// Reverts the given move on the board. This is the inverse of performMove.
             void revertMove(const Move* move);
 
             /// Checks whether the specified piece can be bedployed on the board.
