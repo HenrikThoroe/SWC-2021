@@ -63,6 +63,13 @@ namespace Logic {
             const Model::PlayerColor& getPlayerColor() const;
 
             void handleResults(const App::ResultMsg& message) const;
+
+            /**
+             * @brief Get a const reference to the encapsulated GameState
+             * 
+             * @returns Managed GameState
+             */
+            const Model::GameState& getManagedState() const;
     };
 
 }
