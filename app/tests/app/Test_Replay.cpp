@@ -75,7 +75,7 @@ TEST_CASE("Test Replays", "[app]") {
     }
 
     SECTION("Can parse complete game replay") {
-        #pragma region InpSmallReplay
+        #pragma region InpCompleteReplay
         inp =   "startPiece:PENTO_Z\n"
                 "<data class=\"sc.plugin2021.SetMove\"><piece color=\"BLUE\" kind=\"PENTO_Z\" rotation=\"NONE\" isFlipped=\"false\"><position x=\"0\" y=\"0\" /></piece></data>\n"
                 "<data class=\"sc.plugin2021.SetMove\"><piece color=\"YELLOW\" kind=\"PENTO_Z\" rotation=\"RIGHT\" isFlipped=\"false\"><position x=\"17\" y=\"0\" /></piece></data>\n"
