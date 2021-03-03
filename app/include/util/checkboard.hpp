@@ -5,11 +5,11 @@
 
 #include "Board.hpp"
 
-/// Type that holds positions on the board
-typedef std::array<int, 2> BoardPosition;
-typedef std::vector<BoardPosition> BoardPositions;
-
 namespace Util {
+
+    /// Type that holds positions on the board
+    typedef std::array<int, 2> BoardPosition;
+    typedef std::vector<BoardPosition> BoardPositions;
 
     /**
      * @brief Check if colors occupy specific positions on the board (ONLY FOR TESTS)
