@@ -10,12 +10,12 @@ namespace Util {
         // Vector that contains invalid positions
         BoardPositions invalid;
 
-        const auto makeHash = [](const BoardPosition& pos)->std::string {
-            return std::to_string(pos[0]) + "-" + std::to_string(pos[1]);
+        const auto makeHash = [](const BoardPosition& pos)-> uint64_t {
+            return (static_cast<uint64_t>(pos[0]) << 32) ^ static_cast<uint64_t>(pos[1]);
         };
 
         //? First compile all colors to avoid expensive looping
-        std::unordered_map<std::string, Model::PieceColor> expectedColors;
+        std::unordered_map<uint64_t, Model::PieceColor> expectedColors;
 
         const auto compilePositions = [&makeHash, &expectedColors, &invalid](const BoardPositions& positions, const Model::PieceColor& color)->void {
             for (const BoardPosition& pos : positions) {
