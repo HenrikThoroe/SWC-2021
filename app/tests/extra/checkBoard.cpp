@@ -1,10 +1,9 @@
 #include <unordered_map>
-#include <string>
 
 #include "checkboard.hpp"
 #include "color.hpp"
 
-namespace Util {
+namespace TestExtra {
 
     BoardPositions checkBoard(const Model::Board& board, const BoardPositions& blue, const BoardPositions& red, const BoardPositions& yellow, const BoardPositions& green) {
         // Vector that contains invalid positions

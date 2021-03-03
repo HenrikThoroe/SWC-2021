@@ -6,7 +6,7 @@
 using namespace App;
 using namespace Logic;
 using namespace Model;
-using namespace Util;
+using namespace TestExtra;
 
 TEST_CASE("Test Replays", "[app]") {
     auto parser = XMLParser();

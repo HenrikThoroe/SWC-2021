@@ -5,7 +5,7 @@
 
 #include "Board.hpp"
 
-namespace Util {
+namespace TestExtra {
 
     /// Type that holds positions on the board
     typedef std::array<int, 2> BoardPosition;
