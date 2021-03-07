@@ -79,21 +79,25 @@ namespace Logic {
         // Pull both colors to the opposite corners to build a triangle
 
         if (gameState->getTurn() < 20) {
-            return pullFactor(colors[0]) * pullFactor(colors[1]);
+            return pullFactor(colors[0]) * pullFactor(colors[1]) + (pullFactor(colors[0], true) * pullFactor(colors[1], true) / 4);
         } 
 
         //* Mid Game
         // Pull each color to the opposite corner with the same y value and optimize drop positions
         // This will build two more triangles
 
+        const Util::Rect c1Rect = getBoundingRect(colors[0]);
+        const Util::Rect c2Rect = getBoundingRect(colors[0]);
+        const int sizeFactor = c1Rect.size() * c2Rect.size();
+
         if (gameState->getTurn() < 40) {
-            return pullFactor(colors[0], true) * pullFactor(colors[1], true) + dropFactor(colors, opponentColors);
+            return pullFactor(colors[0], true) * pullFactor(colors[1], true) + dropFactor(colors, opponentColors) + (pullFactor(colors[0]) * pullFactor(colors[1]) / 4) + sizeFactor;
         }
 
         //* Late Game
         // Use created space by deploying everywhere and optimize drop positions with an higher influence
 
-        return dropFactor(colors, opponentColors) * 100 + pullFactor(colors[0]) * pullFactor(colors[1]);;
+        return dropFactor(colors, opponentColors) * 10 + pullFactor(colors[0]) + pullFactor(colors[1]) + sizeFactor;
     }
 
 }
