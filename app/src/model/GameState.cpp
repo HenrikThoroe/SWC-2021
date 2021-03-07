@@ -8,7 +8,7 @@
 
 namespace Model {
 
-    GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
+    GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece), strategy(this) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
         const Util::Position bottomLeft = Util::Position(0, Constants::BOARD_ROWS - 1);
@@ -25,6 +25,11 @@ namespace Model {
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
         allPieces.reserve(Constants::PIECE_VARIANTS);
+
+        startPositions[0] = { 0, 0 };
+        startPositions[1] = { 0, 0 };
+        startPositions[2] = { 0, 0 };
+        startPositions[3] = { 0, 0 };
 
         for (uint8_t color = 0; color < 4; ++color) {
             for (uint8_t pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
@@ -57,6 +62,10 @@ namespace Model {
         return players[turn % 2];
     }
 
+    const Player& GameState::getOtherPlayer() const {
+        return players[!(turn % 2)];
+    }
+
     const PieceColor& GameState::getCurrentPieceColor() const {
         const int idx = turn % 4;
         return getCurrentPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
@@ -84,21 +93,27 @@ namespace Model {
     }
 
     void GameState::performMove(const Move* move) {
+        if (turn < 4) {
+            const int x = move->origin.x > 4 ? 19 : 0;
+            const int y = move->origin.y > 4 ? 19 : 0;
+            startPositions[static_cast<uint8_t>(move->color) - 1] = { x, y };
+        }
+
         if (move != nullptr) {
             pushHistory[static_cast<uint8_t>(move->color) - 1].push(move->pieceId);
             availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] -= 1;
             board.dropPiece(move);
             hashValue ^= hashpool[createIndex(move)];
-            performedMoves.push(*move);
+            performedMoves.push_back(*move);
         } else {
-            performedMoves.push(std::nullopt);
+            performedMoves.push_back(std::nullopt);
         }
 
         turn += 1;
     }
 
     void GameState::revertLastMove() {
-        std::optional<DeployedPiece>& piece = performedMoves.top();
+        std::optional<DeployedPiece>& piece = performedMoves.back();
 
         if (piece.has_value()) {
             pushHistory[static_cast<uint8_t>(piece.value().color) - 1].pop();
@@ -107,7 +122,7 @@ namespace Model {
             hashValue ^= hashpool[createIndex(&piece.value())];
         }
         
-        performedMoves.pop();
+        performedMoves.pop_back();
         turn -= 1;
     }
 
@@ -498,7 +513,7 @@ namespace Model {
             opponentColorBonus = qualifiers[2] * remainders[2] + qualifiers[3] * remainders[3];
         }
 
-        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor;
+        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor + strategy.strategyPoints(colors, opponentColors);
     }
 
     bool GameState::isGameOver() const {
@@ -519,6 +534,10 @@ namespace Model {
 
     const Board& GameState::getBoard() const {
         return board;
+    }
+
+    const std::vector<std::optional<DeployedPiece>>& GameState::getMoveHistory() const {
+        return performedMoves;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {
