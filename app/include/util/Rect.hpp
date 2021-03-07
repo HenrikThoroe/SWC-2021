@@ -40,6 +40,9 @@ namespace Util {
 
         /// The occupied area of the rectangle
         int size() const;
+
+        /// Returns the size of the intersected area of two rects
+        int intersection(const Rect& other) const;
         
     };
 

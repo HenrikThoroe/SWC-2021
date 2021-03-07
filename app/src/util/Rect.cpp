@@ -27,4 +27,27 @@ namespace Util {
         return width() * height();
     }
 
+    int Rect::intersection(const Rect& other) const {
+        int xIntersection = 0;
+        int yIntersection = 0;
+
+        if (maxX > other.maxX) {
+            xIntersection = other.maxX - minX;
+        } else {
+            xIntersection = maxX - other.minX;
+        }
+
+        if (maxY > other.maxY) {
+            yIntersection = other.maxY - minY;
+        } else {
+            yIntersection = maxY - other.minY;
+        }
+
+        if (xIntersection < 0 || yIntersection < 0) {
+            return 0;
+        }
+
+        return (xIntersection + 1) * (yIntersection + 1);
+    }
+
 }

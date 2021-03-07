@@ -26,4 +26,16 @@ TEST_CASE("Rect Test", "[util]") {
         REQUIRE(joined.height() == 11);
         REQUIRE(joined.size() == 121);
     }
+
+    SECTION("Can intersect") {
+        Rect main = Rect(0, 4, 0, 4);
+        Rect noIntersection = Rect(5, 7, 0, 3);
+        Rect after = Rect(3, 5, 0, 4);
+        Rect before = Rect(-2, 2, 1, 5);
+
+        REQUIRE(main.intersection(main) == main.size());
+        REQUIRE(main.intersection(noIntersection) == 0);
+        REQUIRE(main.intersection(after) == 10);
+        REQUIRE(main.intersection(before) == 12);
+    }
 }
