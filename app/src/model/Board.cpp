@@ -104,6 +104,43 @@ namespace Model {
         throw std::runtime_error("Cannot access drop positions. Only RED, BLUE, GREEN and YELLOW are allowed.");
     }
 
+    int Board::estimateDropPositions(const PieceColor& firstColor, const PieceColor& secondColor) const {
+        const RawFieldSet& firstFields = dropPositions[static_cast<uint8_t>(firstColor) - 1];
+        const RawFieldSet& secondFields = dropPositions[static_cast<uint8_t>(secondColor) - 1];
+        int count = 0;
+
+        for (int row = 0; row < 20; ++row) {
+            for (int col = 0; col < 20; ++col) {
+                const bool firstIsPossible = firstFields[row][col] > 0;
+                const bool secondIsPossible = secondFields[row][col] > 0;
+                const bool isNotOccupied = this->fields[row][col] == PieceColor::NONE;
+
+                if ((firstIsPossible || secondIsPossible) && isNotOccupied) {
+                    const Util::Position position = Util::Position(col, row);
+                    const std::array<Util::Position, 4> edges = position.getEdges();
+                    bool valid = 2;
+
+                    // Do not include position in results if another piece of the same color is located at the edge of the position.
+                    for (const Util::Position& edge : edges) {
+                        const PieceColor& color = at(edge);
+                        if (color == firstColor) {
+                            valid -= 1;
+                        }
+                        if (color == secondColor) {
+                            valid -= 1;
+                        }
+                    }
+
+                    if (valid > 0) {
+                        count += 1;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
     bool Board::canDrop(const PieceColor& color, const Util::Position& position) const {
         return dropPositions[static_cast<uint8_t>(color) - 1][position.y][position.x] > 0;
     }

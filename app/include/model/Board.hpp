@@ -39,6 +39,15 @@ namespace Model {
             /// Calculates the available drop positions for the specified color.
             std::vector<Util::Position> getDropPositions(const PieceColor& color) const;
 
+            /**
+             * Estimates the number of available drop positions for two colors. It has not to be the exact value
+             * 
+             * @param firstColor The first color whose drop positions should be counted
+             * @param secondColor The second color whose drop positions should be counted
+             * @returns The estimated number of drop positions
+             */
+            int estimateDropPositions(const PieceColor& firstColor, const PieceColor& secondColor) const;
+
             /// Checks if a piece of the passed color can be droped at the given position.
             bool canDrop(const PieceColor& color, const Util::Position& position) const;
 
