@@ -93,7 +93,7 @@ namespace Model {
     }
 
     void GameState::performMove(const Move* move) {
-        if (turn < 4) {
+        if (turn < 4 && move != nullptr) {
             const int x = move->origin.x > 4 ? 19 : 0;
             const int y = move->origin.y > 4 ? 19 : 0;
             startPositions[static_cast<uint8_t>(move->color) - 1] = { x, y };
