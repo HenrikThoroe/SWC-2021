@@ -93,7 +93,7 @@ namespace Logic {
         //* Late Game
         // Use created space by deploying everywhere and optimize drop positions with an higher influence
 
-        return dropFactor(colors, opponentColors) * 10;
+        return dropFactor(colors, opponentColors) * 100;
     }
 
 }
