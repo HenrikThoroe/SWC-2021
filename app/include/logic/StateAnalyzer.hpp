@@ -55,6 +55,8 @@ namespace Logic {
              */
             int pullFactor(const Model::PieceColor& color, bool swapCorner = false) const;
 
+            int pushFactor(const Model::PieceColor& color) const;
+
             /**
              * Calculates a value which maximizes the number of own drop positions while minimizing the number of opponent drop positions
              * 

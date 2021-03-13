@@ -71,7 +71,29 @@ namespace Logic {
     }
 
     int StateAnalyzer::dropFactor(const std::array<Model::PieceColor, 2>& colors, const std::array<Model::PieceColor, 2>& opponentColors) const {
-        return gameState->getBoard().estimateDropPositions(colors[0], colors[1]) - gameState->getBoard().estimateDropPositions(opponentColors[0], opponentColors[1]);
+        const int ownPositions = gameState->getBoard().estimateDropPositions(colors[0], colors[1]);
+        const int opponentPositions = gameState->getBoard().estimateDropPositions(opponentColors[0], opponentColors[1]);
+
+        return ownPositions - 2 * opponentPositions;
+    }
+
+    int StateAnalyzer::pushFactor(const Model::PieceColor& color) const {
+        int push = 0;
+        const int startX = gameState->startPositions[static_cast<uint8_t>(color) - 1][0];
+        int startY = gameState->startPositions[static_cast<uint8_t>(color) - 1][1];
+
+        for (const std::optional<Model::DeployedPiece>& piece : gameState->getMoveHistory()) {
+            if (piece.has_value() && piece.value().color == color) {
+                for (const Util::Position& pos : piece.value().getOccupiedPositions()) {
+                    const int x = static_cast<int>(pos.x) - startX;
+                    const int y = static_cast<int>(pos.y) - startY;
+
+                    push += std::max(abs(x), abs(y));
+                }
+            }
+        }
+
+        return push;
     }
 
     int StateAnalyzer::strategyPoints(const std::array<Model::PieceColor, 2>& colors, const std::array<Model::PieceColor, 2>& opponentColors) const {
@@ -86,18 +108,22 @@ namespace Logic {
         // Pull each color to the opposite corner with the same y value and optimize drop positions
         // This will build two more triangles
 
-        const Util::Rect c1Rect = getBoundingRect(colors[0]);
-        const Util::Rect c2Rect = getBoundingRect(colors[0]);
-        const int sizeFactor = c1Rect.size() * c2Rect.size();
+        // const int opponentSize = getBoundingRect(colors[0]).size() * getBoundingRect(colors[1]).size();
 
-        if (gameState->getTurn() < 40) {
-            return pullFactor(colors[0], true) * pullFactor(colors[1], true) + dropFactor(colors, opponentColors) + (pullFactor(colors[0]) * pullFactor(colors[1]) / 4) + sizeFactor;
+        if (gameState->getTurn() < 50) {
+            // const Util::Rect c1Rect = getBoundingRect(colors[0]);
+            // const Util::Rect c2Rect = getBoundingRect(colors[1]);
+            // const int sizeFactor = c1Rect.size() * c2Rect.size();
+            // const int pullOne = pullFactor(colors[0], true) * pullFactor(colors[1], true);
+            // const int pullTwo = pullFactor(colors[0]) * pullFactor(colors[1]);
+
+            return dropFactor(colors, opponentColors) + pushFactor(colors[0]) * pushFactor(colors[1]) - pushFactor(opponentColors[0]) * pushFactor(opponentColors[1]) * 2; 
         }
 
         //* Late Game
         // Use created space by deploying everywhere and optimize drop positions with an higher influence
 
-        return dropFactor(colors, opponentColors) * 10 + pullFactor(colors[0]) + pullFactor(colors[1]) + sizeFactor;
+        return dropFactor(colors, opponentColors) * 100;
     }
 
 }
