@@ -11,7 +11,7 @@
 
 namespace Logic {
     
-    GameManager::GameManager(const std::vector<Model::PieceColor>* const colorsInGame) : colorsInGame(colorsInGame), agent(state, ownColor) {}
+    GameManager::GameManager(const std::vector<Model::PieceColor>* const colorsInGame, const std::chrono::high_resolution_clock::time_point* const lastMsgReceivedPtr) : colorsInGame(colorsInGame), agent(state, ownColor, lastMsgReceivedPtr) {}
 
     void GameManager::setColor(const Model::PlayerColor& color) {
         ownColor = color;

@@ -18,7 +18,7 @@ using JSON = nlohmann::json;
 
 namespace App {
 
-    EventLoop::EventLoop(int argc, char* argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr()) {
+    EventLoop::EventLoop(int argc, char* argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr(), messageBroker.getLastMsgReceivedPtr()) {
         // Hostname of gameserver to connect to
         std::string hostname;
 

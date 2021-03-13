@@ -105,6 +105,13 @@ namespace App {
              * @returns Const Pointer to const vector of PieceColors
              */
             const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
+
+            /**
+             * @brief Get a pointer TCPClient´s time last message was received
+             * 
+             * @returns Const Pointer to const time of last received message
+             */
+            const std::chrono::high_resolution_clock::time_point* const getLastMsgReceivedPtr() const;
     };
     
 }
