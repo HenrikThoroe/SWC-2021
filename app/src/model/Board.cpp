@@ -4,7 +4,54 @@
 
 namespace Model {
 
-    Board::Board() {}
+    BoardStatistics::BoardStatistics() : BoardStatistics(PieceColor::NONE) {}
+
+    BoardStatistics::BoardStatistics(const PieceColor& color) 
+        : color(color),
+          pullFactor({ 0, 0, 0, 0 }),
+          freeCorners(0),
+          friendlyBlockedCorners(0),
+          opponentBlockedCorners(0),
+          sharedEdges(0),
+          friendlySharedEdges(0),
+          opponentSharedEdges(0),
+          dropPositions(0),
+          ratedDropPositions({ 0, 0, 0, 0, 0, 0, 0 }) {}
+
+    void BoardStatistics::reset() {
+        pullFactor = { 0, 0, 0, 0 };
+        freeCorners = 0;
+        friendlyBlockedCorners = 0;
+        opponentBlockedCorners = 0;
+        sharedEdges = 0; 
+        friendlySharedEdges = 0;
+        dropPositions = 0;
+        ratedDropPositions = { 0, 0, 0, 0, 0, 0, 0 };
+    }
+
+    Board::Board() : statistics(), neighbours(), corners() {
+        statistics = { BoardStatistics(PieceColor::RED), BoardStatistics(PieceColor::BLUE), BoardStatistics(PieceColor::GREEN), BoardStatistics(PieceColor::YELLOW) };
+
+        for (int y = 0; y < 20; ++y) {
+            for (int x = 0; x < 20; ++x) {
+                positions[y * 20 + x] = Util::Position(x, y);
+            }
+        }
+
+        for (const Util::Position& position : positions) {
+            for (const Util::Position& neighbour : position.getEdges()) {
+                if (neighbour.x < 20 && neighbour.x > -1 && neighbour.y < 20 && neighbour.y > -1) {
+                    neighbours[position.y * 20 + position.x].push_back(&positions[neighbour.y * 20 + neighbour.x]);
+                }
+            }
+
+            for (const Util::Position& corner : position.getCorners()) {
+                if (corner.x < 20 && corner.x > -1 && corner.y < 20 && corner.y > -1) {
+                    corners[position.y * 20 + position.x].push_back(&positions[corner.y * 20 + corner.x]);
+                }
+            }
+        }
+    }
 
     void Board::dropPiece(const DeployedPiece& piece) {
         const uint8_t colorIndex = static_cast<uint8_t>(piece.color) - 1;
@@ -149,6 +196,122 @@ namespace Model {
         return dropPositions[static_cast<uint8_t>(color) - 1][y][x] > 0;
     }
 
+    const std::array<BoardStatistics, 4>& Board::getStatistics() const {
+        // Reset statistics
+        for (BoardStatistics& stats : statistics) {
+            stats.reset();
+        }
+
+        std::array<const Util::Position*, 4> startPositions { 
+            &positions[399], 
+            &positions[19 * 20], 
+            &positions[0], 
+            &positions[19] 
+        };
+
+        for (int y = 0; y < 20; ++y) {
+            for (int x = 0; x < 20; ++x) {
+                const PieceColor& color = at_unsafe(x, y);
+                const uint8_t colorIdx = static_cast<uint8_t>(color) - 1;
+
+                if (color != PieceColor::NONE) {
+                    // If field is occupied calculate pull factor
+                    for (int i = 0; i < 4; ++i) {
+                        const int pull = statistics[colorIdx].pullFactor[i];
+                        statistics[colorIdx].pullFactor[i] = std::max(pull, std::min(abs(x - startPositions[i]->x), abs(y - startPositions[i]->y)));
+                    }
+
+                    // Check if the piece is blocking a drop position
+                    for (int i = 0; i < 4; ++i) {
+                        uint8_t dropValue = dropPositions[i][y][x];
+                        const PieceColor dropParent = static_cast<PieceColor>(i + 1);
+
+                        if (dropValue > 0 && dropParent != color) {
+                            const bool friendlyBlocked = 
+                                (color == PieceColor::RED && dropParent == PieceColor::BLUE) || 
+                                (color == PieceColor::BLUE && dropParent == PieceColor::RED) ||
+                                (color == PieceColor::GREEN && dropParent == PieceColor::YELLOW) || 
+                                (color == PieceColor::YELLOW && dropParent == PieceColor::GREEN);
+
+                            if (friendlyBlocked) {
+                                statistics[i].friendlyBlockedCorners += 1;
+                            } else {
+                                statistics[i].opponentBlockedCorners += 1;
+                            }
+                        }
+                    }
+
+                    // Check for shared edges
+                    for (const Util::Position* neighbour : neighbours[getIndex(x, y)]) {
+                        const PieceColor& neighbourColor = at_unsafe(neighbour->x, neighbour->y);
+
+                        statistics[colorIdx].sharedEdges += neighbourColor != PieceColor::NONE && neighbourColor != color;
+
+                        switch (color) {
+                            case PieceColor::RED:
+                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::BLUE;
+                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
+                                break;
+                            case PieceColor::BLUE:
+                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::RED;
+                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
+                                break;
+                            case PieceColor::GREEN:
+                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::YELLOW;
+                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
+                                break;
+                            case PieceColor::YELLOW:
+                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::GREEN;
+                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
+                                break;
+                        }
+                    }
+                } else {
+                    // If field is empty check if it is a drop position
+                    for (int i = 0; i < 4; ++i) {
+                        if (dropPositions[i][y][x] > 0) {
+                            bool isValid = true;
+
+                            // Do not include position in results if another piece of the same color is located at the edge of the position.
+                            for (const Util::Position* edge : neighbours[getIndex(x, y)]) {
+                                if (at_unsafe(edge->x, edge->y) == static_cast<PieceColor>(i + 1)) {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+
+                            if (isValid) {
+                                statistics[i].dropPositions += 1;
+
+                                // number of free surrounding fields (0...8).
+                                // 8 -> impossible because a drop position is always connected to at least one piece
+                                int free = 0;
+
+                                for (const Util::Position* neighbour : neighbours[getIndex(x, y)]) {
+                                    free += at_unsafe(neighbour->x, neighbour->y) == PieceColor::NONE;
+                                }
+
+                                for (const Util::Position* corner : corners[getIndex(x, y)]) {
+                                    free += at_unsafe(corner->x, corner->y) == PieceColor::NONE;
+                                }
+
+                                statistics[i].ratedDropPositions[free] += 1;
+                            }
+
+                            statistics[i].freeCorners += 1;
+                        } 
+                    }
+                }
+            }
+        }
+
+        return statistics;
+    }
+
+    int Board::getIndex(int x, int y) const {
+        return y * 20 + x;
+    }
+
     std::ostream& operator << (std::ostream& os, const Board& board) {
         for (int row = 0; row < 20; ++row) {
             for (int col = 0; col < 20; ++col) {
@@ -201,6 +364,8 @@ namespace Model {
                 os << std::endl;
             }
         }
+
+        os << std::dec;
 
         return os;
     }

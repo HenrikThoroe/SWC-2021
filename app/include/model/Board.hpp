@@ -9,6 +9,55 @@
 
 namespace Model {
 
+    /// A collection of statistics about the current board state for a specific color
+    struct BoardStatistics {
+
+        BoardStatistics();
+        BoardStatistics(const PieceColor& color);
+        BoardStatistics(BoardStatistics* other) = delete;
+        BoardStatistics(BoardStatistics& other) = delete;
+
+        /// The statistic is created for this color
+        PieceColor color;
+
+        /**
+         * A value which indicates how much the color is pulled to each corner.
+         * Starting at (0, 0) <-> top left and rotating clockwise
+         */
+        std::array<int, 4> pullFactor;
+
+        /// The number of free corners 
+        int freeCorners;
+
+        /// The number of corners where a friendly color is blocking. Does not include the same color
+        int friendlyBlockedCorners;
+
+        /// The number of corners where the opponent is blocking
+        int opponentBlockedCorners;
+
+        /// The number of edges which are shared with another color
+        int sharedEdges;
+
+        /// The number of edges which are shared with the other team color
+        int friendlySharedEdges;
+
+        /// The number of edges which are shared with an opponent color
+        int opponentSharedEdges;
+
+        /// The number of available drop positions
+        int dropPositions;
+
+        /**
+         * The number of drop posotions sorted by their estimated value.
+         * The index indicates how many fields around the field are free.
+         * Positions outside of the board count as not free.
+         * Each entry represents the number of drop positions with specific amount of free neighbour fields.
+         */
+        std::array<int, 8> ratedDropPositions;
+
+        void reset();
+    };
+
     class Board {
         public:
             /// A shorthand for a two dimensional array of the size 20x20 (BoardSize x BoardSize), which stores the color of the field.
@@ -57,6 +106,8 @@ namespace Model {
             /// Forces the specified position to be a drop zone for the passed color.
             void makeDropPosition(const Util::Position& position, const PieceColor& color);
 
+            const std::array<BoardStatistics, 4>& getStatistics() const;
+
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 
             const PieceColor& operator [] (const Util::Position& position) const;
@@ -70,6 +121,18 @@ namespace Model {
             /// If the value is 0 no piece can be attached to this position.
             /// @note 'dropPositions' should be indexed with instances of 'PieceColor' - 1.
             std::array<RawFieldSet, 4> dropPositions {};
+
+            mutable std::array<BoardStatistics, 4> statistics;
+
+            std::array<Util::Position, 400> positions{};
+
+            std::array<std::vector<const Util::Position*>, 400> neighbours;
+
+            std::array<std::vector<const Util::Position*>, 400> corners;
+
+            int getIndex(int x, int y) const;
+
+            const std::vector<const Util::Position&>& getNeighbours(int x, int y) const;
     };
 
 }
