@@ -57,4 +57,16 @@ TEST_CASE("Bench Board", "[benchmark]") {
         board.removePiece(piece3);
         board.removePiece(piece1);
     };
+
+    BENCHMARK_ADVANCED("Analyze Board") (Catch::Benchmark::Chronometer meter) {
+        board.dropPiece(piece3);
+        board.dropPiece(piece1);
+
+        meter.measure([&board] {
+            return &board.getStatistics();
+        });
+
+        board.removePiece(piece3);
+        board.removePiece(piece1);
+    };
 }
