@@ -94,8 +94,8 @@ namespace Model {
 
     void GameState::performMove(const Move* move) {
         if (turn < 4 && move != nullptr) {
-            const int x = move->origin.x > 4 ? 19 : 0;
-            const int y = move->origin.y > 4 ? 19 : 0;
+            const int x = move->origin.x > 5 ? 19 : 0;
+            const int y = move->origin.y > 5 ? 19 : 0;
             startPositions[static_cast<uint8_t>(move->color) - 1] = { x, y };
         }
 
@@ -478,10 +478,10 @@ namespace Model {
         }
 
         // The own score 
-        const int weightedScore = score * 30;
+        const int weightedScore = score * 50;
 
         // The opponent score 
-        const int weightedOpponentScore = opponentScore * 30;
+        const int weightedOpponentScore = opponentScore * 50;
 
         /// The more pieces deployed the better
         const int deployedPieceFactor = pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size();
@@ -511,6 +511,9 @@ namespace Model {
 
             colorBonus = qualifiers[0] * remainders[0] + qualifiers[1] * remainders[1];
             opponentColorBonus = qualifiers[2] * remainders[2] + qualifiers[3] * remainders[3];
+
+            colorBonus *= 1000;
+            opponentColorBonus *= 1000;
         }
 
         return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor + strategy.strategyPoints(colors, opponentColors);
