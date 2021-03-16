@@ -26,6 +26,9 @@ namespace Model {
          */
         std::array<int, 4> pullFactor;
 
+        /// A value which shows how much the collor is pushed away from each corner. X and Y are seperated
+        std::array<std::array<int, 2>, 4> pushFactor;
+
         /// The number of free corners 
         int freeCorners;
 
@@ -54,6 +57,18 @@ namespace Model {
          * Each entry represents the number of drop positions with specific amount of free neighbour fields.
          */
         std::array<int, 8> ratedDropPositions;
+
+        /// The number of drop positions counted by it's distance to each corner
+        std::array<std::array<int, 20>, 4> dropSpread;
+
+        /// The number of used drop positions
+        int usedDropPositions;
+
+        /// The number of drop positions shared with the enemy
+        int opponentSharedDropPositions;
+
+        /// Two values which show how far the color is aligned to each horicontal side of the board
+        std::array<int, 2> alignment;
 
         void reset();
     };

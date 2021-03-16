@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <bitset>
 
 #include "Board.hpp"
 
@@ -9,6 +10,7 @@ namespace Model {
     BoardStatistics::BoardStatistics(const PieceColor& color) 
         : color(color),
           pullFactor({ 0, 0, 0, 0 }),
+          pushFactor({ 0, 0 }),
           freeCorners(0),
           friendlyBlockedCorners(0),
           opponentBlockedCorners(0),
@@ -16,17 +18,26 @@ namespace Model {
           friendlySharedEdges(0),
           opponentSharedEdges(0),
           dropPositions(0),
+          opponentSharedDropPositions(0),
+          dropSpread({}),
+          usedDropPositions(0),
+          alignment({}),
           ratedDropPositions({ 0, 0, 0, 0, 0, 0, 0 }) {}
 
     void BoardStatistics::reset() {
-        pullFactor = { 0, 0, 0, 0 };
+        pullFactor.fill(0);
+        pushFactor.fill({ 0, 0 });
         freeCorners = 0;
         friendlyBlockedCorners = 0;
         opponentBlockedCorners = 0;
         sharedEdges = 0; 
         friendlySharedEdges = 0;
         dropPositions = 0;
-        ratedDropPositions = { 0, 0, 0, 0, 0, 0, 0 };
+        ratedDropPositions.fill(0);
+        opponentSharedDropPositions = 0;
+        dropSpread.fill({});
+        usedDropPositions = 0;
+        alignment.fill(0);
     }
 
     Board::Board() : statistics(), neighbours(), corners() {
@@ -202,7 +213,7 @@ namespace Model {
             stats.reset();
         }
 
-        std::array<const Util::Position*, 4> startPositions { 
+        const std::array<const Util::Position*, 4> startPositions { 
             &positions[399], 
             &positions[19 * 20], 
             &positions[0], 
@@ -215,10 +226,19 @@ namespace Model {
                 const uint8_t colorIdx = static_cast<uint8_t>(color) - 1;
 
                 if (color != PieceColor::NONE) {
-                    // If field is occupied calculate pull factor
+                    // If field is occupied calculate pull and push factor
                     for (int i = 0; i < 4; ++i) {
                         const int pull = statistics[colorIdx].pullFactor[i];
-                        statistics[colorIdx].pullFactor[i] = std::max(pull, std::min(abs(x - startPositions[i]->x), abs(y - startPositions[i]->y)));
+                        const int vecX = abs(x - startPositions[i]->x);
+                        const int vecY = abs(y - startPositions[i]->y);
+                        const int here = std::min(vecX, vecY);
+
+                        statistics[colorIdx].pushFactor[i][0] += vecX;
+                        statistics[colorIdx].pushFactor[i][1] += vecY;
+
+                        if (here > pull) {
+                            statistics[colorIdx].pullFactor[i] = here;
+                        }
                     }
 
                     // Check if the piece is blocking a drop position
@@ -241,32 +261,42 @@ namespace Model {
                         }
                     }
 
-                    // Check for shared edges
-                    for (const Util::Position* neighbour : neighbours[getIndex(x, y)]) {
-                        const PieceColor& neighbourColor = at_unsafe(neighbour->x, neighbour->y);
-
-                        statistics[colorIdx].sharedEdges += neighbourColor != PieceColor::NONE && neighbourColor != color;
-
-                        switch (color) {
-                            case PieceColor::RED:
-                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::BLUE;
-                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
-                                break;
-                            case PieceColor::BLUE:
-                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::RED;
-                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
-                                break;
-                            case PieceColor::GREEN:
-                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::YELLOW;
-                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
-                                break;
-                            case PieceColor::YELLOW:
-                                statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::GREEN;
-                                statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
-                                break;
-                        }
+                    if (dropPositions[colorIdx][y][x] > 0) {
+                        statistics[colorIdx].usedDropPositions += 1;
                     }
+
+                    statistics[colorIdx].alignment[0] += x;
+                    statistics[colorIdx].alignment[1] += 19 - x;
+
+                    //? Temporary unused for performance reasons
+                    // Check for shared edges
+                    // for (const Util::Position* neighbour : neighbours[getIndex(x, y)]) {
+                    //     const PieceColor& neighbourColor = at_unsafe(neighbour->x, neighbour->y);
+
+                    //     statistics[colorIdx].sharedEdges += neighbourColor != PieceColor::NONE && neighbourColor != color;
+
+                    //     switch (color) {
+                    //         case PieceColor::RED:
+                    //             statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::BLUE;
+                    //             statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
+                    //             break;
+                    //         case PieceColor::BLUE:
+                    //             statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::RED;
+                    //             statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::GREEN || neighbourColor == PieceColor::YELLOW;
+                    //             break;
+                    //         case PieceColor::GREEN:
+                    //             statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::YELLOW;
+                    //             statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
+                    //             break;
+                    //         case PieceColor::YELLOW:
+                    //             statistics[colorIdx].friendlySharedEdges += neighbourColor == PieceColor::GREEN;
+                    //             statistics[colorIdx].opponentSharedEdges += neighbourColor == PieceColor::BLUE || neighbourColor == PieceColor::RED;
+                    //             break;
+                    //     }
+                    // }
                 } else {
+                    std::bitset<2> colors{};
+
                     // If field is empty check if it is a drop position
                     for (int i = 0; i < 4; ++i) {
                         if (dropPositions[i][y][x] > 0) {
@@ -283,6 +313,8 @@ namespace Model {
                             if (isValid) {
                                 statistics[i].dropPositions += 1;
 
+                                colors[colorIdx / 2] = true;
+
                                 // number of free surrounding fields (0...8).
                                 // 8 -> impossible because a drop position is always connected to at least one piece
                                 int free = 0;
@@ -296,10 +328,18 @@ namespace Model {
                                 }
 
                                 statistics[i].ratedDropPositions[free] += 1;
+
+                                for (int c = 0; c < 4; ++c) {
+                                    statistics[i].dropSpread[c][std::max(abs(x - startPositions[i]->x), abs(y - startPositions[i]->y))] += 1;
+                                }
                             }
 
                             statistics[i].freeCorners += 1;
                         } 
+                    }
+
+                    if (colors[0] == true && colors[1] == true) {
+                        statistics[colorIdx].opponentSharedDropPositions += 1;
                     }
                 }
             }
