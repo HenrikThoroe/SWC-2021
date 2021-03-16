@@ -1,5 +1,6 @@
 #include "StateAnalyzer.hpp"
 #include "GameState.hpp"
+#include "Board.hpp"
 
 namespace Logic {
 
@@ -97,33 +98,131 @@ namespace Logic {
     }
 
     int StateAnalyzer::strategyPoints(const std::array<Model::PieceColor, 2>& colors, const std::array<Model::PieceColor, 2>& opponentColors) const {
-        //* Early Game
-        // Pull both colors to the opposite corners to build a triangle
+        //? Prepare information
+        const std::array<Model::BoardStatistics, 4>& stats = gameState->getBoard().getStatistics();
+        const std::array<int, 2> colorIdx = { static_cast<int>(colors[0]) - 1, static_cast<int>(colors[1]) - 1 };
+        const std::array<int, 2> opponentColorIdx = { static_cast<int>(opponentColors[0]) - 1, static_cast<int>(opponentColors[1]) - 1 };
+        const std::array<int, 4> normalizedStart = { 
+            gameState->startPositions[0][0] + 20 * gameState->startPositions[0][1],
+            gameState->startPositions[1][0] + 20 * gameState->startPositions[1][1],
+            gameState->startPositions[2][0] + 20 * gameState->startPositions[2][1],
+            gameState->startPositions[3][0] + 20 * gameState->startPositions[3][1]
+        };
+        const std::array<Util::Rect, 4> bounds = {
+            getBoundingRect(static_cast<Model::PieceColor>(1)),
+            getBoundingRect(static_cast<Model::PieceColor>(2)),
+            getBoundingRect(static_cast<Model::PieceColor>(3)),
+            getBoundingRect(static_cast<Model::PieceColor>(4))
+        };
+        std::array<int, 4> startIndex {};
+        std::array<int, 4> horicontalNeighbour{};
+        std::array<int, 4> oppositeCorner{};
+        std::array<int, 4> startSide{};
 
-        if (gameState->getTurn() < 20) {
-            return pullFactor(colors[0]) * pullFactor(colors[1]) + (pullFactor(colors[0], true) * pullFactor(colors[1], true) / 4);
-        } 
-
-        //* Mid Game
-        // Pull each color to the opposite corner with the same y value and optimize drop positions
-        // This will build two more triangles
-
-        // const int opponentSize = getBoundingRect(colors[0]).size() * getBoundingRect(colors[1]).size();
-
-        if (gameState->getTurn() < 50) {
-            // const Util::Rect c1Rect = getBoundingRect(colors[0]);
-            // const Util::Rect c2Rect = getBoundingRect(colors[1]);
-            // const int sizeFactor = c1Rect.size() * c2Rect.size();
-            // const int pullOne = pullFactor(colors[0], true) * pullFactor(colors[1], true);
-            // const int pullTwo = pullFactor(colors[0]) * pullFactor(colors[1]);
-
-            return dropFactor(colors, opponentColors) + pushFactor(colors[0]) * pushFactor(colors[1]) - pushFactor(opponentColors[0]) * pushFactor(opponentColors[1]) * 2; 
+        for (int i = 0; i < 4; ++i) {
+            switch (normalizedStart[i]) {
+                case 0:
+                    startIndex[i] = 0;
+                    horicontalNeighbour[i] = 1;
+                    oppositeCorner[i] = 2;
+                    startSide[i] = 0;
+                    break;
+                case 19:
+                    startIndex[i] = 1;
+                    horicontalNeighbour[i] = 0;
+                    oppositeCorner[i] = 3;
+                    startSide[i] = 1;
+                    break;
+                case 399:
+                    startIndex[i] = 2;
+                    horicontalNeighbour[i] = 3;
+                    oppositeCorner[i] = 0;
+                    startSide[i] = 1;
+                    break;
+                case 20 * 19:
+                    startIndex[i] = 3;
+                    horicontalNeighbour[i] = 2;
+                    oppositeCorner[i] = 1;
+                    startSide[i] = 0;
+                    break;
+            }
         }
 
-        //* Late Game
-        // Use created space by deploying everywhere and optimize drop positions with an higher influence
+        //* Start 
 
-        return dropFactor(colors, opponentColors) * 100;
+        if (gameState->getTurn() < 16) {
+            //? Push each color to the middle 
+
+            return stats[colorIdx[0]].pullFactor[oppositeCorner[colorIdx[0]]] + stats[colorIdx[1]].pullFactor[oppositeCorner[colorIdx[1]]];
+        }
+
+        //* Mid
+
+        if (gameState->getTurn() < 50) {
+            int drop = 0;
+            int size = 0;
+            int block = 0;
+            int dir = 0;
+
+            dir += stats[colorIdx[0]].pullFactor[horicontalNeighbour[colorIdx[0]]];
+            dir += stats[colorIdx[1]].pullFactor[horicontalNeighbour[colorIdx[1]]];
+
+            dir -= stats[opponentColorIdx[0]].pullFactor[horicontalNeighbour[opponentColorIdx[0]]] * 2;
+            dir -= stats[opponentColorIdx[1]].pullFactor[horicontalNeighbour[opponentColorIdx[1]]] * 2;
+
+            size -= bounds[opponentColorIdx[0]].size();
+            size -= bounds[opponentColorIdx[1]].size();
+
+            drop += stats[colorIdx[0]].dropPositions;
+            drop += stats[colorIdx[1]].dropPositions;
+
+            block += stats[opponentColorIdx[0]].opponentBlockedCorners * 100;
+            block += stats[opponentColorIdx[1]].opponentBlockedCorners * 100;
+
+            for (int i = 0; i < 8; ++i) {
+                drop -= stats[opponentColorIdx[0]].ratedDropPositions[i] * i * 4;
+                drop -= stats[opponentColorIdx[1]].ratedDropPositions[i] * i * 4;
+            }
+
+            return drop + size + block + dir;
+        }
+
+        //* Late
+
+        int drop = 0;
+        int size = 0;
+        int block = 0;
+        int dir = 0;
+
+        //? Penalty when the team is blocking itself
+
+        block -= stats[colorIdx[0]].friendlyBlockedCorners;
+        block -= stats[colorIdx[1]].friendlyBlockedCorners;
+
+        //? Block the colors of the opponent
+
+        block += stats[opponentColorIdx[0]].opponentBlockedCorners * 4;
+        block += stats[opponentColorIdx[1]].opponentBlockedCorners * 4;
+
+        //? Maximize own drop positions while minimizing opponent drop positions
+
+        for (int i = 0; i < 8; ++i) {
+            drop += stats[colorIdx[0]].ratedDropPositions[i] * i;
+            drop += stats[colorIdx[1]].ratedDropPositions[i] * i;
+
+            drop -= stats[opponentColorIdx[0]].ratedDropPositions[i] * i;
+            drop -= stats[opponentColorIdx[1]].ratedDropPositions[i] * i;
+        }
+
+        //? Push own color to the opposite side and prevent the same from the opponent
+
+        dir -= stats[opponentColorIdx[0]].alignment[startSide[opponentColorIdx[0]]];
+        dir -= stats[opponentColorIdx[1]].alignment[startSide[opponentColorIdx[1]]];
+
+        dir += stats[colorIdx[0]].alignment[startSide[colorIdx[0]]];
+        dir += stats[colorIdx[1]].alignment[startSide[colorIdx[1]]];
+
+        return drop + size + block + dir;
     }
 
 }
