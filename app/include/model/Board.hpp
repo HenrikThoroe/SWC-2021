@@ -121,7 +121,12 @@ namespace Model {
             /// Forces the specified position to be a drop zone for the passed color.
             void makeDropPosition(const Util::Position& position, const PieceColor& color);
 
-            const std::array<BoardStatistics, 4>& getStatistics() const;
+            /**
+             * Calculates statistics for the evaluation through the StateAnalyzer
+             * 
+             * @param horizontal If the opposing colors are alligned horizontally
+             */
+            const std::array<BoardStatistics, 4>& getStatistics(bool& horizontal) const;
 
             friend std::ostream& operator << (std::ostream& os, const Board& board);
 

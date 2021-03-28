@@ -99,15 +99,22 @@ namespace Logic {
 
     int StateAnalyzer::strategyPoints(const std::array<Model::PieceColor, 2>& colors, const std::array<Model::PieceColor, 2>& opponentColors) const {
         //? Prepare information
-        const std::array<Model::BoardStatistics, 4>& stats = gameState->getBoard().getStatistics();
-        const std::array<int, 2> colorIdx = { static_cast<int>(colors[0]) - 1, static_cast<int>(colors[1]) - 1 };
-        const std::array<int, 2> opponentColorIdx = { static_cast<int>(opponentColors[0]) - 1, static_cast<int>(opponentColors[1]) - 1 };
+        const Model::Board& board = gameState->getBoard();
+
         const std::array<int, 4> normalizedStart = { 
             gameState->startPositions[0][0] + 20 * gameState->startPositions[0][1],
             gameState->startPositions[1][0] + 20 * gameState->startPositions[1][1],
             gameState->startPositions[2][0] + 20 * gameState->startPositions[2][1],
             gameState->startPositions[3][0] + 20 * gameState->startPositions[3][1]
         };
+        bool horizontal =
+            static_cast<int>(board.at(0, 0)) >= 3                       // If top left is team two
+            ? ( static_cast<int>(board.at(0, 19)) >= 3 ? true : false)  // YES: If bottom left is team two -> horizontal
+            : ( static_cast<int>(board.at(0, 19)) >= 3 ? false : true); // NO: If bottom left is team two -> vertical
+
+        const std::array<Model::BoardStatistics, 4>& stats = board.getStatistics(horizontal);
+        const std::array<int, 2> colorIdx = { static_cast<int>(colors[0]) - 1, static_cast<int>(colors[1]) - 1 };
+        const std::array<int, 2> opponentColorIdx = { static_cast<int>(opponentColors[0]) - 1, static_cast<int>(opponentColors[1]) - 1 };
         const std::array<Util::Rect, 4> bounds = {
             getBoundingRect(static_cast<Model::PieceColor>(1)),
             getBoundingRect(static_cast<Model::PieceColor>(2)),
@@ -115,35 +122,40 @@ namespace Logic {
             getBoundingRect(static_cast<Model::PieceColor>(4))
         };
         std::array<int, 4> startIndex {};
-        std::array<int, 4> horicontalNeighbour{};
+        std::array<int, 4> opposingNeighbour{};
         std::array<int, 4> oppositeCorner{};
         std::array<int, 4> startSide{};
+
 
         for (int i = 0; i < 4; ++i) {
             switch (normalizedStart[i]) {
                 case 0:
+                    // Top left
                     startIndex[i] = 0;
-                    horicontalNeighbour[i] = 1;
+                    opposingNeighbour[i] = horizontal ? 1 : 3;
                     oppositeCorner[i] = 2;
                     startSide[i] = 0;
                     break;
                 case 19:
+                    // Top right
                     startIndex[i] = 1;
-                    horicontalNeighbour[i] = 0;
+                    opposingNeighbour[i] = horizontal ? 0 : 2;
                     oppositeCorner[i] = 3;
-                    startSide[i] = 1;
+                    startSide[i] = horizontal ? 1 : 0;
                     break;
                 case 399:
+                    // Bottom right
                     startIndex[i] = 2;
-                    horicontalNeighbour[i] = 3;
+                    opposingNeighbour[i] = horizontal ? 3 : 1;
                     oppositeCorner[i] = 0;
                     startSide[i] = 1;
                     break;
-                case 20 * 19:
+                case 380:
+                    // Bottom left
                     startIndex[i] = 3;
-                    horicontalNeighbour[i] = 2;
+                    opposingNeighbour[i] = horizontal ? 2 :0;
                     oppositeCorner[i] = 1;
-                    startSide[i] = 0;
+                    startSide[i] = horizontal ? 0 : 1;
                     break;
             }
         }
@@ -164,11 +176,11 @@ namespace Logic {
             int block = 0;
             int dir = 0;
 
-            dir += stats[colorIdx[0]].pullFactor[horicontalNeighbour[colorIdx[0]]];
-            dir += stats[colorIdx[1]].pullFactor[horicontalNeighbour[colorIdx[1]]];
+            dir += stats[colorIdx[0]].pullFactor[opposingNeighbour[colorIdx[0]]];
+            dir += stats[colorIdx[1]].pullFactor[opposingNeighbour[colorIdx[1]]];
 
-            dir -= stats[opponentColorIdx[0]].pullFactor[horicontalNeighbour[opponentColorIdx[0]]] * 2;
-            dir -= stats[opponentColorIdx[1]].pullFactor[horicontalNeighbour[opponentColorIdx[1]]] * 2;
+            dir -= stats[opponentColorIdx[0]].pullFactor[opposingNeighbour[opponentColorIdx[0]]] * 2;
+            dir -= stats[opponentColorIdx[1]].pullFactor[opposingNeighbour[opponentColorIdx[1]]] * 2;
 
             size -= bounds[opponentColorIdx[0]].size();
             size -= bounds[opponentColorIdx[1]].size();

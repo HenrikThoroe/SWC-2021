@@ -207,7 +207,7 @@ namespace Model {
         return dropPositions[static_cast<uint8_t>(color) - 1][y][x] > 0;
     }
 
-    const std::array<BoardStatistics, 4>& Board::getStatistics() const {
+    const std::array<BoardStatistics, 4>& Board::getStatistics(bool& horizontal) const {
         // Reset statistics
         for (BoardStatistics& stats : statistics) {
             stats.reset();
@@ -265,8 +265,8 @@ namespace Model {
                         statistics[colorIdx].usedDropPositions += 1;
                     }
 
-                    statistics[colorIdx].alignment[0] += x;
-                    statistics[colorIdx].alignment[1] += 19 - x;
+                    statistics[colorIdx].alignment[0] += horizontal ? x : y;
+                    statistics[colorIdx].alignment[1] += 19 - (horizontal ? x : y);
 
                     //? Temporary unused for performance reasons
                     // Check for shared edges
