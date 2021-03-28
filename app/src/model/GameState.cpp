@@ -194,10 +194,6 @@ namespace Model {
 
         // Reserve 550 items to prevent repeated resizing of moves vector
         moves.reserve(550);
-        
-        if (turn > 3) {
-            moves.push_back(nullptr);
-        }
 
         auto allowsMoreThanOneField = [&color, this](const Util::Position& position) {
 
@@ -321,6 +317,57 @@ namespace Model {
                         }
                     }
                 }
+            }
+        }
+
+        if (turn > 3) {
+            moves.push_back(nullptr);
+        } else {
+            int x, y;
+            // Filter the moves according to 'shouldRemove' callback
+            // Note: we need to use std::function here as functionPointers can not be used with lambdas that capture values (x&y)
+            auto filterMoves = [&moves](std::function<bool(const Util::Position&)> shouldRemove)->void {
+                for (std::vector<const Model::Move *>::iterator it = moves.begin(); it != moves.end();) {
+                    const Util::Position& pos = (*it)->origin;
+
+                    if (shouldRemove(pos)) {
+                        it = moves.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            };
+            // Force horizontal or vertical play for colors (No X)
+            if (turn == 1 || turn == 2) {
+                // Get piece on oposite corner of first piece
+                if (board.at(0, 0) == PieceColor::BLUE) {
+                    x = 19;
+                    y = 19;
+                } else if (board.at(19, 0) == PieceColor::BLUE) {
+                    x = 0;
+                    y = 19;
+                } else if (board.at(19, 19) == PieceColor::BLUE) {
+                    x = 0;
+                    y = 0;
+                } else if (board.at(0, 19) == PieceColor::BLUE) {
+                    x = 19;
+                    y = 0;
+                }
+
+                std::function<bool(const Util::Position&)> shouldRemove;
+                if (turn == 1) {
+                    shouldRemove = [&x, &y](const Util::Position& pos)->bool {
+                        // Put piece on opposite corner
+                        return !(((x-5) <= pos.x && pos.x <= (x+5)) && ((y-5) <= pos.y && pos.y <= (y+5)));
+                    };
+                } else {
+                    shouldRemove = [&x, &y](const Util::Position& pos)->bool {
+                        // Dont put piece on opposite corner
+                        return (((x-5) <= pos.x && pos.x <= (x+5)) && ((y-5) <= pos.y && pos.y <= (y+5)));
+                    };
+                }
+
+                filterMoves(shouldRemove);
             }
         }
 
