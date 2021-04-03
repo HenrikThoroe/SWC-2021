@@ -45,7 +45,8 @@ class GameManager():
         self._l                = logging.getLogger("TestServer.GameManager")
         
         self.playedGames       = 0 # Number of games already played (to switch client colors)
-        self.kill: Callable[[], None] = lambda: None
+        self.kill: Callable[[], None]       = lambda: None
+        self.logClients: Callable[[], None] = lambda: None 
     
     def run(self) -> Optional[ResultMsg]:
         """Play one game with both clients
@@ -81,6 +82,14 @@ class GameManager():
         
         self.kill = kill
         
+        def logClients() -> None:
+            """Save client logs to disk
+            """
+            self.logger.logClient(player1, client1.stdout)
+            self.logger.logClient(player2, client2.stdout)
+        
+        self.logClients = logClients
+        
         #? These are commented out as per 
         # sleep(0.5) # See Bugreport on Discord -> Server is overwhelmed lmao
         # self.serverClient.send(f'<pause roomId="{self._roomId}" pause="false" />') # Start game
@@ -115,8 +124,7 @@ class GameManager():
                             client2.wait()
                         
                         # Save client logs
-                        self.logger.logClient(player1, client1.stdout)
-                        self.logger.logClient(player2, client2.stdout)
+                        self.logClients()
                         
                         # Swap player scores as we swaped their reservations (normalise)
                         if player1 != 0:
