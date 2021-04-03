@@ -1,6 +1,7 @@
 from typing import Literal, Union
 
 import socket
+import re
 
 class TCPClient():
     """A synchronous TCPClient for communicating with the SWC server
@@ -10,7 +11,8 @@ class TCPClient():
         port     {int} -- Port on which the server listens
     """
     
-    MSG_SIGNALS = ("</room>", "</prepared>", "</protocol>")
+    MSG_SIGNALS = ("</room>", "</prepared>", "</protocol>", "<left />")
+    LEFT_REGEX  = re.compile(r'<left roomId="[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}" \/>')
     
     def __init__(self, hostname: str, port: int) -> None:
         self._buffer = b''
@@ -78,7 +80,7 @@ class TCPClient():
             
             #? Try to decode buffer, wait for more bytes on failure
             try:
-                self._decodedBuffer += self._buffer.decode()
+                self._decodedBuffer  = TCPClient.LEFT_REGEX.sub("<left />", (self._decodedBuffer + self._buffer.decode()))
                 self._buffer         = b''
             except:
                 pass
