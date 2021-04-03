@@ -66,7 +66,7 @@ class TCPClient():
                         self._decodedBuffer = self._decodedBuffer[index+len(signal):] # Consume message from the buffer
                         
                         return ret
-            except:
+            except Exception:
                 pass
             
             #? Read if no full message was received yet
@@ -82,5 +82,5 @@ class TCPClient():
             try:
                 self._decodedBuffer  = TCPClient.LEFT_REGEX.sub("<left />", (self._decodedBuffer + self._buffer.decode()))
                 self._buffer         = b''
-            except:
+            except Exception:
                 pass

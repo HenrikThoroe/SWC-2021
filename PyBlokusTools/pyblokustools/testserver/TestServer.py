@@ -117,7 +117,7 @@ class TestServer():
         
         try:
             releases = get("https://api.github.com/repos/CAU-Kiel-Tech-Inf/backend/releases", params={'per_page': 1})
-        except:
+        except Exception:
             #? No internet connection
             self._l.warning("Could not reach Github")
             return fallback()
@@ -147,7 +147,7 @@ class TestServer():
                         
                         self._l.info(f"Using freshly downloaded server version {tag_name}")
                         return self.config.serverPath
-                    except:
+                    except Exception:
                         self._l.warning(f"Could not download server verion {tag_name}")
                         return fallback()
 

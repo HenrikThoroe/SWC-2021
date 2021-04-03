@@ -72,12 +72,12 @@ class GameManager():
             try:
                 client1.kill()
                 client1.wait()
-            except:
+            except Exception:
                 pass
             try:
                 client2.kill()
                 client2.wait()
-            except:
+            except Exception:
                 pass
         
         self.kill = kill
@@ -112,13 +112,13 @@ class GameManager():
                         # Wait for clients to shutdown
                         try:
                             client1.wait(5)
-                        except:
+                        except Exception:
                             self._l.error(f"Client did not shutdown after 5sec: '{self.clientNames[player1]}'")
                             client1.kill()
                             client1.wait()
                         try:
                             client2.wait(5)
-                        except:
+                        except Exception:
                             self._l.error(f"Client did not shutdown after 5sec: '{self.clientNames[player2]}'")
                             client2.kill()
                             client2.wait()
