@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 #include <vector>
 #include <memory>
 #include <string>
@@ -43,7 +44,13 @@ namespace App
         public:
             /// Bool that indicates messages received state
             std::atomic<bool> hasMessages = false;
-            
+
+            /// Mutex to avoid unnecessary work in the main eventloop
+            mutable std::mutex signalMutex;
+
+            /// Condition variable to signal the main thread
+            mutable std::condition_variable signalCv;
+
         public:
             TCPClient();
             

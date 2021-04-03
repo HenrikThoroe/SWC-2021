@@ -37,6 +37,10 @@ namespace App {
         return tcpClient.hasMessages;
     }
 
+    const TCPClient& MessageBroker::getTCPClient() const {
+        return tcpClient;
+    }
+
     const std::vector<Model::PieceColor>* const MessageBroker::getColorsInGamePtr() const {
         return xmlParser.getColorsInGamePtr();
     }
