@@ -380,7 +380,8 @@ class Compiler():
             return False
         
         # Determine which files need to be compiled
-        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash)
+        changed    = cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash) # We need to always call this as it updates the hashes
+        to_compile = source_files if makeAll else changed
         
         #? Shared variables
         compiled_out_dir = os.path.join(cache_dir, 'compiled')
