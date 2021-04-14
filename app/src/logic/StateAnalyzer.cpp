@@ -65,8 +65,8 @@ namespace Logic {
 
         //* Spread 
 
-        spread += stats[colorIdx[0]].teamPushFactor + stats[colorIdx[1]].teamPushFactor;
-        spread -= stats[opponentColorIdx[0]].pushFactor + stats[opponentColorIdx[1]].pushFactor;
+        spread += stats[colorIdx[0]].teamSpread + stats[colorIdx[1]].teamSpread;
+        spread -= stats[opponentColorIdx[0]].spread + stats[opponentColorIdx[1]].spread;
 
         return spread + block + drop;
     }   

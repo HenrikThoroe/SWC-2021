@@ -10,20 +10,20 @@ namespace Model {
     BoardStatistics::BoardStatistics(const PieceColor& color) 
         : color(color),
           pullFactor({ 0, 0, 0, 0 }),
-          pushFactor(0),
+          spread(0),
           freeCorners(0),
           friendlyBlockedCorners(0),
           opponentBlockedCorners(0),
           dropPositions(0),
           opponentSharedDropPositions(0),
           usedDropPositions(0),
-          teamPushFactor(0),
+          teamSpread(0),
           ratedDropPositions({ 0, 0, 0, 0, 0, 0, 0 }) {}
 
     void BoardStatistics::reset() {
         pullFactor.fill(0);
-        pushFactor = 0;
-        teamPushFactor = 0;
+        spread = 0;
+        teamSpread = 0;
         freeCorners = 0;
         friendlyBlockedCorners = 0;
         opponentBlockedCorners = 0;
@@ -244,8 +244,8 @@ namespace Model {
                 const uint8_t mateColorIdx = colorIdx % 2 == 0 ? colorIdx + 1 : colorIdx - 1;
 
                 if (color != PieceColor::NONE) {
-                    statistics[colorIdx].pushFactor += std::max(abs(x - startPositions[colorIdx]->x), abs(y - startPositions[colorIdx]->y));
-                    statistics[colorIdx].teamPushFactor += std::max(
+                    statistics[colorIdx].spread += std::max(abs(x - startPositions[colorIdx]->x), abs(y - startPositions[colorIdx]->y));
+                    statistics[colorIdx].teamSpread += std::max(
                         std::min(abs(x - startPositions[colorIdx]->x), abs(x - startPositions[mateColorIdx]->x)), 
                         std::min(abs(y - startPositions[colorIdx]->y), abs(y - startPositions[mateColorIdx]->y))
                     );

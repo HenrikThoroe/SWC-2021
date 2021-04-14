@@ -26,11 +26,11 @@ namespace Model {
          */
         std::array<int, 4> pullFactor;
 
-        /// A value which shows how much the collor is pushed away from each corner. X and Y are seperated
-        int pushFactor;
+        /// A value that is greater, the further the color is distributed from the start corner. 
+        int spread;
 
-        /// A value which shows how much the collor is pushed away from each corner. X and Y are seperated
-        int teamPushFactor;
+        /// A value that is greater, the further the color is distributed from the start corner of both team colors. 
+        int teamSpread;
 
         /// The number of free corners 
         int freeCorners;
@@ -58,6 +58,7 @@ namespace Model {
         /// The number of drop positions shared with the enemy
         int opponentSharedDropPositions;
 
+        /// Resets the statistic to zero
         void reset();
     };
 
