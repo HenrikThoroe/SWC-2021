@@ -68,6 +68,9 @@ namespace Logic {
         spread += stats[colorIdx[0]].teamSpread + stats[colorIdx[1]].teamSpread;
         spread -= stats[opponentColorIdx[0]].spread + stats[opponentColorIdx[1]].spread;
 
+        spread += stats[colorIdx[0]].advancement + stats[colorIdx[1]].advancement;
+        spread -= stats[opponentColorIdx[0]].advancement + stats[opponentColorIdx[1]].advancement;
+
         return spread + block + drop;
     }   
 
@@ -83,9 +86,9 @@ namespace Logic {
         };
 
         bool horizontal =
-            static_cast<int>(board.at(0, 0)) >= 3                       // If top left is team two
-            ? (static_cast<int>(board.at(0, 19)) >= 3 ? true : false)   // YES: If bottom left is team two -> horizontal
-            : (static_cast<int>(board.at(0, 19)) >= 3 ? false : true);  // NO: If bottom left is team two -> vertical
+            static_cast<uint8_t>(board.at(0, 0)) >= 3                       // If top left is team two
+            ? (static_cast<uint8_t>(board.at(0, 19)) >= 3 ? true : false)   // YES: If bottom left is team two -> horizontal
+            : (static_cast<uint8_t>(board.at(0, 19)) >= 3 ? false : true);  // NO: If bottom left is team two -> vertical
 
         const std::array<Model::BoardStatistics, 4>& stats = board.getStatistics(horizontal);
         const std::array<int, 2> colorIdx = { static_cast<int>(colors[0]) - 1, static_cast<int>(colors[1]) - 1 };

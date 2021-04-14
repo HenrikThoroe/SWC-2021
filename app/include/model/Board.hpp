@@ -58,6 +58,9 @@ namespace Model {
         /// The number of drop positions shared with the enemy
         int opponentSharedDropPositions;
 
+        /// High when the color is advancing towards the opponent side
+        int advancement;
+
         /// Resets the statistic to zero
         void reset();
     };

@@ -18,6 +18,7 @@ namespace Model {
           opponentSharedDropPositions(0),
           usedDropPositions(0),
           teamSpread(0),
+          advancement(0),
           ratedDropPositions({ 0, 0, 0, 0, 0, 0, 0 }) {}
 
     void BoardStatistics::reset() {
@@ -31,6 +32,7 @@ namespace Model {
         ratedDropPositions.fill(0);
         opponentSharedDropPositions = 0;
         usedDropPositions = 0;
+        advancement = 0;
     }
 
     Board::Board() : statistics(), neighbours(), corners() {
@@ -232,7 +234,7 @@ namespace Model {
                     startPositions[static_cast<uint8_t>(PieceColor::GREEN) - 1] = corner;
                     break;
                 case PieceColor::YELLOW:
-                    startPositions[static_cast<uint8_t>(PieceColor::BLUE) - 1] = corner;
+                    startPositions[static_cast<uint8_t>(PieceColor::YELLOW) - 1] = corner;
                     break;
             }
         }
@@ -249,6 +251,12 @@ namespace Model {
                         std::min(abs(x - startPositions[colorIdx]->x), abs(x - startPositions[mateColorIdx]->x)), 
                         std::min(abs(y - startPositions[colorIdx]->y), abs(y - startPositions[mateColorIdx]->y))
                     );
+
+                    if (horizontal) {
+                        statistics[colorIdx].advancement += abs(x - startPositions[colorIdx]->x);
+                    } else {
+                        statistics[colorIdx].advancement += abs(y - startPositions[colorIdx]->y);
+                    }
 
                     // If field is occupied calculate pull and push factor
                     for (int i = 0; i < 4; ++i) {
