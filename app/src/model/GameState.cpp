@@ -530,9 +530,6 @@ namespace Model {
         // The opponent score 
         const int weightedOpponentScore = opponentScore * 50;
 
-        /// The more pieces deployed the better
-        const int deployedPieceFactor = pushHistory[static_cast<uint8_t>(colors[0]) - 1].size() + pushHistory[static_cast<uint8_t>(colors[1]) - 1].size();
-
         // If a color from the opponent is invalid add 100 points
         int colorBonus = 0;
 
@@ -563,7 +560,7 @@ namespace Model {
             opponentColorBonus *= 1000;
         }
 
-        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + deployedPieceFactor + strategy.strategyPoints(colors, opponentColors);
+        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + strategy.strategyPoints(colors, opponentColors);
     }
 
     bool GameState::isGameOver() const {
