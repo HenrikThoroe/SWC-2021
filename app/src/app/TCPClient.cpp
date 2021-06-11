@@ -8,7 +8,7 @@
 
 namespace App {
 
-    TCPClient::TCPClient() {
+    TCPClient::TCPClient() : clock(), lastMsgReceived(clock.now()) {
         messages->reserve(5);
     }
 
@@ -93,6 +93,9 @@ namespace App {
             return;
         }
 
+        // Save time message was recieved to ensure on time delivery of move
+        lastMsgReceived = clock.now();
+
         messages->emplace_back(
             boost::asio::buffers_begin(receiveBuffer.data()),
             boost::asio::buffers_begin(receiveBuffer.data()) + bytes_transferred
@@ -102,7 +105,11 @@ namespace App {
         
         Util::Log::received << messages->back();
 
-        hasMessages = true;
+        {
+            std::lock_guard g{signalMutex};
+            hasMessages = true;
+        }
+        signalCv.notify_one();
 
         //! This model always listens in the background, remove this call and call .listen manually in the event loop
         //! if you want to manually reschedule listening for messages. This is more async but may bump performance a little
@@ -111,5 +118,9 @@ namespace App {
             this->on_read(ec, bytes_transferred);
         });
     }
-    
+
+    const std::chrono::high_resolution_clock::time_point* const TCPClient::getLastMsgReceivedPtr() const {
+        return &lastMsgReceived;
+    }
+
 }

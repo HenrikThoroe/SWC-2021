@@ -13,6 +13,7 @@
  - blokusbench
  - blokusprod
  - blokusdebug
+ - blokusmass
  - blokusdoc
 
 ## Building Documentation:

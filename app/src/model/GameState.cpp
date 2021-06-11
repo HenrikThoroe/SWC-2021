@@ -4,10 +4,11 @@
 #include "GameState.hpp"
 #include "PieceCollection.hpp"
 #include "bitAt.hpp"
+#include "filterMap.hpp"
 
 namespace Model {
 
-    GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece) {
+    GameState::GameState(int initialPiece) : players({ Player(PlayerColor::BLUE), Player(PlayerColor::RED) }), board(), turn(0), initialPiece(initialPiece), strategy(this) {
         const Util::Position topLeft = Util::Position(0, 0);
         const Util::Position topRight = Util::Position(Constants::BOARD_COLUMNS - 1, 0);
         const Util::Position bottomLeft = Util::Position(0, Constants::BOARD_ROWS - 1);
@@ -24,6 +25,11 @@ namespace Model {
 
         availablePieces.fill({ { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } });
         allPieces.reserve(Constants::PIECE_VARIANTS);
+
+        startPositions[0] = { 0, 0 };
+        startPositions[1] = { 0, 0 };
+        startPositions[2] = { 0, 0 };
+        startPositions[3] = { 0, 0 };
 
         for (uint8_t color = 0; color < 4; ++color) {
             for (uint8_t pieceId = 0; pieceId < Constants::PIECE_SHAPES; ++pieceId) {
@@ -56,6 +62,10 @@ namespace Model {
         return players[turn % 2];
     }
 
+    const Player& GameState::getOtherPlayer() const {
+        return players[!(turn % 2)];
+    }
+
     const PieceColor& GameState::getCurrentPieceColor() const {
         const int idx = turn % 4;
         return getCurrentPlayer().getPieceColors().at(idx > 1 ? 1 : 0);
@@ -83,21 +93,27 @@ namespace Model {
     }
 
     void GameState::performMove(const Move* move) {
+        if (turn < 4 && move != nullptr) {
+            const int x = move->origin.x > 5 ? 19 : 0;
+            const int y = move->origin.y > 5 ? 19 : 0;
+            startPositions[static_cast<uint8_t>(move->color) - 1] = { x, y };
+        }
+
         if (move != nullptr) {
             pushHistory[static_cast<uint8_t>(move->color) - 1].push(move->pieceId);
             availablePieces[static_cast<uint8_t>(move->color) - 1][move->pieceId] -= 1;
             board.dropPiece(move);
             hashValue ^= hashpool[createIndex(move)];
-            performedMoves.push(*move);
+            performedMoves.push_back(*move);
         } else {
-            performedMoves.push(std::nullopt);
+            performedMoves.push_back(std::nullopt);
         }
 
         turn += 1;
     }
 
     void GameState::revertLastMove() {
-        std::optional<DeployedPiece>& piece = performedMoves.top();
+        std::optional<DeployedPiece>& piece = performedMoves.back();
 
         if (piece.has_value()) {
             pushHistory[static_cast<uint8_t>(piece.value().color) - 1].pop();
@@ -106,7 +122,7 @@ namespace Model {
             hashValue ^= hashpool[createIndex(&piece.value())];
         }
         
-        performedMoves.pop();
+        performedMoves.pop_back();
         turn -= 1;
     }
 
@@ -115,6 +131,11 @@ namespace Model {
     }
 
     bool GameState::canBeDeployed(const DeployedPiece* piece) {
+        // A skip move can always be performed / No piece can always be deployed
+        if (piece == nullptr) {
+            return true;
+        } 
+
         for (const Util::Position& position : piece->getOccupiedPositions()) {
 
             if (position.x < 0 || position.x > 19 || position.y < 0 || position.y > 19) {
@@ -136,7 +157,7 @@ namespace Model {
         return true;
     }
 
-    inline int GameState::createIndex(const DeployedPiece* piece, bool includeColor) const {
+    int GameState::createIndex(const DeployedPiece* piece, bool includeColor) const {
         int idx = 
             piece->origin.x +
             piece->origin.y * 20 +
@@ -158,7 +179,7 @@ namespace Model {
 
     void GameState::assignPossibleMoves(std::vector<const Move*>& moves) {
 
-        if (movesCache.contains(hashValue)) {
+        if (movesCache.contains(hashValue) && movesCache[hashValue].turn % 4 == turn % 4) {
             moves = movesCache[hashValue].value;
             movesCache[hashValue].accesses += 1;
             movesCache[hashValue].turn = turn;
@@ -299,6 +320,57 @@ namespace Model {
             }
         }
 
+        if (turn > 3) {
+            moves.push_back(nullptr);
+        } else {
+            int x, y;
+            // Filter the moves according to 'shouldRemove' callback
+            // Note: we need to use std::function here as functionPointers can not be used with lambdas that capture values (x&y)
+            auto filterMoves = [&moves](std::function<bool(const Util::Position&)> shouldRemove)->void {
+                for (std::vector<const Model::Move *>::iterator it = moves.begin(); it != moves.end();) {
+                    const Util::Position& pos = (*it)->origin;
+
+                    if (shouldRemove(pos)) {
+                        it = moves.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            };
+            // Force horizontal or vertical play for colors (No X)
+            if (turn == 1 || turn == 2) {
+                // Get piece on oposite corner of first piece
+                if (board.at(0, 0) == PieceColor::BLUE) {
+                    x = 19;
+                    y = 19;
+                } else if (board.at(19, 0) == PieceColor::BLUE) {
+                    x = 0;
+                    y = 19;
+                } else if (board.at(19, 19) == PieceColor::BLUE) {
+                    x = 0;
+                    y = 0;
+                } else if (board.at(0, 19) == PieceColor::BLUE) {
+                    x = 19;
+                    y = 0;
+                }
+
+                std::function<bool(const Util::Position&)> shouldRemove;
+                if (turn == 1) {
+                    shouldRemove = [&x, &y](const Util::Position& pos)->bool {
+                        // Put piece on opposite corner
+                        return !(((x-5) <= pos.x && pos.x <= (x+5)) && ((y-5) <= pos.y && pos.y <= (y+5)));
+                    };
+                } else {
+                    shouldRemove = [&x, &y](const Util::Position& pos)->bool {
+                        // Dont put piece on opposite corner
+                        return (((x-5) <= pos.x && pos.x <= (x+5)) && ((y-5) <= pos.y && pos.y <= (y+5)));
+                    };
+                }
+
+                filterMoves(shouldRemove);
+            }
+        }
+
         movesCache[hashValue] = { moves, 0, turn };
     }
 
@@ -340,17 +412,21 @@ namespace Model {
         uint64_t targetSize = static_cast<uint64_t>(static_cast<float>(movesCache.size()) * (1 - normalizedPercent));
         std::vector<std::vector<uint64_t>> accessMap {};
 
-        for (const std::pair<uint64_t, Model::GameState::MoveCacheEntry>& entry : movesCache) {
-            if (entry.second.turn < turn) {
-                movesCache.erase(entry.first);
+        auto filter = [this, &accessMap] (const uint64_t& key, const MoveCacheEntry& entry) {
+            if (entry.turn < turn) {
+                return true;
             } else {
-                while (entry.second.accesses >= accessMap.size()) {
+                while (entry.accesses >= accessMap.size()) {
                     accessMap.push_back({});
                 }
                 
-                accessMap.at(entry.second.accesses).push_back(entry.first);
+                accessMap.at(entry.accesses).push_back(key);
             }
-        }
+
+            return false;
+        };
+
+        Util::filterMap(movesCache, filter);
 
         for (uint64_t index = 0; index < accessMap.size(); ++index) {
             for (const uint64_t& key : accessMap.at(index)) {
@@ -374,39 +450,141 @@ namespace Model {
         }
     }
 
-    int GameState::evaluate() const {
-        if (turn == 0) {
-            return 0;
-        }
-
-        const std::array<PieceColor, 2>& colors = getLastPlayer().getPieceColors();
-        int score = 0;
+    int GameState::evaluate(const PlayerColor& player, const std::bitset<4>* invalidColors) const {
+        const std::array<PieceColor, 2>& colors = players[static_cast<uint8_t>(player)].getPieceColors();
+        const std::array<PieceColor, 2>& opponentColors = players[!static_cast<uint8_t>(player)].getPieceColors();
+        std::array<int, 4> colorScores { 0, 0, 0, 0 };
+        bool noColorsLeft = invalidColors != nullptr && invalidColors->count() == 4;
 
         for (const PieceColor& color : colors) {
+            uint8_t colorId = static_cast<uint8_t>(color) - 1;
 
             // Iterate all shapes
             for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
 
                 // Check if the shape has been deployed
-                if (availablePieces[static_cast<uint8_t>(color) - 1][id] == 0) {
+                if (availablePieces[colorId][id] == 0) {
 
                     // Add the size of the shape to the score
-                    score += PieceCollection::getPiece(id).size;
+                    colorScores[colorId] += PieceCollection::getPiece(id).size;
                 }
             }
 
             // Check if all pieces have been deployed
-            if (pushHistory[static_cast<uint8_t>(color) - 1].size() == Constants::PIECE_SHAPES) {
-                score += 15;
+            if (pushHistory[colorId].size() == Constants::PIECE_SHAPES) {
+                colorScores[colorId] += 15;
 
                 // Check if the last deployed piece is the MONOMINO
-                if (pushHistory[static_cast<uint8_t>(color) - 1].top() == 0) {
-                    score += 5;
+                if (pushHistory[colorId].top() == 0) {
+                    colorScores[colorId] += 5;
                 }
             }
         }
 
-        return score;
+        for (const PieceColor& color : opponentColors) {
+            uint8_t colorId = static_cast<uint8_t>(color) - 1;
+
+            // Iterate all shapes
+            for (uint8_t id = 0; id < Constants::PIECE_SHAPES; ++id) {
+
+                // Check if the shape has been deployed
+                if (availablePieces[colorId][id] == 0) {
+
+                    // Add the size of the shape to the score
+                    colorScores[colorId] += PieceCollection::getPiece(id).size;
+                }
+            }
+
+            // Check if all pieces have been deployed
+            if (pushHistory[colorId].size() == Constants::PIECE_SHAPES) {
+                colorScores[colorId] += 15;
+
+                // Check if the last deployed piece is the MONOMINO
+                if (pushHistory[colorId].top() == 0) {
+                    colorScores[colorId] += 5;
+                }
+            }
+        }
+
+        int score = 
+            colorScores[static_cast<uint8_t>(colors[0]) - 1] + 
+            colorScores[static_cast<uint8_t>(colors[1]) - 1];
+
+        int opponentScore = 
+            colorScores[static_cast<uint8_t>(opponentColors[0]) - 1] + 
+            colorScores[static_cast<uint8_t>(opponentColors[1]) - 1];;
+
+        if (isGameOver() || noColorsLeft) {
+            if (score > opponentScore) {
+                return Constants::WIN_POINTS + score;
+            } else if (score < opponentScore) {
+                return Constants::LOSE_POINTS - 10000 + score;
+            } else {
+                return 0;
+            }
+        }
+
+        // The own score 
+        const int weightedScore = score * 50;
+
+        // The opponent score 
+        const int weightedOpponentScore = opponentScore * 50;
+
+        // If a color from the opponent is invalid add 100 points
+        int colorBonus = 0;
+
+        // If a color from the own player is invalid subtract 100 points
+        int opponentColorBonus = 0;
+
+        if (invalidColors != nullptr) {
+            // Remaining points for each color
+            std::array<int, 4> remainders {
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(opponentColors[0]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(opponentColors[1]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(colors[0]) - 1],
+                Constants::MAX_COLOR_POINTS - colorScores[static_cast<uint8_t>(colors[1]) - 1]
+            };
+
+            // 1 if color is invalid (=> qualified for counting) otherwise 0
+            std::array<int, 4> qualifiers {
+                (*invalidColors)[static_cast<int>(opponentColors[0]) - 1],
+                (*invalidColors)[static_cast<int>(opponentColors[1]) - 1],
+                (*invalidColors)[static_cast<int>(colors[0]) - 1],
+                (*invalidColors)[static_cast<int>(colors[1]) - 1]
+            };
+
+            colorBonus = qualifiers[0] * remainders[0] + qualifiers[1] * remainders[1];
+            opponentColorBonus = qualifiers[2] * remainders[2] + qualifiers[3] * remainders[3];
+
+            colorBonus *= 1000;
+            opponentColorBonus *= 1000;
+        }
+
+        return (weightedScore - weightedOpponentScore) + (colorBonus - opponentColorBonus) + strategy.strategyPoints(colors, opponentColors);
+    }
+
+    bool GameState::isGameOver() const {
+        if (turn >= 100) {
+            return true;
+        }  
+        
+        if (turn >= Constants::PIECE_SHAPES * 4) {
+            for (int p = 0; p < 4; ++p) {
+                if (pushHistory[p].size() == Constants::PIECE_SHAPES) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    const Board& GameState::getBoard() const {
+        return board;
+    }
+
+    const std::vector<std::optional<DeployedPiece>>& GameState::getMoveHistory() const {
+        return performedMoves;
     }
 
     std::ostream& operator << (std::ostream& os, const GameState& state) {

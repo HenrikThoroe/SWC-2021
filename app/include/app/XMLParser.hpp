@@ -19,6 +19,9 @@ namespace App {
             /// Current turn on the board
             uint8_t turn = 0;
 
+            /// Current PieceColor on the board
+            Model::PieceColor turnColor = Model::PieceColor::BLUE;
+
             /// Colors that are still in the game
             std::vector<Model::PieceColor> colorsInGame{};
             
@@ -38,6 +41,14 @@ namespace App {
             void splitAndParseMessages(std::string& input, std::vector<Message>& result);
 
             /**
+             * @brief Split a replay string into separate parsed messages
+             * 
+             * @param input Input string as received from swc-blokus.net
+             * @param result Vector to save parsed messages in
+             */
+            void splitAndParseReplay(const std::string& input, std::vector<Message>& result);
+
+            /**
              * @brief Convert a move into its xml representation to send to server
              * 
              * @param move Move object to convert
@@ -48,6 +59,13 @@ namespace App {
 
             /// Get a const pointer to a const vector containing all PieceColors that are still in the game
             const std::vector<Model::PieceColor>* const getColorsInGamePtr() const;
+
+            /**
+             * @brief Return the current color, which is eligible to perform the next move.
+             * 
+             * @returns Current color
+             */
+            const Model::PieceColor& getCurrentColor() const;
         
         private:
             //? Specific message parsers
@@ -93,6 +111,15 @@ namespace App {
 
             //* Helpers
             /**
+             * @brief Compute the move index for a specific SetMove xml node
+             * 
+             * @param piece XML node of SetMove
+             * 
+             * @returns Move index corresponding to XML node
+             */
+            int computeMoveIndex(const pugi::xml_node piece) const;
+
+            /**
              * @brief Translate name of piece to its id
              * 
              * @param pieceName Name of piece
@@ -111,11 +138,11 @@ namespace App {
             const char* getColor(const Model::PieceColor& colorId) const;
 
             /**
-             * @brief Calculate current color based on turn
+             * @brief Calculates the name of the current color.
              * 
              * @returns Name of current color
              */
-            const char* getCurrentColor() const;
+            const char* getCurrentColorName() const;
     };
     
 }

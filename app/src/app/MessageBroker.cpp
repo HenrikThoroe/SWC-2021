@@ -25,6 +25,10 @@ namespace App {
         xmlParser.splitAndParseMessages(msg, result);
     }
 
+    void MessageBroker::parseReplay(const std::string& msg, std::vector<Message>& result) {
+        xmlParser.splitAndParseReplay(msg, result);
+    }
+
     void MessageBroker::dispatch(const std::string& msg) { 
         tcpClient.send(msg);
     }
@@ -33,8 +37,16 @@ namespace App {
         return tcpClient.hasMessages;
     }
 
+    const TCPClient& MessageBroker::getTCPClient() const {
+        return tcpClient;
+    }
+
     const std::vector<Model::PieceColor>* const MessageBroker::getColorsInGamePtr() const {
         return xmlParser.getColorsInGamePtr();
+    }
+
+    const std::chrono::high_resolution_clock::time_point* const MessageBroker::getLastMsgReceivedPtr() const {
+        return tcpClient.getLastMsgReceivedPtr();
     }
 
     void MessageBroker::sendProtocol() {

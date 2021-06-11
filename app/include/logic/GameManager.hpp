@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <mutex>
 
 #include "Message.hpp"
+#include "Search.hpp"
 #include "Move.hpp"
 #include "color.hpp"
 #include "GameState.hpp"
@@ -18,15 +20,21 @@ namespace Logic {
             /// Own PlayerColor
             Model::PlayerColor ownColor;
 
+            /// Mutex to prevent data races when freeing memory in background
+            std::mutex moveRequestGuard {};
+            
             Model::GameState state = Model::GameState(-1);
+
+            Search agent;
 
         public:
             /**
              * @brief Construct a new GameManager instance
              * 
              * @param colorsInGame Pointer to a vector of PieceColors still in the game
+             * @param lastMsgReceivedPtr Pointer to time the last message was received (MoveRequest)
              */
-            GameManager(const std::vector<Model::PieceColor>* const colorsInGame);
+            GameManager(const std::vector<Model::PieceColor>* const colorsInGame, const std::chrono::high_resolution_clock::time_point* const lastMsgReceivedPtr);
 
             /// No copy constructors allowed
             GameManager(GameManager* other) = delete;
@@ -54,6 +62,15 @@ namespace Logic {
             const Model::Move* moveRequest();
 
             const Model::PlayerColor& getPlayerColor() const;
+
+            void handleResults(const App::ResultMsg& message) const;
+
+            /**
+             * @brief Get a const reference to the encapsulated GameState
+             * 
+             * @returns Managed GameState
+             */
+            const Model::GameState& getManagedState() const;
     };
 
 }

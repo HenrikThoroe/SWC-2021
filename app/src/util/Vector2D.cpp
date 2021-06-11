@@ -4,6 +4,8 @@
 
 namespace Util {
 
+    Vector2D::Vector2D() : Vector2D(0, 0) {}
+
     Vector2D::Vector2D(int8_t x, int8_t y) : x(x), y(y) {};
 
     Vector2D::Vector2D(const Vector2D& other) : x(other.x), y(other.y) {};

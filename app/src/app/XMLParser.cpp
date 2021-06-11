@@ -1,6 +1,7 @@
 #include <array>
 #include <stdexcept>
 #include <cstring>
+#include <sstream>
 
 #include "XMLParser.hpp"
 #include "XMLStringWriter.hpp"
@@ -96,6 +97,77 @@ namespace App {
         }
     }
 
+    void XMLParser::splitAndParseReplay(const std::string& input, std::vector<Message>& result) {
+        //? Split replay string by newline
+        std::stringstream ss{input};
+
+        uint8_t turn = 0;
+
+        // Turn -> Color
+        auto denormalizeColor = [](uint8_t color) -> uint8_t {
+            switch (color) {                
+                // Blue
+                case 0:
+                    return 2;
+                
+                // Yellow
+                case 1:
+                    return 4;
+
+                // Red
+                case 2:
+                    return 1;
+
+                // Green
+                case 3:
+                    return 3;
+                
+                default:
+                    throw std::runtime_error("Could not denormalize color '" + std::to_string(color) + "'");
+            }
+        };
+
+        // Get next turns color
+        auto getNextTurnColor = [&turn, &denormalizeColor]() -> Model::PieceColor {
+            return static_cast<Model::PieceColor>(denormalizeColor(turn % 4));
+        };
+
+        for (std::string line; std::getline(ss, line, '\n');) {
+            if (line.rfind("startPiece:", 0) == 0) {
+                //? Start piece
+                result.emplace_back(
+                    MsgType::GAMESTATE,
+                    MementoMsg(
+                        getPieceId(line.substr(11, std::string::npos).c_str()),
+                        std::nullopt,
+                        turn,
+                        getNextTurnColor()
+                    )
+                );
+            } else {
+                //? Normal move
+
+                pugi::xml_document xmlDoc;
+                xmlDoc.load_string(line.data());
+
+                pugi::xml_node move = xmlDoc.first_child();
+                pugi::xml_node piece = move.first_child();
+                if (move.attribute("class").value()[15] == 'k') {
+                    //* Skip move
+                    result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, getNextTurnColor()));
+                } else {
+                    //* Set move
+                    result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, computeMoveIndex(piece), turn, getNextTurnColor()));
+                }
+            }
+
+            turn += 1;
+        }
+
+        // Remove last msg as the server will send it when we join
+        result.pop_back();
+    }
+
     std::string XMLParser::makeMoveMessage(const Model::Move* move) const {
         pugi::xml_document xmlDoc;
 
@@ -175,7 +247,7 @@ namespace App {
             pugi::xml_node data = roomNode.append_child("data");
             data.append_attribute("class").set_value("sc.plugin2021.SkipMove");
 
-            data.append_child("color").append_child(pugi::node_pcdata).set_value(getCurrentColor());
+            data.append_child("color").append_child(pugi::node_pcdata).set_value(getCurrentColorName());
         }
 
         Util::XMLStringWriter xmlStringWriter;
@@ -190,11 +262,29 @@ namespace App {
 
     //? Specific message parsers
 
-    inline void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
+    void XMLParser::parseMemento(const pugi::xml_node& data, std::vector<Message>& result) {
         turn = data.attribute("turn").as_int();
 
+        switch (turn % 4) {
+            case 0:
+                turnColor  = Model::PieceColor::BLUE;
+                break;
+            case 1:
+                turnColor  = Model::PieceColor::YELLOW;
+                break;
+            case 2:
+                turnColor  = Model::PieceColor::RED;
+                break;
+            case 3:
+                turnColor  = Model::PieceColor::GREEN;
+                break;
+            
+            default:
+                throw std::runtime_error("Could not determine turnColor for turn '" + std::to_string(turn) + "'");
+        }
+
         colorsInGame.clear();
-        for (const pugi::xml_node& color : data.child("orderedColors").children()) {
+        for (const pugi::xml_node& color : data.child("validColors").children()) {
             switch (color.child_value()[0]) {
                 // Blue
                 case 'B':
@@ -226,82 +316,17 @@ namespace App {
             //* Not first move -> LastMove
             if (piece.name()[0] == 'p') {
                 // SetMove
-
-                //? Rotation
-                const char* pieceRotation = piece.attribute("rotation").value();
-                uint8_t rotation;
-                if (!strcmp(pieceRotation, "NONE")) {
-                    rotation = 0;
-                } else if (!strcmp(pieceRotation, "RIGHT")) {
-                    rotation = 1;
-                } else if (!strcmp(pieceRotation, "MIRROR")) {
-                    rotation = 2;
-                } else if (!strcmp(pieceRotation, "LEFT")) {
-                    rotation = 3;
-                }
-
-                if (piece.attribute("isFlipped").as_bool()) {
-                    rotation += 4;
-                }
-
-                //? PieceID
-                uint8_t pieceId = getPieceId(piece.attribute("kind").value());
-
-                //? Color
-                uint8_t color;
-                switch (piece.attribute("color").value()[0]) {
-                    // Red
-                    case 'R':
-                        color = 0;
-                        break;
-                    
-                    // Blue
-                    case 'B':
-                        color = 1;
-                        break;
-
-                    // Green
-                    case 'G':
-                        color = 2;
-                        break;
-
-                    // Yellow
-                    case 'Y':
-                        color = 3;
-                        break;
-                    
-                    default:
-                        throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
-                }
-
-                //? X, Y
-                pugi::xml_node position = piece.first_child();
-                uint8_t x = position.attribute("x").as_int();
-                uint8_t y = position.attribute("y").as_int();
-
-                //? Origin
-                int8_t minX = 127;
-                int8_t minY = 127;
-                for (const Util::Vector2D& piece : std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
-                    if (piece.x < minX) minX = piece.x;
-                    if (piece.y < minY) minY = piece.y;
-                }
-
-                //? Calculate index
-                // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
-                const int index = (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
-
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, index, turn));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, computeMoveIndex(piece), turn, turnColor));
             } else {
                 // SkipMove
-                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn));
+                result.emplace_back(MsgType::GAMESTATE, MementoMsg(0, std::nullopt, turn, turnColor));
             }
         } else {
-            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn));
+            result.emplace_back(MsgType::GAMESTATE, MementoMsg(getPieceId(data.attribute("startPiece").value()), std::nullopt, turn, turnColor));
         }
     }
 
-    inline void XMLParser::parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseResult(const pugi::xml_node& data, std::vector<Message>& result) const {
         pugi::xml_node score1 = data.first_child().next_sibling();
         pugi::xml_node score2 = score1.next_sibling();
 
@@ -345,24 +370,91 @@ namespace App {
         );
     }
 
-    inline void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseWelcome(const pugi::xml_node& data, std::vector<Message>& result) const {
         // Checks the first character of the color attribute on the data node in the welcome message to determine own PlayerColor
-        result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'o' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
+        result.emplace_back(MsgType::WELCOME, data.attribute("color").value()[0] == 'O' ? Model::PlayerColor::BLUE : Model::PlayerColor::RED);
     }
     
-    inline void XMLParser::parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
+    void XMLParser::parseJoined(const pugi::xml_node& node, std::vector<Message>& result) {
         strcpy(roomId, node.attribute("roomId").value());
         result.emplace_back(MsgType::JOINED, std::string(roomId));
     }
 
-    inline void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
+    void XMLParser::parseError(const pugi::xml_node& data, std::vector<Message>& result) const {
         Util::XMLStringWriter xmlStringWriter;
         data.print(xmlStringWriter, " ", pugi::format_default);
 
         result.emplace_back(MsgType::EXCEPT, xmlStringWriter.result);
     }
 
-    inline uint8_t XMLParser::getPieceId(const char* pieceName) const {
+    int XMLParser::computeMoveIndex(const pugi::xml_node piece) const {
+        //? Rotation
+        const char* pieceRotation = piece.attribute("rotation").value();
+        uint8_t rotation;
+        if (!strcmp(pieceRotation, "NONE")) {
+            rotation = 0;
+        } else if (!strcmp(pieceRotation, "RIGHT")) {
+            rotation = 1;
+        } else if (!strcmp(pieceRotation, "MIRROR")) {
+            rotation = 2;
+        } else if (!strcmp(pieceRotation, "LEFT")) {
+            rotation = 3;
+        }
+
+        if (piece.attribute("isFlipped").as_bool()) {
+            rotation += 4;
+        }
+
+        //? PieceID
+        uint8_t pieceId = getPieceId(piece.attribute("kind").value());
+
+        //? Color
+        uint8_t color;
+        switch (piece.attribute("color").value()[0]) {
+            // Red
+            case 'R':
+                color = 0;
+                break;
+            
+            // Blue
+            case 'B':
+                color = 1;
+                break;
+
+            // Green
+            case 'G':
+                color = 2;
+                break;
+
+            // Yellow
+            case 'Y':
+                color = 3;
+                break;
+            
+            default:
+                throw std::runtime_error("Color '" + std::string(piece.attribute("color").value()) + "' not found");
+        }
+
+        //? X, Y
+        pugi::xml_node position = piece.child("position");
+
+        uint8_t x = position.attribute("x").as_int();
+        uint8_t y = position.attribute("y").as_int();
+
+        //? Origin
+        int8_t minX = 127;
+        int8_t minY = 127;
+        for (const Util::Vector2D& piece : std::get<0>(Model::PieceCollection::getPiece(pieceId).getRotation(rotation))) {
+            if (piece.x < minX) minX = piece.x;
+            if (piece.y < minY) minY = piece.y;
+        }
+
+        //? Calculate index
+        // x + y * maxX + rotation * maxX * maxY + id * maxRotations * maxX * maxY + color * maxId * maxRotations * maxX * maxY
+        return (x - minX + (y - minY) * 20) + (rotation * 400 + pieceId * 3200) + (color * 20 * 20 * 8 * 21);
+    }
+
+    uint8_t XMLParser::getPieceId(const char* pieceName) const {
         if (!strcmp(pieceName, "MONO")) {
             return 0;
         } else if (!strcmp(pieceName, "DOMINO")) {
@@ -410,7 +502,7 @@ namespace App {
         throw std::runtime_error("Piece of type '" + std::string(pieceName) + "' not found");
     }
 
-    inline const char* XMLParser::getColor(const Model::PieceColor& colorId) const {
+    const char* XMLParser::getColor(const Model::PieceColor& colorId) const {
         switch (colorId) {
             case Model::PieceColor::RED:
                 return "RED";
@@ -429,23 +521,12 @@ namespace App {
         }
     }
 
-    inline const char* XMLParser::getCurrentColor() const {
-        switch (turn % 4) {
-            case 0:
-                return "BLUE";
+    const Model::PieceColor& XMLParser::getCurrentColor() const {
+        return turnColor;
+    }
 
-            case 1:
-                return "YELLOW";
-
-            case 2:
-                return "RED";
-            
-            case 3:
-                return "GREEN";
-            
-            default:
-                throw std::runtime_error("Could not deduce currentColor from turn '" + std::to_string(turn) + "'");
-        }
+    const char* XMLParser::getCurrentColorName() const {
+        return getColor(turnColor);
     }
 
 }

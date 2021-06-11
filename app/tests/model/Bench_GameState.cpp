@@ -5,6 +5,8 @@
 #include "catch.hpp"
 #include "GameState.hpp"
 
+#include "Process.hpp"
+
 using namespace Model;
 
 TEST_CASE("Bench Game State", "[benchmark]") {
@@ -70,7 +72,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state, &moves] {
-                return state.canBeDeployed(moves[0]);
+                return state.canBeDeployed(moves[moves.size() - 1]);
             });
 
             int index = rand() % moves.size();
@@ -86,14 +88,19 @@ TEST_CASE("Bench Game State", "[benchmark]") {
     BENCHMARK("Full Run Static") {
         std::vector<const Move*> moves {};
 
-        for (int i = 0; i < 2000; ++i) {       
-            for (int x = 0; x < 20; ++x) {
+        for (int i = 0; i < 100; ++i) {       
+            for (int x = 0; x < 50; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
-                state.performMove(moves[0]);
+                
+                if (moves.size() == 0) {
+                    state.performMove(nullptr);
+                } else {
+                    state.performMove(moves[0]);
+                }
             }
 
-            for (int x = 0; x < 20; ++x) {
+            for (int x = 0; x < 50; ++x) {
                 state.revertLastMove();
             }
         }
@@ -103,8 +110,8 @@ TEST_CASE("Bench Game State", "[benchmark]") {
         std::vector<const Move*> moves {};
         int index;
 
-        for (int i = 0; i < 2000; ++i) {       
-            for (int x = 0; x < 20; ++x) {
+        for (int i = 0; i < 100; ++i) {       
+            for (int x = 0; x < 50; ++x) {
                 moves.clear();
                 state.assignPossibleMoves(moves);
                 if (moves.size() == 0) {
@@ -115,7 +122,7 @@ TEST_CASE("Bench Game State", "[benchmark]") {
                 }
             }
 
-            for (int x = 0; x < 20; ++x) {
+            for (int x = 0; x < 50; ++x) {
                 state.revertLastMove();
             }
         }
@@ -156,12 +163,43 @@ TEST_CASE("Bench Game State", "[benchmark]") {
             }
 
             meter.measure([&state] {
-                return state.evaluate();
+                return state.evaluate(PlayerColor::BLUE);
             });
         }
 
         for (int x = 0; x < 20; ++x) {
             state.revertLastMove();
         }
+    };
+
+    BENCHMARK_ADVANCED("Memory Cleanup") (Catch::Benchmark::Chronometer meter) {
+        std::vector<const Move*> moves {};
+        int index;
+        const Util::Process p = Util::Process();
+        uint64_t vm = p.virtualMemory();
+
+        // Virtual memory < 1GB
+        while (vm < 1'000'000'000) {
+            for (int x = 0; x < 20; ++x) {
+                moves.clear();
+                state.assignPossibleMoves(moves);
+                if (moves.size() == 0) {
+                    state.performMove(nullptr);
+                } else {
+                    index = rand() % moves.size();
+                    state.performMove(moves[index]);
+                }
+            }
+
+            for (int x = 0; x < 20; ++x) {
+                state.revertLastMove();
+            }
+
+            vm = p.virtualMemory();
+        }
+
+        meter.measure([&state] {
+            state.freeMemory(1);
+        });
     };
 }

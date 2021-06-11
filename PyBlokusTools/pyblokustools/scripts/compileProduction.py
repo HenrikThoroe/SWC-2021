@@ -3,6 +3,7 @@ from typing import List
 import os
 import subprocess
 import argparse
+import zipfile
 
 from pyblokustools.compileEngine import Compiler
 from pyblokustools.helpers.coloring import Colors, colorT
@@ -94,7 +95,7 @@ def compileProduction() -> None:
 
     print(colorT("Compiling in production mode", Colors.WHITE))
 
-    out_file = 'dist/prodSWC-2021.out'
+    out_file = 'dist/prod.out'
 
     compiled: bool = Compiler.make(
         CWD           = os.getcwd(),
@@ -105,7 +106,7 @@ def compileProduction() -> None:
         debug         = False,
         makeAll       = args.all,
         forceLink     = args.forcelink,
-        extraFlags    = args.extraflags,
+        extraFlags    = list(set(args.extraflags) | {'-march=broadwell', '-DNOLOG'}),
         sources_incRe = args.sourcesincre,
         headers_incRe = args.headersincre,
         )
@@ -115,3 +116,15 @@ def compileProduction() -> None:
         raise SystemExit()
 
     print(colorT("\nCompiled successfully, placed in 'dist/'", Colors.GREEN))
+
+    zipf = zipfile.ZipFile('dist/client.zip', 'w', zipfile.ZIP_DEFLATED)
+    zipf.write(os.path.abspath('start.sh'), '/start.sh')
+    zipf.write(os.path.abspath('dist/prod.out'), 'dist/prod.out')
+    failedFiles = zipf.testzip()
+    zipf.close()
+
+    if failedFiles:
+        print(colorT("\nFailed to compress files. Error in: {}".format(str.join(", ", failedFiles)), Colors.RED))
+        raise SystemExit()
+
+    print(colorT("Compressed successfully, placed in 'dist/'", Colors.GREEN))

@@ -115,6 +115,7 @@
         "scoped_allocator": "cpp",
         "shared_mutex": "cpp",
         "unordered_set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "*.impl": "cpp"
     }
 }

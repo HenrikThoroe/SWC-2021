@@ -18,7 +18,7 @@ To install all required dependencies and dev-tools in a custom Linux environment
 ./env-setup.sh
 ```
 
-**Note**: A distro which support binutils >= 2.33 and python >= 3.8 is required. For example Ubuntu 20.04 (focal) or Debian 11 (bullseye).
+**Note**: A distro which supports binutils >= 2.33 and python >= 3.8 is required. For example Ubuntu 20.04 (focal) or Debian 11 (bullseye).
 
 
 ## Usage
@@ -37,8 +37,14 @@ blokusbench
 # Create a debug build of the client
 blokusdebug
 
-# Create a production build of the client
+# Create an optimized build and run it with debug flag and log file support
+blokusrun
+
+# Create a production build of the client and prepare for upload
 blokusprod
+
+# Run mass tests with two clients competing
+blokusmass
 
 # Create the documentation from ./docsrc
 blokusdoc

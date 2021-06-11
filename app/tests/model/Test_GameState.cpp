@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "GameState.hpp"
 
+#include "Process.hpp"
+
 using namespace Model;
 using namespace Util;
 
@@ -136,11 +138,16 @@ TEST_CASE("Test Game State", "[model]") {
             for (int x = 0; x < 25; ++x) {
                 std::vector<const Move*> moves = state.getPossibleMoves();
 
-                if (moves.size() == 0) {
+                if (moves.size() <= 1) {
                     FAIL(state);
                 }
 
                 int index = rand() % moves.size();
+
+                // Ignore skip moves, because hash does not take the current turn into account, but uniqueHash does
+                while (moves[index] == nullptr) {
+                    index = rand() % moves.size();
+                }
 
                 state.performMove(moves[index]);
                 
@@ -159,5 +166,44 @@ TEST_CASE("Test Game State", "[model]") {
                 state.revertLastMove();
             }
         }
+    }
+
+    SECTION("Can Free Memory") {
+        const Process p = Process();
+        GameState state = GameState(20);
+        std::vector<const Move*> moves {};
+        int index;
+        const uint64_t acceptance = 500'000; // Accept an unaccuracy of 500KB
+        const auto fillMemory = [&state, &moves, &index] {
+            for (int i = 0; i < 10000; ++i) {       
+                for (int x = 0; x < 20; ++x) {
+                    moves.clear();
+                    state.assignPossibleMoves(moves);
+                    if (moves.size() == 0) {
+                        state.performMove(nullptr);
+                    } else {
+                        index = rand() % moves.size();
+                        state.performMove(moves[index]);
+                    }
+                }
+
+                for (int x = 0; x < 20; ++x) {
+                    state.revertLastMove();
+                }
+            }
+        };
+
+        fillMemory();
+
+        uint64_t firstRun = p.virtualMemory();
+
+        state.freeMemory(1);
+
+        fillMemory();
+
+        uint64_t secondRun = p.virtualMemory();
+
+        // No extra memory is used after it has been freed for reuse
+        REQUIRE((secondRun + acceptance > firstRun && secondRun - acceptance < firstRun));
     }
 }
