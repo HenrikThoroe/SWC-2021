@@ -100,6 +100,13 @@ namespace App {
             std::atomic<bool>& getHasMessagesFlag();
 
             /**
+             * @brief Get a refference to the underlaying TCPClient
+             * 
+             * @returns TCPClient
+             */
+            const TCPClient& getTCPClient() const;
+
+            /**
              * @brief Get a pointer to XMLParser`s vector of PieceColors still in the game
              * 
              * @returns Const Pointer to const vector of PieceColors

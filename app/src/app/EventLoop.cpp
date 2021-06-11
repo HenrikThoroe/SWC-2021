@@ -105,8 +105,14 @@ namespace App {
         std::vector<Message> messages;
         messages.reserve(10);
 
+        const TCPClient& tcpClient = messageBroker.getTCPClient();
+
         while (!gameOver) {
             // Main event loop in here
+            //? Wait for messages before running (avoid taking up cpu while idle)
+            std::unique_lock<std::mutex> lk(tcpClient.signalMutex);
+            tcpClient.signalCv.wait(lk, [this](){return this->messageReceivedFlag.load();});
+
             if (messageReceivedFlag) {
                 //? Messages in queue
                 std::shared_ptr<MessageQueue> msgQueue = messageBroker.getMessages();

@@ -102,7 +102,11 @@ namespace App {
         
         Util::Log::received << messages->back();
 
-        hasMessages = true;
+        {
+            std::lock_guard g{signalMutex};
+            hasMessages = true;
+        }
+        signalCv.notify_one();
 
         //! This model always listens in the background, remove this call and call .listen manually in the event loop
         //! if you want to manually reschedule listening for messages. This is more async but may bump performance a little
