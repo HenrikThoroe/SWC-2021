@@ -11,6 +11,7 @@
 #include "DeployedPiece.hpp"
 #include "Piece.hpp"
 #include "constants.hpp"
+#include "StateAnalyzer.hpp"
 
 namespace Model {
 
@@ -18,6 +19,9 @@ namespace Model {
         public:
 
             int initialPiece;
+
+            /// The starting positions of each color
+            std::array<std::array<int, 2>, 4> startPositions {};
 
         private:
 
@@ -30,8 +34,8 @@ namespace Model {
             /// Collection of all available players.
             const std::array<Player, 2> players;
 
-            /// A stack (first-in last-out) which tracks the performed moves.
-            std::stack<std::optional<DeployedPiece>> performedMoves {};
+            /// A list which tracks the performed moves.
+            std::vector<std::optional<DeployedPiece>> performedMoves {};
 
             /// A cache to improve move calculation speed.
             tsl::robin_map<uint64_t, MoveCacheEntry> movesCache;
@@ -58,6 +62,9 @@ namespace Model {
             /// The current hash value of the game state.
             uint64_t hashValue = 0;
 
+            /// The analyzer for improved evaluation
+            Logic::StateAnalyzer strategy;
+
             /// Calculates a unique index for the piece to access it in `allPieces` 
             int createIndex(const DeployedPiece* piece, bool includeColor = true) const;
 
@@ -77,6 +84,9 @@ namespace Model {
 
             /// Returns the player which is eligible to perform the next move.
             const Player& getCurrentPlayer() const;
+
+            /// Returns the player which is not eligible to perform the next move.
+            const Player& getOtherPlayer() const;
 
             /// Returns the color which may be deployed next.
             const PieceColor& getCurrentPieceColor() const;
@@ -131,6 +141,9 @@ namespace Model {
 
             /// Get a const reference to the encapsulated Board
             const Board& getBoard() const;
+
+            /// Get a const ref to the move history
+            const std::vector<std::optional<DeployedPiece>>& getMoveHistory() const;
 
             friend std::ostream& operator << (std::ostream& os, const GameState& state);
     };

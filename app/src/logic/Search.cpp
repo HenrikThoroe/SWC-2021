@@ -7,7 +7,7 @@ namespace Logic {
 
     SearchResult::SearchResult(const Model::Move* move, const int score) : move(move), score(score) {}
 
-    Search::Search(Model::GameState& state, const Model::PlayerColor& player) : state(state), player(player), selectedMove(nullptr), clock(), searchedNodes(0), table(), tableHits(0), invalidMask() {}
+    Search::Search(Model::GameState& state, const Model::PlayerColor& player, const std::chrono::high_resolution_clock::time_point* const lastMsgReceivedPtr) : state(state), player(player), lastMsgReceivedPtr(lastMsgReceivedPtr), selectedMove(nullptr), clock(), searchedNodes(0), table(), tableHits(0), invalidMask() {}
 
     SearchResult Search::find() {
         reset();
@@ -94,7 +94,7 @@ namespace Logic {
     }
 
     void Search::reset() {
-        startTime = clock.now();
+        startTime = *lastMsgReceivedPtr;
         searchedNodes = 0;
         alphaCutoffs = 0;
         betaCutoffs = 0;

@@ -45,6 +45,10 @@ namespace App {
         return xmlParser.getColorsInGamePtr();
     }
 
+    const std::chrono::high_resolution_clock::time_point* const MessageBroker::getLastMsgReceivedPtr() const {
+        return tcpClient.getLastMsgReceivedPtr();
+    }
+
     void MessageBroker::sendProtocol() {
         tcpClient.send("<protocol>");
     }

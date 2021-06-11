@@ -33,6 +33,9 @@ namespace Logic {
             /// The start time of the most recent search. Call `reset` to initiate.
             std::chrono::high_resolution_clock::time_point startTime;
 
+            /// Pointer to time the last message was received (MoveRequest)
+            const std::chrono::high_resolution_clock::time_point* const lastMsgReceivedPtr;
+
             /// A table which stores already explored states to speed up searching
             TranspositionTable table;
 
@@ -79,7 +82,7 @@ namespace Logic {
         
         public:
 
-            Search(Model::GameState& state, const Model::PlayerColor& player);
+            Search(Model::GameState& state, const Model::PlayerColor& player, const std::chrono::high_resolution_clock::time_point* const lastMsgReceivedPtr);
             Search(Search& other) = delete;
             Search(Search* other) = delete;
 

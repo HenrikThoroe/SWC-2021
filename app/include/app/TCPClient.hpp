@@ -41,6 +41,12 @@ namespace App
             /// The socket used by boost asio
             boost::asio::ip::tcp::socket socket{ioService};
 
+            /// Internal high resolution clock
+            std::chrono::high_resolution_clock clock;
+
+            /// Time last message was received
+            std::chrono::high_resolution_clock::time_point lastMsgReceived;
+
         public:
             /// Bool that indicates messages received state
             std::atomic<bool> hasMessages = false;
@@ -84,6 +90,10 @@ namespace App
              * @param message Message to send to server
              */
             void send(const std::string& message);
+
+            /// Get pointer to time last message was received
+            const std::chrono::high_resolution_clock::time_point* const getLastMsgReceivedPtr() const;
+
         private:
             /**
              * @brief Handler called when a Message is read

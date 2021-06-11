@@ -5,6 +5,8 @@
 
 namespace Util {
 
+    Position::Position() : Position(0, 0) {}
+
     Position::Position(int8_t x, int8_t y) : Vector2D { x, y } {}
 
     bool Position::isNextTo(const Position& other) const {
@@ -26,6 +28,15 @@ namespace Util {
             Position(x + 1, y),
             Position(x, y - 1), 
             Position(x, y + 1)
+        };
+    }
+
+    std::array<Position, 4> Position::getCorners() const {
+        return {
+            Position(x - 1, y - 1), 
+            Position(x + 1, y - 1),
+            Position(x - 1, y + 1), 
+            Position(x + 1, y + 1)
         };
     }
 

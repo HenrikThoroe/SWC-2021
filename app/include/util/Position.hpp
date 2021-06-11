@@ -9,11 +9,15 @@ namespace Util {
 
     class Position: public Vector2D {
         public:
+            Position();
+
             Position(int8_t x, int8_t y);
 
             bool isNextTo(const Position& other) const;
 
             std::array<Position, 4> getEdges() const;
+
+            std::array<Position, 4> getCorners() const;
 
             Position move(const Vector2D& direction) const;
 

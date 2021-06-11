@@ -18,7 +18,10 @@ using JSON = nlohmann::json;
 
 namespace App {
 
-    EventLoop::EventLoop(int argc, char* argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr()) {
+    EventLoop::EventLoop(int argc, char* argv[]): messageReceivedFlag(messageBroker.getHasMessagesFlag()), gameManager(messageBroker.getColorsInGamePtr(), messageBroker.getLastMsgReceivedPtr()) {
+        // Print version
+        std::cout << "Blokus C++: " << Constants::VERSION << std::endl;
+        
         // Hostname of gameserver to connect to
         std::string hostname;
 

@@ -13,6 +13,7 @@ namespace Util {
             /// @brief The y offset.
             int8_t y;
 
+            Vector2D();
             Vector2D(int8_t x, int8_t y);
             Vector2D(const Vector2D* other);
             Vector2D(const Vector2D& other);
