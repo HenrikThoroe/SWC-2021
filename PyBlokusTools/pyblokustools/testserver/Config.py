@@ -33,7 +33,7 @@ class Config():
             try:
                 with open(path.resolve(), 'r') as file:
                     return Config(**load(file))
-            except:
+            except Exception:
                 return Config()
         else:
             #? Create new empty config

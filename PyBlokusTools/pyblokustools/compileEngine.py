@@ -63,7 +63,7 @@ class CompileCache():
                 del load['version']
             
             return CompileCache(**load)
-        except:
+        except Exception:
             return CompileCache()
     
     def getChangedSourcesAndUpdate(self, currentFiles: List[str], header_files: List[str], compArgsHash: str) -> List[str]:
@@ -306,7 +306,7 @@ class Compiler():
         try:
             with open(cache_file, 'r') as file:
                 cache = CompileCache.loads(file.read())
-        except:
+        except Exception:
             cache = CompileCache()
         
         #? Make shared compilation args
@@ -380,7 +380,8 @@ class Compiler():
             return False
         
         # Determine which files need to be compiled
-        to_compile = source_files if makeAll else cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash)
+        changed    = cache.getChangedSourcesAndUpdate(source_files, header_files, comp_args_hash) # We need to always call this as it updates the hashes
+        to_compile = source_files if makeAll else changed
         
         #? Shared variables
         compiled_out_dir = os.path.join(cache_dir, 'compiled')

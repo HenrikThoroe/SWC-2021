@@ -126,7 +126,7 @@ class Logger(logging.Handler):
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             self.handleError(record)
 
     @logger_enabled

@@ -117,7 +117,7 @@ class TestServer():
         
         try:
             releases = get("https://api.github.com/repos/CAU-Kiel-Tech-Inf/backend/releases", params={'per_page': 1})
-        except:
+        except Exception:
             #? No internet connection
             self._l.warning("Could not reach Github")
             return fallback()
@@ -147,7 +147,7 @@ class TestServer():
                         
                         self._l.info(f"Using freshly downloaded server version {tag_name}")
                         return self.config.serverPath
-                    except:
+                    except Exception:
                         self._l.warning(f"Could not download server verion {tag_name}")
                         return fallback()
 
@@ -289,6 +289,17 @@ class TestServer():
         def _run() -> None:
             """Function that actually runs the mass tests
             """
+            def failed() -> None:
+                """Called when game failed
+                """
+                self.manager.kill()
+                self.manager.logClients()
+                self.failedGames += 1
+                sleep(2) # Wait for server logs to populate
+                
+                # Write Serverlogs to current game logs
+                self.logger.logServer(self.serverProc.stdout)
+            
             # Prepare logger for new game
             self.logger.makeDirs()
             
@@ -299,24 +310,13 @@ class TestServer():
                 
                 if not result:
                     #? Game failed
-                    self.manager.kill()
-                    self.failedGames += 1
-                    sleep(2) # Wait for server logs to populate
-                    
                     self.logger.logFile(f"Could not finish Game {self.manager.playedGames}:\n\tScore is now: {self.clientNames[0]}: {self.scores[0]}, {self.clientNames[1]}: {self.scores[1]}\n")
-                    
-                    # Write Serverlogs to current game logs
-                    self.logger.logServer(self.serverProc.stdout)
+                    failed()
                     return
             except Exception as e:
                 #? Game crashed
-                self.manager.kill()
-                self.failedGames += 1
-                sleep(2) # Wait for server logs to populate
-                
                 self._l.critical(f"Fatal error during game {self.manager.playedGames}?", exc_info=True)
-                # Write Serverlogs to current game logs
-                self.logger.logServer(self.serverProc.stdout)
+                failed()
                 return
                             
             # Update scores, points and log them

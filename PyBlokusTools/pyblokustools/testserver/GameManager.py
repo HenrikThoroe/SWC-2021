@@ -45,7 +45,8 @@ class GameManager():
         self._l                = logging.getLogger("TestServer.GameManager")
         
         self.playedGames       = 0 # Number of games already played (to switch client colors)
-        self.kill: Callable[[], None] = lambda: None
+        self.kill: Callable[[], None]       = lambda: None
+        self.logClients: Callable[[], None] = lambda: None 
     
     def run(self) -> Optional[ResultMsg]:
         """Play one game with both clients
@@ -71,15 +72,23 @@ class GameManager():
             try:
                 client1.kill()
                 client1.wait()
-            except:
+            except Exception:
                 pass
             try:
                 client2.kill()
                 client2.wait()
-            except:
+            except Exception:
                 pass
         
         self.kill = kill
+        
+        def logClients() -> None:
+            """Save client logs to disk
+            """
+            self.logger.logClient(player1, client1.stdout)
+            self.logger.logClient(player2, client2.stdout)
+        
+        self.logClients = logClients
         
         #? These are commented out as per 
         # sleep(0.5) # See Bugreport on Discord -> Server is overwhelmed lmao
@@ -103,20 +112,19 @@ class GameManager():
                         # Wait for clients to shutdown
                         try:
                             client1.wait(5)
-                        except:
+                        except Exception:
                             self._l.error(f"Client did not shutdown after 5sec: '{self.clientNames[player1]}'")
                             client1.kill()
                             client1.wait()
                         try:
                             client2.wait(5)
-                        except:
+                        except Exception:
                             self._l.error(f"Client did not shutdown after 5sec: '{self.clientNames[player2]}'")
                             client2.kill()
                             client2.wait()
                         
                         # Save client logs
-                        self.logger.logClient(player1, client1.stdout)
-                        self.logger.logClient(player2, client2.stdout)
+                        self.logClients()
                         
                         # Swap player scores as we swaped their reservations (normalise)
                         if player1 != 0:
